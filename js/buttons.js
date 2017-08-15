@@ -286,11 +286,8 @@
     // Open Log folder //
     /////////////////////
 
-    // SystemPath.USER_DATA
-    // SystemPath.COMMON_FILES
-
     $("#openLogFolder").click(function() {
-        var logFolder;
+        var logFolder, query;
         if (isMac) {
             logFolder = path.join(
                 csInterface.getSystemPath(SystemPath.USER_DATA),
@@ -300,9 +297,11 @@
         } else { //  windows
             logFolder = path.join(
                 csInterface.getSystemPath(SystemPath.USER_DATA),
-                '../Logs/CSXS' // need to change this
+                '../Local/Temp'
             );
-            exec('start "" "' + logFolder + '"');
+            // For Windows as there's no dedicated log folder it's best to add a filter
+            query = 'explorer.exe "search-ms:query=cep*.log&crumb=location:' + logFolder +'&"';
+            exec(query);
         }
     });
 
