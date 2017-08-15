@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ExtensionManifest Version="6.0" ExtensionBundleId="com.creative-scripts.scratch.pad.bundle.1" ExtensionBundleVersion="1.0.0" ExtensionBundleName="Extension-Name" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ExtensionManifest Version="6.0" ExtensionBundleId="com.creative-scripts.cstk.bundle.1" ExtensionBundleVersion="1.0.0" ExtensionBundleName="Extension-Name" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Author>Trevor http://www.creative-scripts.com</Author>
     <Legal>Written under the do not complain do not sue license</Legal>
-    <Abstract>Provides a Scratch Pad for messing around with</Abstract>
+    <Abstract>CSTK Provides a Scratch Pad for messing around with. Even less useful than the ESTK</Abstract>
     <ExtensionList>
-        <Extension Id="com.creative-scripts.scratch.pad.1" Version="6.1.0" />
+        <Extension Id="com.creative-scripts.cstk.1" Version="6.1.0" />
     </ExtensionList>
     <ExecutionEnvironment>
         <HostList>
@@ -45,7 +45,7 @@
         </RequiredRuntimeList>
     </ExecutionEnvironment>
     <DispatchInfoList>
-        <Extension Id="com.creative-scripts.scratch.pad.1">
+        <Extension Id="com.creative-scripts.cstk.1">
             <DispatchInfo>
                 <Resources>
                     <MainPath>./html/index.html</MainPath>
@@ -64,7 +64,7 @@
                 </Lifecycle>
                 <UI>
                     <Type>Panel</Type>
-                    <Menu>Scratch Pad</Menu>
+                    <Menu>CSTK</Menu>
                     <Geometry>
                         <Size>
                             <Height>600</Height>
@@ -81,11 +81,11 @@
 
                     </Geometry>
                     <Icons>
-                        <Icon Type="Normal">./icons/PlaneIcon.png</Icon>
-                        <Icon Type="RollOver">./icons/PlaneIcon.png</Icon>
-                        <Icon Type="Disabled">./icons/PlaneIcon.png</Icon>
-                        <Icon Type="DarkNormal">./icons/PlaneIconDark.png</Icon>
-                        <Icon Type="DarkRollOver">./icons/PlaneIconDark.png</Icon>
+                        <Icon Type="Normal">./icons/pad.png</Icon>
+                        <Icon Type="RollOver">./icons/pad.png</Icon>
+                        <Icon Type="Disabled">./icons/pad.png</Icon>
+                        <Icon Type="DarkNormal">./icons/padDark.png</Icon>
+                        <Icon Type="DarkRollOver">./icons/padDark.png</Icon>
                     </Icons>
                 </UI>
             </DispatchInfo>

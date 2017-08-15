@@ -194,13 +194,14 @@ Jsx.prototype.evalScript = function() {
     if (replacements) {
         for (key in replacements) {
             if (replacements.hasOwnProperty(key)) {
-                replaceThis = new RegExp('{{' + key + '}}', 'g');
+                replaceThis = new RegExp('__' + key + '__', 'g');
                 withThis = replacements[key];
                 jsxScript = jsxScript.replace(replaceThis, withThis + '');
             }
         }
     }
 
+    
     try {
         csInterface.evalScript(jsxScript, callback);
         return true;
@@ -482,7 +483,7 @@ Jsx.prototype.evalFile = function() {
     if (replacements) {
         for (key in replacements) {
             if (replacements.hasOwnProperty(key)) {
-                replaceThis = new RegExp('{{' + key + '}}', 'g');
+                replaceThis = new RegExp('__' + key + '__', 'g');
                 withThis = replacements[key];
                 jsxScript = jsxScript.replace(replaceThis, withThis + '');
             }

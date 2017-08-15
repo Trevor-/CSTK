@@ -37,13 +37,16 @@
     width: 100px;
 }
 
+.main{
+    height: auto;
+}
 
 .codeBox {
     height: 200px;
     width: 97%;
     resize: vertical;
     border-color: blue;
-    border-width: 2px;
+    border-width: 4px;
     border-radius: 5px;
     overflow: auto !important;
     margin-top: 0px;
@@ -102,6 +105,21 @@
     user-select: none;
 }
 
+.flatHighlight {
+    background: blue;
+    text-shadow: none !important;
+    /*border-radius: 5px;*/
+    cursor: default;
+}
+
+.greenButton {
+    box-shadow: inset 0px 1px 0px 0px #373;
+    border: 1px solid #888;
+    text-shadow: 0px 1px 0px #111;
+    background: -webkit-linear-gradient(top, #5a3 00%, #3f3 100%);
+    user-select: none;
+}
+
 .greyButton {
     box-shadow: inset 0px 1px 0px 0px #eee;
     border: 1px solid #888;
@@ -125,6 +143,11 @@
 }
 
 .greyButton:active {
+    position: relative;
+    top: 1px;
+}
+
+.greenButton:active {
     position: relative;
     top: 1px;
 }
@@ -165,6 +188,16 @@
     text-align: center;
 }
 
+.expanded {
+    visibility: visible;
+    height: auto;
+    text-align: center;
+}
+
+._collapsed, .collapsed {
+    visibility: collapse!important;
+    height: 0px !important;
+}
 
 h1 {
     font-size: 14px;
@@ -177,11 +210,12 @@ h1 {
 
 h2 {
     font-size: 12px;
+    line-height: 1.4em;
     margin-top: 0px;
     margin-bottom: 0px;
     text-align: center;
     font-weight: 600;
-    text-shadow: 0px 0px 0.4px grey,0 0 1px white;
+    /*text-shadow: 0px 0px 0.4px grey,0 0 1px white;*/
 }
 
 h3 {

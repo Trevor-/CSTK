@@ -3,6 +3,9 @@
     "unused": true,
     "esversion": 6,
     "-W002": true,
+    "browser": true,
+    "node": true,
+    "jquery": true,
     "predef": [
         "require",
         "alert",
@@ -36,6 +39,9 @@
         "Transformation",
         "Justification"
     ]
+
 }
 
+
 // https://github.com/jshint/jshint/blob/master/src/messages.js
+// http://jshint.com/docs/options/
