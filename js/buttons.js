@@ -1,4 +1,4 @@
-/* global APP, jsx, window, process */
+/* global jsx, window, process */
 /* jshint undef:true, unused:true, evil: true, esversion:6 */
 
 ////////////////////////////////////////////////////////

@@ -106,9 +106,8 @@
 }
 
 .flatHighlight {
-    background: blue;
+    background: lightskyblue;
     text-shadow: none !important;
-    /*border-radius: 5px;*/
     cursor: default;
 }
 
