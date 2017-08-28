@@ -37,19 +37,16 @@
     evalMode = 0; // default value
 
     $('#jsModeRB').click(function() {
-        // return alert('jsModeRB')
         $('#evalCode').css({ borderColor: 'blue' });
         evalMode = 0;
     });
 
     $('#jsxModeRB').click(function() {
-        // return alert('jsxModeRB')
         $('#evalCode').css({ borderColor: 'green' });
         evalMode = 1;
     });
 
     $('#execModeRB').click(function() {
-        // return alert('execModeRB')
         $('#evalCode').css({ borderColor: 'red' });
         evalMode = 2;
     });
