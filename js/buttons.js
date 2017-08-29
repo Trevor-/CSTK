@@ -69,13 +69,16 @@
             var contents, modes;
             modes = ['JS', 'JSX', 'SHELL'];
             contents = $("#evalResult").val();
-            $("#evalResult").append(evalLines.replace(/^\s+/, '') +
+            result = $("#evalResult").val() +
+                evalLines.replace(/^\s+/, '') +
                 '\n---------------------------\n' +
                 ('' + new Date()).substr(16, 8) +
                 ' @ ==> '.replace('@', modes[evalMode]) +
                 (/.[\n\r]/.test(result) ? '\n' : '') + // for multiline results we'll start on a new line
                 result +
-                '\n---------------------------\n');
+                '\n---------------------------\n';
+            // we should be able to use ("#evalResult").append() but it wasn't working properly
+            $("#evalResult").val(result);
             $("#evalResult").animate({
                 scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
             }, 100);
@@ -145,15 +148,16 @@
         } catch (err) {
             result = err;
         }
-        $("#evalResult").append(
+        result = $("#evalResult").val() +
             $("#evalCode").val() +
             '\n---------------------------\n' +
             ('' + new Date()).substr(16, 8) +
             ' JS ==> ' +
-            (/.[\n\r]/.test(result) ? '\n' : '') +
+            (/.[\n\r]/.test('' + result) ? '\n' : '') +
             result +
-            '\n---------------------------\n'
-        );
+            '\n---------------------------\n';
+        // we should be able to use ("#evalResult").append() but it wasn't working properly
+        $("#evalResult").val(result);
         $("#evalResult").animate({
             scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
         }, 200);
@@ -164,24 +168,24 @@
     //////////////
 
     $("#evaljsx").click(function() {
-        var result;
         $('#jsxModeRB').click();
         var evalCallBack = function(result) {
-            $("#evalResult").append(
+            result = $("#evalResult").val() +
                 $("#evalCode").val() +
                 '\n---------------------------\n' +
                 ('' + new Date()).substr(16, 8) +
                 ' JSX ==> ' +
                 (/.[\n\r]/.test(result) ? '\n' : '') +
                 result +
-                '\n---------------------------\n'
-            );
+                '\n---------------------------\n';
+            // we should be able to use ("#evalResult").append() but it wasn't working properly
+            $("#evalResult").val(result);
             $("#evalResult").animate({
                 scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
             }, 200);
         };
         try {
-            result = jsx.eval($("#evalCode").val(), evalCallBack, true);
+            jsx.eval($("#evalCode").val(), evalCallBack, true);
         } catch (err) {
             evalCallBack(err);
         }
@@ -199,15 +203,16 @@
         var evalCallBack = function(error, stdout) {
             var result;
             result = error || stdout;
-            $("#evalResult").append(
+            result = $("#evalResult").val +
                 $("#evalCode").val() +
                 '\n---------------------------\n' +
                 ('' + new Date()).substr(16, 8) +
                 ' EXEC ==> ' +
                 (/.[\n\r]/.test(result) ? '\n' : '') +
                 result +
-                '\n---------------------------\n'
-            );
+                '\n---------------------------\n';
+            // we should be able to use ("#evalResult").append() but it wasn't working properly
+            $("#evalResult").val(result);
             $("#evalResult").animate({
                 scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
             }, 200);
@@ -297,7 +302,7 @@
                 '../Local/Temp'
             );
             // For Windows as there's no dedicated log folder it's best to add a filter
-            query = 'explorer.exe "search-ms:query=cep*.log&crumb=location:' + logFolder +'&"';
+            query = 'explorer.exe "search-ms:query=cep*.log&crumb=location:' + logFolder + '&"';
             exec(query);
         }
     });
