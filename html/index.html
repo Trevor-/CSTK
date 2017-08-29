@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link id="hostStyle" rel="stylesheet" href="../css/styles.css" />
+    <title>Scratch Pad</title>
+</head>
+
+<body class="hostElt body">
+    <div id="main" class="hostElt whiteBox">
+        <div id="console" class="expanded" style="text-align: center;">
+            <h2 style="font-size: 18px">CSTK<span style="font-size: .6em">© Ver 1, by Trevor <span class="link" id="CreativeScripts">www.creative-scripts.com</span> last modified 29th Aug 2017</span></h2>
+            <h2>To execute the whole snippet click on one of the Eval buttons.</h2>
+            <h2>
+            <form>To execute the selected lines in 
+            <input class="chbx" type="radio" id="jsModeRB" name="evalMode" value="true" checked="true">
+            <label id="jsModeLB" class="label" for="jsModeRB" style="color: blue;text-shadow: 0px 0px 1px white !important;">JS</label>
+            <input class="chbx" type="radio" id="jsxModeRB" name="evalMode" value="false">
+            <label id="jsxMode" class="label" for="jsxModeRB" style="color: green;">JSX</label>
+            <input class="chbx" type="radio" id="execModeRB" name="evalMode" value="false">
+            <label id="execMode" class="label" for="execModeRB" style="color: red;">Shell</label>
+            mode press Shift + Enter
+            </form>
+
+            <div class="center" style="margin-top: 4px;">
+                <textarea type="text" id="evalCode" name="evalCode" value="" class="codeBox">jsx.file({ file:'fileName.jsx', callBack: function(r){alert(r);}, replacements:{replaceMe: 'File Paths'}, eval: false }) </textarea>
+                <span id="zoomOut" class="csButton blueButton">-</span>
+                <span id="eval" class="csButton blueButton">JS ENGINE EVAL</span>
+                <span id="evaljsx" class="csButton greenButton">JSX ENGINE EVAL</span>
+                <span id="evalExec" class="csButton redButton">EXEC EVAL</span>
+                <span id="zoomIn" class="csButton blueButton">+</span>
+                <textarea type="text" id="evalResult" name="evalResult" value="" class="result"></textarea>
+            </div>
+        </div>
+        <div class="center">
+            <span id="openFolders" name="" value="" class="csButton">Show All Extensions Folders</span>
+            <span id="openLogFolder" name="" value="" class="csButton greyButton">Open Log Folder</span>
+            <span id="restartExt" class="csButton blueButton">Restart Extension</span>
+            <a href="./readme.html" class="csButton blueButton">?</a>
+        </div>
+    </div>
+    <div id="folders"></div>
+
+    <script src="../js/libs/CSInterface.js"></script>
+    <script src="../js/themeManager.js"></script>
+    <script src="../js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../js/libs/jquery.selection.js"></script>
+    <script src="../js/JSX.js"></script>
+    <script src="../js/buttons.js"></script>
+</body>
+
+</html>

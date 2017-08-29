@@ -1,0 +1,47 @@
+{
+    "undef": true,
+    "unused": true,
+    "esversion": 6,
+    "-W002": true,
+    "browser": true,
+    "node": true,
+    "jquery": true,
+    "predef": [
+        "require",
+        "alert",
+        "CSInterface",
+        "SystemPath",
+        "themeManager",
+        "XMLHttpRequest",
+        "app",
+        "Window",
+        "alert",
+        "SaveOptions",
+        "CMYKColor",
+        "RGBColor",
+        "LabColor",
+        "RGBColor",
+        "LabColor",
+        "File",
+        "$",
+        "ColorModel",
+        "Folder",
+        "PDFSaveOptions",
+        "PDFXStandard",
+        "PDFCompatibility",
+        "SpotColor",
+        "CSXSEvent",
+        "ExternalObject",
+        "BridgeTalk",
+        "logFactory",
+        "DocumentColorSpace",
+        "StrokeCap",
+        "Transformation",
+        "Justification"
+    ]
+
+}
+
+
+// https://github.com/jshint/jshint/blob/master/src/messages.js
+// http://jshint.com/docs/options/

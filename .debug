@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionList>
+    <Extension Id="com.creative-scripts.cstk.1">
+        <HostList>
+            <!-- Photoshop Extended -->
+            <Host Name="PHXS" Port="9070" />
+            <!-- Photoshop -->
+            <Host Name="PHSP" Port="9071" />
+            <!-- Illustrator -->
+            <Host Name="ILST" Port="9072" />
+            <!-- InDesign -->
+            <Host Name="IDSN" Port="9073" />
+            <!-- InCopy -->
+            <Host Name="AICY" Port="9074" />
+            <!-- Premiere -->
+            <Host Name="PPRO" Port="9075" />
+            <!-- AfterEffects -->
+            <Host Name="AEFT" Port="9076" />
+            <!-- PRELUDE -->
+            <Host Name="PRLD" Port="9077" />  
+            <!-- FLASH Pro -->
+            <Host Name="FLPR" Port="9078" />
+            <!-- Audition -->
+            <Host Name="AUDT" Port="9079" />
+            <!-- Dreamweaver -->
+            <Host Name="DRWV" Port="9080" />
+            <!-- Muse -->
+            <Host Name="MUSE" Port="9081" />
+        </HostList>
+    </Extension>
+</ExtensionList>
+

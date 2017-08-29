@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionManifest Version="6.0" ExtensionBundleId="com.creative-scripts.cstk.bundle.1" ExtensionBundleVersion="1.0.0" ExtensionBundleName="Extension-Name" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <Author>Trevor http://www.creative-scripts.com</Author>
+    <Legal>Written under the do not complain do not sue license</Legal>
+    <Abstract>CSTK Provides a Scratch Pad for messing around with. Even less useful than the ESTK</Abstract>
+    <ExtensionList>
+        <Extension Id="com.creative-scripts.cstk.1" Version="6.1.0" />
+    </ExtensionList>
+    <ExecutionEnvironment>
+        <HostList>
+            <!-- This is for CC2015 onwards -->
+            <!-- Uncomment Host tags according to the apps you want your panel to support -->
+            <!-- Photoshop Extended -->
+            <Host Name="PHXS" Version="16" />
+            <!-- Photoshop -->
+            <Host Name="PHSP" Version="16" />
+            <!-- Illustrator -->
+            <Host Name="ILST" Version="19" />
+            <!-- InDesign -->
+            <Host Name="IDSN" Version="11" />
+            <!-- InCopy -->
+            <Host Name="AICY" Version="11" />
+            <!-- Premiere -->
+            <Host Name="PPRO" Version="9" />
+            <!-- AfterEffects -->
+            <Host Name="AEFT" Version="13" />
+            <!-- PRELUDE -->
+            <Host Name="PRLD" Version="4" />  
+            <!-- FLASH Pro -->
+            <Host Name="FLPR" Version="15" />
+            <!-- Audition -->
+            <Host Name="AUDT" Version="8" />
+            <!-- Dreamweaver -->
+            <Host Name="DRWV" Version="16" />
+            <!-- Muse (I don't know the version number for 2017 -->
+            <!-- never used it don't care, not a.muse.d -->
+            <Host Name="MUSE" Version="2" />
+
+        </HostList>
+        <LocaleList>
+            <Locale Code="All" />
+        </LocaleList>
+        <RequiredRuntimeList>
+            <RequiredRuntime Name="CSXS" Version="6.0" />
+        </RequiredRuntimeList>
+    </ExecutionEnvironment>
+    <DispatchInfoList>
+        <Extension Id="com.creative-scripts.cstk.1">
+            <DispatchInfo>
+                <Resources>
+                    <MainPath>./html/index.html</MainPath>
+                    <!-- we are using JSX.js so we don't use ScriptPath -->
+                    <!-- <ScriptPath>./jsx/host.js</ScriptPath> -->
+                    <CEFCommandLine>
+                        <Parameter>--enable-nodejs</Parameter>
+                    </CEFCommandLine>
+                </Resources>
+                <Lifecycle>
+                    <AutoVisible>false</AutoVisible>
+                    <StartOn>
+                        <Event>applicationActivate</Event>
+                        <!-- <Event>documentAfterActivate</Event> -->
+                    </StartOn>
+                </Lifecycle>
+                <UI>
+                    <Type>Panel</Type>
+                    <Menu>CSTK</Menu>
+                    <Geometry>
+                        <Size>
+                            <Height>600</Height>
+                            <Width>500</Width>
+                        </Size>
+                        <MinSize>
+                            <Height>600</Height>
+                            <Width>600</Width>
+                        </MinSize>
+                        <MaxSize>
+                            <Height>1000</Height>
+                            <Width>1000</Width>
+                        </MaxSize>
+
+                    </Geometry>
+                    <Icons>
+                        <Icon Type="Normal">./icons/pad.png</Icon>
+                        <Icon Type="RollOver">./icons/pad.png</Icon>
+                        <Icon Type="Disabled">./icons/pad.png</Icon>
+                        <Icon Type="DarkNormal">./icons/padDark.png</Icon>
+                        <Icon Type="DarkRollOver">./icons/padDark.png</Icon>
+                    </Icons>
+                </UI>
+            </DispatchInfo>
+        </Extension>
+    </DispatchInfoList>
+</ExtensionManifest>
