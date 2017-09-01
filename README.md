@@ -3,6 +3,8 @@
 
 * CSTK© Version 1
 
+![][consoleGif]
+
 ### What is this repository for? ###
 
 * Faffing around, learning and helping to write Adobe HTML Extensions
@@ -92,6 +94,7 @@ If your a chicken you can use RegEdit, edit or add the `LogLevel` entry of type 
 * Copyright Trevor [Creative Scripts](https://creative-scripts.com)
 
 [regedit]: https://content.screencast.com/users/dtrevor1/folders/Snagit/media/06f14ee3-fa9c-411e-85bf-dce61c8ec9bd/regedit_small.png
+[consoleGif]: http://creative-scripts.com/wp-content/uploads/2017/09/CSTK-GIF.gif
 
 [console]: https://content.screencast.com/users/dtrevor1/folders/Snagit/media/09b3efde-0bd3-4dc1-8b00-331f28c81398/CSTK%20Console.png
 [extensions]: https://content.screencast.com/users/dtrevor1/folders/Snagit/media/bfd23e15-486f-4ce9-819c-e0aaf2c445e3/All%20extensions.png
