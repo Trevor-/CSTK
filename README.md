@@ -26,7 +26,8 @@
 
 #### How do set the debug mode? ####
 * The extension's not signed and **WILL NOT WORK** unless the debug mode is set, so set to debug mode!
-### The examples here or for CEP7<br>For CEP8 you use CSXS.8 instead of CSXS.7<br>What will you need to do for CEP9? 😕
+### 👉The examples here or for CEP7👈<br>
+For CEP8 you use CSXS.**8** instead of CSXS.**7**<br>What will you need to do for CEP9? 😕
 * **Mac**: In **Terminal**
 ````Shell
 defaults write com.adobe.CSXS.7.plist PlayerDebugMode 1
