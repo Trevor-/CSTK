@@ -20,7 +20,7 @@
 
 ### How do I get set up? ###
 
-* Plonk and unzip the zip file in the extensions folder
+* `git clone https://github.com/Trevor-/CSTK.git` or plonk and unzip the zip file in the extensions folder
 * Mac /Library/Application Support/Adobe/CEP/extensions or ~/Library/Application Support/Adobe/CEP/extensions
 * Windows C:\Program Files\Common Files\Adobe\CEP\extensions or C:\Users\{USER}\AppData\Roaming\Adobe\CEP\extensions (for pre CEP 6.1 C:\Program Files (x86)\Common Files\Adobe\CEP\extensions)
 
