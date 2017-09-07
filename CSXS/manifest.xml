@@ -32,10 +32,11 @@
             <Host Name="AUDT" Version="8" />
             <!-- Dreamweaver -->
             <Host Name="DRWV" Version="16" />
-            <!-- Muse (I don't know the version number for 2017 -->
-            <!-- never used it don't care, not a.muse.d -->
-            <Host Name="MUSE" Version="2" />
-
+            <HostList>
+            <!-- Bridge -->   
+            <Host Name="KBRG" Version="[8.0]" />
+            </HostList>
+            
         </HostList>
         <LocaleList>
             <Locale Code="All" />
