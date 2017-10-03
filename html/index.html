@@ -41,11 +41,25 @@
         </div>
     </div>
     <div id="folders"></div>
+    <script>
+    if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }
 
+    if (typeof exports === 'object') {
+        window.exports = exports;
+        exports = undefined;
+    }
+    </script>
     <script src="../js/libs/CSInterface.js"></script>
     <script src="../js/themeManager.js"></script>
     <script src="../js/libs/jquery-3.1.1.min.js"></script>
     <script src="../js/libs/jquery.selection.js"></script>
+    <script>
+    if (window.module) module = window.module;
+    if (window.exports) exports = window.exports;
+    </script>
     <script src="../js/JSX.js"></script>
     <script src="../js/buttons.js"></script>
 </body>
