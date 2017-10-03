@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ExtensionManifest Version="6.0" ExtensionBundleId="com.creative-scripts.cstk.bundle.1" ExtensionBundleVersion="1.0.0" ExtensionBundleName="Extension-Name" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ExtensionManifest Version="6.0" ExtensionBundleId="com.creative-scripts.cstk.bundle.1" ExtensionBundleVersion="2.0.0" ExtensionBundleName="Extension-Name" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Author>Trevor http://www.creative-scripts.com</Author>
     <Legal>Written under the do not complain do not sue license</Legal>
     <Abstract>CSTK Provides a Scratch Pad for messing around with. Even less useful than the ESTK</Abstract>
     <ExtensionList>
-        <Extension Id="com.creative-scripts.cstk.1" Version="6.1.0" />
+        <Extension Id="com.creative-scripts.cstk.1" Version="8.0.0" />
     </ExtensionList>
     <ExecutionEnvironment>
         <HostList>
@@ -25,17 +25,15 @@
             <!-- AfterEffects -->
             <Host Name="AEFT" Version="13" />
             <!-- PRELUDE -->
-            <Host Name="PRLD" Version="4" />  
+            <Host Name="PRLD" Version="4" />
             <!-- FLASH Pro -->
             <Host Name="FLPR" Version="15" />
             <!-- Audition -->
             <Host Name="AUDT" Version="8" />
             <!-- Dreamweaver -->
             <Host Name="DRWV" Version="16" />
-            <!-- Muse (I don't know the version number for 2017 -->
-            <!-- never used it don't care, not a.muse.d -->
-            <Host Name="MUSE" Version="2" />
-
+            <!-- Bridge -->
+            <Host Name="KBRG" Version="[8.0]" />
         </HostList>
         <LocaleList>
             <Locale Code="All" />
@@ -78,7 +76,6 @@
                             <Height>1000</Height>
                             <Width>1000</Width>
                         </MaxSize>
-
                     </Geometry>
                     <Icons>
                         <Icon Type="Normal">./icons/pad.png</Icon>
