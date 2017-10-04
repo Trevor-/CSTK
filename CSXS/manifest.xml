@@ -33,7 +33,7 @@
             <!-- Dreamweaver -->
             <Host Name="DRWV" Version="16" />
             <!-- Bridge -->
-            <Host Name="KBRG" Version="[8.0]" />
+            <Host Name="KBRG" Version="8" />
         </HostList>
         <LocaleList>
             <Locale Code="All" />
