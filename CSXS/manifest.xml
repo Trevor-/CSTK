@@ -56,7 +56,7 @@
                 <Lifecycle>
                     <AutoVisible>false</AutoVisible>
                     <StartOn>
-                        <Event>applicationActivate</Event>
+                        <!-- <Event>applicationActivate</Event> -->
                         <!-- <Event>documentAfterActivate</Event> -->
                     </StartOn>
                 </Lifecycle>
