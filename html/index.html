@@ -4,11 +4,38 @@
 <head>
     <meta charset="utf-8">
     <link id="hostStyle" rel="stylesheet" href="../css/styles.css" />
-    <title>Scratch Pad</title>
+    <link rel="stylesheet" href="../js/libs/pretty-dropdowns/dist/css/prettydropdowns.css">
+    <script>
+    if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }
+    if (typeof exports === 'object') {
+        window.exports = exports;
+        exports = undefined;
+    }
+    if (typeof require === 'object') {
+        window.require = require;
+        require = undefined;
+    }
+    </script>
+    <script src="../js/libs/jquery-3.1.1.min.js"></script>
+    <script src="../js/libs/pretty-dropdowns/dist/js/jquery.prettydropdowns.js"></script>
+    <script src="../js/libs/jquery.selection.js"></script>
+    <script>
+    if (window.module) module = window.module;
+    if (window.exports) exports = window.exports;
+    if (window.require) require = window.require;
+    </script>
+    <script src="../js/libs/CSInterface.js"></script>
+    <script src="../js/themeManager.js"></script>
+    <script src="../js/JSX.js"></script>
+    <title>CSTK</title>
 </head>
 
 <body class="hostElt body">
     <div id="main" class="hostElt whiteBox">
+
         <div id="console" class="expanded" style="text-align: center;">
             <h2 style="font-size: 18px">CSTK<span style="font-size: .6em">© Ver 1.2, by Trevor <span class="link" id="CreativeScripts">www.creative-scripts.com</span> last modified 3rd Oct 2017</span></h2>
             <h2>To execute the whole snippet click on one of the Eval buttons.</h2>
@@ -34,34 +61,45 @@
             </div>
         </div>
         <div class="center">
-            <span id="openFolders" name="" value="" class="csButton">Show All Extensions Folders</span>
+
             <span id="openLogFolder" name="" value="" class="csButton greyButton">Open Log Folder</span>
-            <span id="restartExt" class="csButton blueButton">Restart Extension</span>
+            <select id="logLevel" name="logLevel" class="pretty" onchange="alert('You selected ' + value)">
+              <option value="0">Log Level 0 - Off</option>
+              <option value="1">Log Level 1 - Error</option>
+              <option value="2">Log Level 2 - Warn</option>
+              <option value="3">Log Level 3 - Info</option>
+              <option value="4">Log Level 4 - Debug</option>
+              <option value="5">Log Level 5 - Trace</option>
+              <option value="6">Log Level 6 - All</option>
+            </select>
+
+
+            <select id="debugLevel" name="debugLevel" class="pretty" onchange="alert('You selected ' + value)">
+              <option value="1">Debug level 1</option>
+              <option value="0">Debug level 0</option>
+            </select>
+
+            <span id="openFolders" name="" value="" class="csButton">Show All Extensions Folders</span>
+            <!-- <span id="restartExt" class="csButton blueButton">Restart Extension</span> -->
+            <img src="../img/refresh.png" style="cursor: pointer; height: 25px;" id="restartExt">
             <a href="./readme.html" class="csButton blueButton">?</a>
         </div>
+        <div>
+    </div>
+        <script>
+        $(document).ready(function() {
+          $('select').prettyDropdown({
+            height: 29,
+            classic: true
+          });       
+        });
+        $("#logLevel").val(3);
+        </script>
     </div>
     <div id="folders"></div>
-    <script>
-    if (typeof module === 'object') {
-        window.module = module;
-        module = undefined;
-    }
-
-    if (typeof exports === 'object') {
-        window.exports = exports;
-        exports = undefined;
-    }
-    </script>
-    <script src="../js/libs/CSInterface.js"></script>
-    <script src="../js/themeManager.js"></script>
-    <script src="../js/libs/jquery-3.1.1.min.js"></script>
-    <script src="../js/libs/jquery.selection.js"></script>
-    <script>
-    if (window.module) module = window.module;
-    if (window.exports) exports = window.exports;
-    </script>
-    <script src="../js/JSX.js"></script>
     <script src="../js/buttons.js"></script>
+
+
 </body>
 
 </html>

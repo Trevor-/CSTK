@@ -8,7 +8,6 @@
     settings as defined by the end user.
 
 */
-
 var themeManager = (function() {
     'use strict';
 
@@ -119,4 +118,5 @@ var themeManager = (function() {
     };
 
 }());
+
 themeManager.init();

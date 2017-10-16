@@ -33,7 +33,8 @@
             <!-- Dreamweaver -->
             <Host Name="DRWV" Version="16" />
             <!-- Bridge -->
-            <Host Name="KBRG" Version="[8.0]" />
+            <Host Name="KBRG" Version="[8.0,99.9]" />
+            <Host Name="BRDG" Version="[8.0,99.9]" />
         </HostList>
         <LocaleList>
             <Locale Code="All" />
@@ -51,6 +52,7 @@
                     <!-- <ScriptPath>./jsx/host.js</ScriptPath> -->
                     <CEFCommandLine>
                         <Parameter>--enable-nodejs</Parameter>
+                        <Parameter>--mixed-context</Parameter>
                     </CEFCommandLine>
                 </Resources>
                 <Lifecycle>
