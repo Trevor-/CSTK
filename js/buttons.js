@@ -235,9 +235,7 @@
         l = extensions.length;
         template = [
             '<div id="div__n__">',
-            '<span id="name__n__" class="csButton flatHighlight">__name__</span>',
-            '<span id="base__n__" class="csButton blueButton" style="font-size:10px!important;">Open Folder</span>',
-            '<span class="csButton flatHighlight" style="font-size:10px!important;">Mess With Care!</span>',
+            '<span id="base__n__" class="csButton blueButton">__name__ - Open Folder</span>',
             '</div>',
         ].join('\n');
         html = [];
@@ -311,13 +309,27 @@
         exec('X http://www.creative-scripts.com '.replace(/X/, isMac ? 'open' : 'start'));
     });
 
+    ////////////////////
+    // Set Log Levels //
+    ////////////////////
+
+    $("#logLevel").click(function() {
+        if (/\bshow\b/.test('' + $('#myDropdown').attr('class'))) {
+            $("#myDropdown").removeClass("show");
+        } else {
+            $("#myDropdown").addClass("show");
+        }
+    });
+
     $("#restartExt").click(function() {
         try {
             // if we're restarting then we should remove all the eventListeners so we don't get double events
             process.removeAllListeners();
-            window.location.href = "../html/index.html";
+            // window.location.href = path.join(__dirname, "/html/index.html");
+            window.location.href = '/Library/Application Support/Adobe/CEP/extensions/CSTK/html/index.html';
         } catch (e) {
-            window.location.href = "../html/index.html";
+            // window.location.href = path.join(__dirname, "/html/index.html");
+            window.location.href = '/Library/Application Support/Adobe/CEP/extensions/CSTK/html/index.html';
         }
     });
 
