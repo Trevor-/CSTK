@@ -93,6 +93,10 @@ If your a chicken you can use RegEdit, edit or add the `LogLevel` entry of type 
 * Any disputes to be settled by my dad.
 * Copyright Trevor [Creative Scripts](https://creative-scripts.com)
 
+### Change Log ###
+
+
+
 [regedit]: https://content.screencast.com/users/dtrevor1/folders/Snagit/media/06f14ee3-fa9c-411e-85bf-dce61c8ec9bd/regedit_small.png
 [consoleGif]: http://creative-scripts.com/wp-content/uploads/2017/09/CSTK-GIF.gif
 

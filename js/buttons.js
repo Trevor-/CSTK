@@ -325,11 +325,9 @@
         try {
             // if we're restarting then we should remove all the eventListeners so we don't get double events
             process.removeAllListeners();
-            // window.location.href = path.join(__dirname, "/html/index.html");
-            window.location.href = '/Library/Application Support/Adobe/CEP/extensions/CSTK/html/index.html';
+            window.location.href = './index.html';
         } catch (e) {
-            // window.location.href = path.join(__dirname, "/html/index.html");
-            window.location.href = '/Library/Application Support/Adobe/CEP/extensions/CSTK/html/index.html';
+            window.location.href = './index.html';
         }
     });
 
@@ -342,5 +340,7 @@
         jsx.eval("new File('" + csInterface.getSystemPath(SystemPath.EXTENSION) + "').execute();");
     });
 
-
+    $('#help').click(function() {
+        exec((isMac ? 'open "' : 'start "" "')  + 'https://github.com/Trevor-/CSTK#readme"');
+    });
 })();

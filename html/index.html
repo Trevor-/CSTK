@@ -37,7 +37,7 @@
     <div id="main" class="hostElt whiteBox">
 
         <div id="console" class="expanded" style="text-align: center;">
-            <h2 style="font-size: 18px">CSTK<span style="font-size: .6em">© Ver 1.3, by Trevor <span class="link" id="CreativeScripts">www.creative-scripts.com</span> last modified 4th Oct 2017</span></h2>
+            <h2 style="font-size: 18px">CSTK<span style="font-size: .6em">© Ver 1.9, by Trevor <span class="link" id="CreativeScripts">www.creative-scripts.com</span> last modified 17th Oct 2017</span></h2>
             <h2>To execute the whole snippet click on one of the Eval buttons.</h2>
             <h2>
             <form>To execute the selected lines in 
@@ -78,11 +78,11 @@
               <option value="1">Debug level 1</option>
               <option value="0">Debug level 0</option>
             </select>
+            <img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt">
 
             <span id="openFolders" name="" value="" class="csButton">Show All Extensions Folders</span>
             <!-- <span id="restartExt" class="csButton blueButton">Restart Extension</span> -->
-            <img src="../img/refresh.png" style="cursor: pointer; height: 25px;" id="restartExt">
-            <a href="./readme.html" class="csButton blueButton">?</a>
+            <a id="help" href="" class="csButton blueButton">?</a>
         </div>
         <div>
     </div>
@@ -93,7 +93,8 @@
             classic: true
           });       
         });
-        $("#logLevel").val(3);
+        $("#logLevel").val(4);
+        $("#debugLevel").val(1);
         </script>
     </div>
     <div id="folders"></div>
