@@ -35,7 +35,6 @@
 
 <body class="hostElt body">
     <div id="main" class="hostElt whiteBox">
-
         <div id="console" class="expanded" style="text-align: center;">
             <h2 style="font-size: 18px">CSTK<span style="font-size: .6em">© Ver 1.9, by Trevor <span class="link" id="CreativeScripts">www.creative-scripts.com</span> last modified 17th Oct 2017</span></h2>
             <h2>To execute the whole snippet click on one of the Eval buttons.</h2>
@@ -61,8 +60,8 @@
             </div>
         </div>
         <div class="center">
+            <div>
 
-            <span id="openLogFolder" name="" value="" class="csButton greyButton">Open Log Folder</span>
             <select id="logLevel" name="logLevel" class="pretty" onchange="alert('You selected ' + value)">
               <option value="0">Log Level 0 - Off</option>
               <option value="1">Log Level 1 - Error</option>
@@ -71,31 +70,54 @@
               <option value="4">Log Level 4 - Debug</option>
               <option value="5">Log Level 5 - Trace</option>
               <option value="6">Log Level 6 - All</option>
+              <option value="7">Log Level Not Set</option>
             </select>
 
 
             <select id="debugLevel" name="debugLevel" class="pretty" onchange="alert('You selected ' + value)">
               <option value="1">Debug level 1</option>
               <option value="0">Debug level 0</option>
+              <option value="2">Debug Not Set</option>
             </select>
-            <img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt">
+
+              <span id="Set" class="csButton greyButton">Set</span> 
+
+            <select id="cepVersion" name="cepVersion" class="pretty">
+              <option value="1">for CEP 1</option>
+              <option value="2">for CEP 2</option>
+              <option value="3">for CEP 3</option>
+              <option value="4">for CEP 4</option>
+              <option value="5">for CEP 5</option>
+              <option value="6">for CEP 6</option>
+              <option value="7">for CEP 7</option>
+              <option value="8">for CEP 8</option>
+              <option value="9">for CEP 9</option>
+              <option value="10">for CEP 10</option>
+              <option value="11">for CEP 11</option>
+              <option value="12">for CEP 12</option>
+              <option value="13">for CEP 13</option>
+              <option value="14">for CEP 14</option>
+              <option value="15">for CEP 15</option>
+              <option value="16">for CEP 16</option>
+              <option value="17">for CEP 17</option>
+              <option value="18">for CEP 18</option>
+              <option value="19">for CEP 19</option>
+              <option value="20">for CEP 20</option>   
+            </select>
+
+            <span id="openLogFolder" name="" value="" class="csButton greyButton">Open Log Folder</span>
+          </div>
+          <div>
 
             <span id="openFolders" name="" value="" class="csButton">Show All Extensions Folders</span>
-            <!-- <span id="restartExt" class="csButton blueButton">Restart Extension</span> -->
-            <a id="help" href="" class="csButton blueButton">?</a>
+
+            <img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt">
+            <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help">
+           </div>
         </div>
         <div>
     </div>
-        <script>
-        $(document).ready(function() {
-          $('select').prettyDropdown({
-            height: 29,
-            classic: true
-          });       
-        });
-        $("#logLevel").val(4);
-        $("#debugLevel").val(1);
-        </script>
+
     </div>
     <div id="folders"></div>
     <script src="../js/buttons.js"></script>

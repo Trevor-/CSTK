@@ -224,6 +224,62 @@
         }
     });
 
+    ///////////////////////////////////////////
+    // Set and Get LogLevel and Debug Values //
+    ///////////////////////////////////////////
+
+    $(document).ready(function() {
+        {
+            var $log, $cep, $debug, getValue, setValue, cep;
+            $log = $("#logLevel").prettyDropdown({
+                height: 29,
+                classic: true
+            });
+            $debug = $("#debugLevel").prettyDropdown({
+                height: 29,
+                classic: true
+            });
+            $cep = $("#cepVersion").prettyDropdown({
+                height: 29,
+                classic: true
+            });
+
+            getValue = function(key, value) {
+                if (key === 'LogLevel') {
+                    $("#logLevel").val('' + (value ? +value : 7));
+                    $log.refresh();
+                } else if (key === 'PlayerDebugMode') {
+                    $("#debugLevel").val('' + (value ? +value : 2));
+                    $debug.refresh();
+                }
+            };
+            setValue = function(key, cep) {
+
+            };
+            cep = csInterface.getCurrentApiVersion().major;
+            $("#cepVersion").val(cep);
+            exec('defaults read com.adobe.CSXS.' + cep + '.plist LogLevel', function(err, result) {
+                getValue('LogLevel', result);
+            });
+            $("#cepVersion").val(cep);
+            $cep.refresh();
+            exec('defaults read com.adobe.CSXS.' + cep + '.plist PlayerDebugMode', function(err, result) {
+                getValue('PlayerDebugMode', result);
+            });
+            $("#cepVersion").change(function(){
+                exec('defaults read com.adobe.CSXS.' + $("#cepVersion").val() + '.plist PlayerDebugMode', function(err, result) {
+                    getValue('PlayerDebugMode', result);
+                });
+                exec('defaults read com.adobe.CSXS.' + $("#cepVersion").val() + '.plist LogLevel', function(err, result) {
+                    getValue('LogLevel', result);
+                });
+            });
+        }
+    });
+
+
+
+
 
     //////////////////
     // Open Folders //
@@ -341,6 +397,6 @@
     });
 
     $('#help').click(function() {
-        exec((isMac ? 'open "' : 'start "" "')  + 'https://github.com/Trevor-/CSTK#readme"');
+        exec((isMac ? 'open "' : 'start "" "') + 'https://github.com/Trevor-/CSTK#readme"');
     });
 })();
