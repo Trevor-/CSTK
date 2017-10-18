@@ -36,7 +36,7 @@
 <body class="hostElt body">
     <div id="main" class="hostElt whiteBox">
         <div id="console" class="expanded" style="text-align: center;">
-            <h2 style="font-size: 18px">CSTK<span style="font-size: .6em">© Ver 1.9, by Trevor <span class="link" id="CreativeScripts">www.creative-scripts.com</span> last modified 17th Oct 2017</span></h2>
+            <h2 style="font-size: 18px">CSTK<span style="font-size: .6em">© Ver 2, by Trevor <span class="link" id="CreativeScripts">www.creative-scripts.com</span> last modified 18th Oct 17</span></h2>
             <h2>To execute the whole snippet click on one of the Eval buttons.</h2>
             <h2>
             <form>To execute the selected lines in 
@@ -62,7 +62,9 @@
         <div class="center">
             <div>
 
-            <select id="logLevel" name="logLevel" class="pretty" onchange="alert('You selected ' + value)">
+            <span id="Set" class="csButton greyButton">Set</span> <span id="SetWarning" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px;"></span>
+
+            <select id="logLevel" name="logLevel" class="pretty">
               <option value="0">Log Level 0 - Off</option>
               <option value="1">Log Level 1 - Error</option>
               <option value="2">Log Level 2 - Warn</option>
@@ -74,13 +76,11 @@
             </select>
 
 
-            <select id="debugLevel" name="debugLevel" class="pretty" onchange="alert('You selected ' + value)">
+            <select id="debugLevel" name="debugLevel" class="pretty">
               <option value="1">Debug level 1</option>
               <option value="0">Debug level 0</option>
               <option value="2">Debug Not Set</option>
             </select>
-
-              <span id="Set" class="csButton greyButton">Set</span> 
 
             <select id="cepVersion" name="cepVersion" class="pretty">
               <option value="1">for CEP 1</option>
@@ -105,10 +105,9 @@
               <option value="20">for CEP 20</option>   
             </select>
 
-            <span id="openLogFolder" name="" value="" class="csButton greyButton">Open Log Folder</span>
           </div>
           <div>
-
+            <span id="openLogFolder" name="" value="" class="csButton greyButton">Open Log Folder</span>
             <span id="openFolders" name="" value="" class="csButton">Show All Extensions Folders</span>
 
             <img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt">

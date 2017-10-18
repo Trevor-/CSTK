@@ -230,7 +230,7 @@
 
     $(document).ready(function() {
         {
-            var $log, $cep, $debug, getValue, setValue, cep;
+            var $log, $cep, $debug, getValue, processValue, setValue, cep, setUI;
             $log = $("#logLevel").prettyDropdown({
                 height: 29,
                 classic: true
@@ -244,7 +244,8 @@
                 classic: true
             });
 
-            getValue = function(key, value) {
+            processValue = function(key, value) {
+                value = value.replace(/\s/g, '').match(/\d+$/);
                 if (key === 'LogLevel') {
                     $("#logLevel").val('' + (value ? +value : 7));
                     $log.refresh();
@@ -253,26 +254,64 @@
                     $debug.refresh();
                 }
             };
-            setValue = function(key, cep) {
 
+            setUI = function(error, result, warning) {
+                var m;
+                m = warning || error || result + '<br>The apps need to be restarted to reflect the changes';
+                $('#SetWarning').html(m);
+                $('#SetWarning').fadeIn(50);
+                $('#SetWarning').fadeOut(warning ? 2000 : 6000);
             };
+
+            setValue = function(key, value, cep) {
+                var command;
+                command = isMac ? 'defaults write com.adobe.CSXS._CEP_.plist _KEY_ _VALUE_ && killall -u `whoami` cfprefsd' :
+                    'reg add HKEY_CURRENT_USER\\SOFTWARE\\Adobe\\CSXS._CEP_ /t REG_SZ /v _KEY_ /d _VALUE_ /f';
+                command = command.replace(/_CEP_/, '' + cep).replace(/_KEY_/, '' + key).replace(/_VALUE_/, '' + value);
+                exec(command, function(err, result) {
+                    setUI(err, result);
+                });
+            };
+
+
+            getValue = function(key, cep) {
+                var command;
+                command = isMac ? 'defaults read com.adobe.CSXS.CEP.plist KEY' :
+                    'reg query HKEY_CURRENT_USER\\SOFTWARE\\Adobe\\CSXS._CEP_ /v _KEY_';
+                command = command.replace(/_CEP_/, '' + cep).replace(/_KEY_/, '' + key);
+                exec(command, function(err, result) {
+                    processValue(key, result);
+                });
+            };
+
             cep = csInterface.getCurrentApiVersion().major;
             $("#cepVersion").val(cep);
-            exec('defaults read com.adobe.CSXS.' + cep + '.plist LogLevel', function(err, result) {
-                getValue('LogLevel', result);
-            });
-            $("#cepVersion").val(cep);
             $cep.refresh();
-            exec('defaults read com.adobe.CSXS.' + cep + '.plist PlayerDebugMode', function(err, result) {
-                getValue('PlayerDebugMode', result);
+            getValue('LogLevel', cep);
+            getValue('PlayerDebugMode', cep);
+            $("#cepVersion").change(function() {
+                var cep = '' + $("#cepVersion").val();
+                getValue('LogLevel', cep);
+                getValue('PlayerDebugMode', cep);
+                setUI(false,false,'REMEMBER to click SET to apply the changes');
             });
-            $("#cepVersion").change(function(){
-                exec('defaults read com.adobe.CSXS.' + $("#cepVersion").val() + '.plist PlayerDebugMode', function(err, result) {
-                    getValue('PlayerDebugMode', result);
-                });
-                exec('defaults read com.adobe.CSXS.' + $("#cepVersion").val() + '.plist LogLevel', function(err, result) {
-                    getValue('LogLevel', result);
-                });
+            $("#logLevel").change(function() {
+                setUI(false,false,'REMEMBER to click SET to apply the changes');
+            });
+            $("#debugLevel").change(function() {
+                setUI(false,false,'REMEMBER to click SET to apply the changes');
+            });
+            $('#Set').click(function() {
+                var logValue, cepValue, debugValue;
+                logValue = $('#logLevel').val();
+                cepValue = $('#cepVersion').val();
+                debugValue = $('#debugLevel').val();
+                if (logValue !=='7') {
+                    setValue('LogLevel', logValue, cepValue);
+                }
+                if (debugValue !=='2') {
+                    setValue('PlayerDebugMode', debugValue, cepValue);
+                }
             });
         }
     });
