@@ -35,8 +35,8 @@
 
 <body class="hostElt body">
     <div id="main" class="hostElt whiteBox">
-        <div id="console" class="expanded" style="text-align: center;">
-            <h2 style="font-size: 18px">CSTK<span style="font-size: .6em">© Ver 2, by Trevor <span class="link" id="CreativeScripts">www.creative-scripts.com</span> last modified 18th Oct 17</span></h2>
+        <div id="console" style="text-align: center;">
+            <h2 style="font-size: 18px">CSTK<span style="font-size: .6em">© Ver 2, by Trevor <span class="link" id="CreativeScripts" style="color:blue;background: white;border-radius: 2px;padding:2px;">www.creative-scripts.com</span> last modified 18th Oct 17</span></h2>
             <h2>To execute the whole snippet click on one of the Eval buttons.</h2>
             <h2>
             <form>To execute the selected lines in 
@@ -60,9 +60,39 @@
             </div>
         </div>
         <div class="center">
+
+            <div id="SetWarning" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px; margin-bottom: 15px;">
+            </div>
+
+            <div>
+              <span id="openLogFolder" name="" value="" class="csButton greyButton">Open Log Folder</span>
+              <span id="openFolders" name="" value="" class="csButton">Show All Extensions Folders</span>
+
+              <img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt">
+              <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help">
+
+              <span id="chromeDebug" name="" value="" class="csButton greyButton">Debug</span>
+              <div id="debug">
+                  <span id="chrome"></span>
+                  <span id="ports"></span>
+                  <input type="text" id="sudoText" name="portText" value="" style="height: 18px;">
+                  <img src="../img/enter.svg" style="height:22px;top:6px;position: relative;" id="portEnter" />
+              </div>
+             </div>
             <div>
 
-            <span id="Set" class="csButton greyButton">Set</span> <span id="SetWarning" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px;"></span>
+            <span id="Set" class="csButton greyButton">Set</span>
+
+
+<!-- The below sudo div seems unnecessary -->
+<!--             
+            <div id="sudo" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px; margin-bottom: 15px;">To apply the changes either force restart Finder or enter the administrative password here <input type="text" id="sudoText" name="sudoText" value="" style="height: 18px;">
+            <img src="../img/enter.svg" style="height:22px;top:6px;position: relative;" id="sudoEnter" />
+            <img src="../img/close.svg" style="height:22px;top:6px;position: relative;" id="sudoClose" />
+
+            </div>
+ -->
+
 
             <select id="logLevel" name="logLevel" class="pretty">
               <option value="0">Log Level 0 - Off</option>
@@ -106,13 +136,7 @@
             </select>
 
           </div>
-          <div>
-            <span id="openLogFolder" name="" value="" class="csButton greyButton">Open Log Folder</span>
-            <span id="openFolders" name="" value="" class="csButton">Show All Extensions Folders</span>
 
-            <img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt">
-            <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help">
-           </div>
         </div>
         <div>
     </div>

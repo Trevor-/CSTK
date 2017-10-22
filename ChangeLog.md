@@ -1,4 +1,8 @@
 #Change log#
 
-Version
-1.2 3-Oct-17 Updated for CEP8
+##Version - 2##
+##19-Oct-17##
+
++Fully workingUpdated for CEP8
++Can set and get debug and log levels
++UI improvements
