@@ -36,116 +36,109 @@
 <body class="hostElt body">
     <div id="main" class="hostElt whiteBox">
         <div id="console" style="text-align: center;">
-            <h2 style="font-size: 18px">CSTK<span style="font-size: .6em">© Ver 2, by Trevor <span class="link" id="CreativeScripts" style="color:blue;background: white;border-radius: 2px;padding:2px;">www.creative-scripts.com</span> last modified 18th Oct 17</span></h2>
+            <h2 style="font-size: 18px">
+                CSTK
+                <span style="font-size: .6em">
+                    &copy; by Trevor&nbsp;
+                    <span class="link" id="CreativeScripts" style="color:blue;background: white;border-radius: 2px;padding:2px;">www.creative-scripts.com
+                    </span>
+            </span>
+            </h2>
             <h2>To execute the whole snippet click on one of the Eval buttons.</h2>
-            <h2>
-            <form>To execute the selected lines in 
-            <input class="chbx" type="radio" id="jsModeRB" name="evalMode" value="true" checked="true">
-            <label id="jsModeLB" class="label" for="jsModeRB" style="color: blue;text-shadow: 0px 0px 1px white !important;">JS</label>
-            <input class="chbx" type="radio" id="jsxModeRB" name="evalMode" value="false">
-            <label id="jsxMode" class="label" for="jsxModeRB" style="color: green;">JSX</label>
-            <input class="chbx" type="radio" id="execModeRB" name="evalMode" value="false">
-            <label id="execMode" class="label" for="execModeRB" style="color: red;">Shell</label>
-            mode press Shift + Enter
+            <a href="javascript:history.go(0)">Refresh</a>
+            <form>To execute the selected lines in
+                <input class="chbx" type="radio" id="jsModeRB" name="evalMode" value="true" checked="1">
+                <label id="jsModeLB" class="label" for="jsModeRB" style="color: blue;text-shadow: 0px 0px 1px white !important;">JS</label>
+                <input class="chbx" type="radio" id="jsxModeRB" name="evalMode" value="false">
+                <label id="jsxMode" class="label" for="jsxModeRB" style="color: green;">JSX</label>
+                <input class="chbx" type="radio" id="execModeRB" name="evalMode" value="false">
+                <label id="execMode" class="label" for="execModeRB" style="color: red;">Shell</label>
+                mode press Shift + Enter
             </form>
-
             <div class="center" style="margin-top: 4px;">
-                <textarea type="text" id="evalCode" name="evalCode" value="" class="codeBox">jsx.file({ file:'fileName.jsx', callBack: function(r){alert(r);}, replacements:{replaceMe: 'File Paths'}, eval: false }) </textarea>
+                <textarea id="evalCode" name="evalCode" class="codeBox">jsx.file({ file:'fileName.jsx', callBack: function(r){alert(r);}, replacements:{replaceMe: 'File Paths'}, eval: false }) </textarea>
                 <span id="zoomOut" class="csButton blueButton">-</span>
                 <span id="eval" class="csButton blueButton">JS ENGINE EVAL</span>
                 <span id="evaljsx" class="csButton greenButton">JSX ENGINE EVAL</span>
                 <span id="evalExec" class="csButton redButton">EXEC EVAL</span>
                 <span id="zoomIn" class="csButton blueButton">+</span>
-                <textarea type="text" id="evalResult" name="evalResult" value="" class="result"></textarea>
+                <textarea id="evalResult" name="evalResult" class="result"></textarea>
             </div>
-        </div>
-        <div class="center">
-
-            <div id="SetWarning" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px; margin-bottom: 15px;">
-            </div>
-
-            <div>
-              <span id="openLogFolder" name="" value="" class="csButton greyButton">Open Log Folder</span>
-              <span id="openFolders" name="" value="" class="csButton">Show All Extensions Folders</span>
-
-              <img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt">
-              <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help">
-
-              <span id="chromeDebug" name="" value="" class="csButton greyButton">Debug</span>
-              <div id="debug">
-                  <span id="chrome"></span>
-                  <span id="ports"></span>
-                  <input type="text" id="sudoText" name="portText" value="" style="height: 18px;">
-                  <img src="../img/enter.svg" style="height:22px;top:6px;position: relative;" id="portEnter" />
-              </div>
-             </div>
-            <div>
-
-            <span id="Set" class="csButton greyButton">Set</span>
-
-
-<!-- The below sudo div seems unnecessary -->
-<!--             
-            <div id="sudo" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px; margin-bottom: 15px;">To apply the changes either force restart Finder or enter the administrative password here <input type="text" id="sudoText" name="sudoText" value="" style="height: 18px;">
-            <img src="../img/enter.svg" style="height:22px;top:6px;position: relative;" id="sudoEnter" />
-            <img src="../img/close.svg" style="height:22px;top:6px;position: relative;" id="sudoClose" />
-
-            </div>
- -->
-
-
-            <select id="logLevel" name="logLevel" class="pretty">
-              <option value="0">Log Level 0 - Off</option>
-              <option value="1">Log Level 1 - Error</option>
-              <option value="2">Log Level 2 - Warn</option>
-              <option value="3">Log Level 3 - Info</option>
-              <option value="4">Log Level 4 - Debug</option>
-              <option value="5">Log Level 5 - Trace</option>
-              <option value="6">Log Level 6 - All</option>
-              <option value="7">Log Level Not Set</option>
-            </select>
-
-
-            <select id="debugLevel" name="debugLevel" class="pretty">
-              <option value="1">Debug level 1</option>
-              <option value="0">Debug level 0</option>
-              <option value="2">Debug Not Set</option>
-            </select>
-
-            <select id="cepVersion" name="cepVersion" class="pretty">
-              <option value="1">for CEP 1</option>
-              <option value="2">for CEP 2</option>
-              <option value="3">for CEP 3</option>
-              <option value="4">for CEP 4</option>
-              <option value="5">for CEP 5</option>
-              <option value="6">for CEP 6</option>
-              <option value="7">for CEP 7</option>
-              <option value="8">for CEP 8</option>
-              <option value="9">for CEP 9</option>
-              <option value="10">for CEP 10</option>
-              <option value="11">for CEP 11</option>
-              <option value="12">for CEP 12</option>
-              <option value="13">for CEP 13</option>
-              <option value="14">for CEP 14</option>
-              <option value="15">for CEP 15</option>
-              <option value="16">for CEP 16</option>
-              <option value="17">for CEP 17</option>
-              <option value="18">for CEP 18</option>
-              <option value="19">for CEP 19</option>
-              <option value="20">for CEP 20</option>   
-            </select>
-
-          </div>
-
         </div>
         <div>
+            <div class="center">
+                <div id="SetWarning" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px; margin-bottom: 15px;">
+                </div>
+                <div>
+                    <span id="openFolders" class="csButton blueButton">Show Extensions Tools</span>
+                    <img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt">
+                    <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help">
+                    <span id="hostAppInfo"></span>
+                </div>
+                <div id="versions" style="font-size: .7em;">
+                </div>
+            </div>
+            <div id="folders">
+                <div id="folderHeader">
+                    <div>
+                        <span id="Set" class="csButton greyButton">Set</span>
+                        <select id="logLevel" name="logLevel" class="pretty">
+                            <option value="0">Log Level 0 - Off</option>
+                            <option value="1">Log Level 1 - Error</option>
+                            <option value="2">Log Level 2 - Warn</option>
+                            <option value="3">Log Level 3 - Info</option>
+                            <option value="4">Log Level 4 - Debug</option>
+                            <option value="5">Log Level 5 - Trace</option>
+                            <option value="6">Log Level 6 - All</option>
+                            <option value="7">Log Level Not Set</option>
+                        </select>
+                        <select id="debugLevel" name="debugLevel" class="pretty" style="margin: 0 10px 0 10px">
+                            <option value="1">Debug level 1</option>
+                            <option value="0">Debug level 0</option>
+                            <option value="2">Debug Not Set</option>
+                        </select>
+                        <select id="cepVersion" name="cepVersion" class="pretty">
+                            <option value="1">for CEP 1</option>
+                            <option value="2">for CEP 2</option>
+                            <option value="3">for CEP 3</option>
+                            <option value="4">for CEP 4</option>
+                            <option value="5">for CEP 5</option>
+                            <option value="6">for CEP 6</option>
+                            <option value="7">for CEP 7</option>
+                            <option value="8">for CEP 8</option>
+                            <option value="9">for CEP 9</option>
+                            <option value="10">for CEP 10</option>
+                            <option value="11">for CEP 11</option>
+                            <option value="12">for CEP 12</option>
+                            <option value="13">for CEP 13</option>
+                            <option value="14">for CEP 14</option>
+                            <option value="15">for CEP 15</option>
+                            <option value="16">for CEP 16</option>
+                            <option value="17">for CEP 17</option>
+                            <option value="18">for CEP 18</option>
+                            <option value="19">for CEP 19</option>
+                            <option value="20">for CEP 20</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select id="debugApps" class="pretty">
+                            <option value="0">Choose debug app</option>
+                        </select>
+                        <span style="font-size: .8em;">Port:</span>
+                        <input type="text" id="portIN" name="portText" value="" style="height: 18px; width: 100px;">
+                        <span id="debugBT" class="csButton greyButton">Launch</span>
+                        <div>
+                            <span id="openLogFolder" class="csButton greyButton">Open Log Folder</span>
+                            <span id="refeshAppList" class="csButton greyButton">Refresh</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="folderBody"></div>
+            </div>
+        </div>
     </div>
-
-    </div>
-    <div id="folders"></div>
+    <script src="../js/LogFactory.js"></script>
     <script src="../js/buttons.js"></script>
-
-
 </body>
 
 </html>

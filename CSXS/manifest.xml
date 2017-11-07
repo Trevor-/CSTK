@@ -32,6 +32,8 @@
             <Host Name="AUDT" Version="8" />
             <!-- Dreamweaver -->
             <Host Name="DRWV" Version="16" />
+            <!-- Muse -->
+            <Host Name="DRWV" Version="2017" />
             <!-- Bridge -->
             <Host Name="KBRG" Version="[8.0,99.9]" />
             <Host Name="BRDG" Version="[8.0,99.9]" />
@@ -53,6 +55,7 @@
                     <CEFCommandLine>
                         <Parameter>--enable-nodejs</Parameter>
                         <Parameter>--mixed-context</Parameter>
+                        <Parameter>--javascript-harmony</Parameter>
                     </CEFCommandLine>
                 </Resources>
                 <Lifecycle>
