@@ -11,9 +11,9 @@
             <!-- This is for CC2015 onwards -->
             <!-- Uncomment Host tags according to the apps you want your panel to support -->
             <!-- Photoshop Extended -->
-            <Host Name="PHXS" Version="16" />
+            <Host Name="PHXS" Version="10" />
             <!-- Photoshop -->
-            <Host Name="PHSP" Version="16" />
+            <!-- <Host Name="PHSP" Version="10" /> -->
             <!-- Illustrator -->
             <Host Name="ILST" Version="19" />
             <!-- InDesign -->
@@ -55,7 +55,6 @@
                     <CEFCommandLine>
                         <Parameter>--enable-nodejs</Parameter>
                         <Parameter>--mixed-context</Parameter>
-                        <Parameter>--javascript-harmony</Parameter>
                     </CEFCommandLine>
                 </Resources>
                 <Lifecycle>

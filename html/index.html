@@ -36,7 +36,7 @@
 <body class="hostElt body">
     <div id="main" class="hostElt whiteBox">
         <div id="console" style="text-align: center;">
-            <h2 style="font-size: 18px">
+            <h2 style="font-size: 18px" title="Ver 2.0 Last Modified 9 Nov 17">
                 CSTK
                 <span style="font-size: .6em">
                     &copy; by Trevor&nbsp;
@@ -126,10 +126,16 @@
                         </select>
                         <span style="font-size: .8em;">Port:</span>
                         <input type="text" id="portIN" name="portText" value="" style="height: 18px; width: 100px;">
-                        <span id="debugBT" class="csButton greyButton">Launch</span>
+                        <span id="debugBT" class="csButton greyButton">Debug</span>
                         <div>
                             <span id="openLogFolder" class="csButton greyButton">Open Log Folder</span>
                             <span id="refeshAppList" class="csButton greyButton">Refresh</span>
+                        </div>
+                        <div>
+                            <!-- <span id="openFolderApp" class="csButton blueButton">Set Open Folders Application</span> -->
+                            <span><span style="color: cyan">Shift</span> Click the <span class="csButton blueButton" style="cursor: default;">Open Folder</span> buttons to open the folders with </span>
+                            <span id="openFolderApp" style="color: cyan"></span>
+                            <span id="openFolderAppBT" class="csButton greyButton">Change</span>
                         </div>
                     </div>
                 </div>

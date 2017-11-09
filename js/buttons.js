@@ -147,7 +147,7 @@ var run, Jfy, log, exec, isMac, __dirname, path, os, csInterface, fs;
         evalOnEnter(key, 1);
     });
 
-
+    
 
     /////////////
     // JS Eval //
@@ -271,22 +271,23 @@ var run, Jfy, log, exec, isMac, __dirname, path, os, csInterface, fs;
             },
             error: function(err) {
                 if (error) {
-                    e = (typeof error === 'function') ?
-                        error() :
-                        eval(error); // this looks rubbish!
+                    // e = (typeof error === 'function') ?
+                    //     error() :
+                    //     eval(error); // this looks rubbish! and 99.99% is!
                 } else {
                     e = err;
                 }
             }
         }).done(function() {
-            // This will allow for no console feedback
-            if (success === false || error === false) { return; }
-            if (s || e) {
-                $("#evalResult").val(
-                    $("#evalResult").val() +
-                    (s || e) + '\n'
-                );
-            }
+            // This will allow for console feedback
+            // if (success === false || error === false) { return; }
+            // not doing this now
+            // if (s || e) {
+            //     $("#evalResult").val(
+            //         $("#evalResult").val() +
+            //         (s || e) + '\n'
+            //     );
+            // }
         });
 
     };
@@ -362,6 +363,7 @@ var run, Jfy, log, exec, isMac, __dirname, path, os, csInterface, fs;
     })();
 
     $("#folders").hide();
+    $("#SetWarning").hide();
 
     $("#openFolders").click(function() {
         if ($('#folders').is(":visible")) {
@@ -371,13 +373,9 @@ var run, Jfy, log, exec, isMac, __dirname, path, os, csInterface, fs;
             $('#console').show();
         } else {
             $('#console').hide();
-            // $('#folderHeader').html('Please Wait');
             $('#folderBody').text('Please wait a few (upto 10) seconds for the apps to be processed');
-            // run('debug2.js', 'createDebugAppList()');
-            run('debug2.js');
-            // getCeps();
+            run(isMac ? 'debug_tools_mac.js' : 'debug_tools_windows.js');
             $("#openFolders").text('Show Console');
-            // $("#openFolders").addClass("blueButton");
             $('#folders').show();
         }
     });
