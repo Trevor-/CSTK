@@ -38,15 +38,14 @@
         <div id="console" style="text-align: center;">
             <h2 style="font-size: 18px" title="Ver 2.0 Last Modified 9 Nov 17">
                 CSTK
-                <span style="font-size: .6em">
+                <span style="font-size: .6em;">
                     &copy; by Trevor&nbsp;
                     <span class="link" id="CreativeScripts" style="color:blue;background: white;border-radius: 2px;padding:2px;">www.creative-scripts.com
                     </span>
             </span>
             </h2>
             <h2>To execute the whole snippet click on one of the Eval buttons.</h2>
-            <a href="javascript:history.go(0)">Refresh</a>
-            <form>To execute the selected lines in
+            <form style="font-size: .75em;">To execute the selected lines in
                 <input class="chbx" type="radio" id="jsModeRB" name="evalMode" value="true" checked="1">
                 <label id="jsModeLB" class="label" for="jsModeRB" style="color: blue;text-shadow: 0px 0px 1px white !important;">JS</label>
                 <input class="chbx" type="radio" id="jsxModeRB" name="evalMode" value="false">
@@ -71,8 +70,8 @@
                 </div>
                 <div>
                     <span id="openFolders" class="csButton blueButton">Show Extensions Tools</span>
-                    <img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt">
-                    <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help">
+                    <a href="./index.html"><img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt3" title="Restart CSTK"></a>
+                    <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help" title="Open CSTK Github page">
                     <span id="hostAppInfo"></span>
                 </div>
                 <div id="versions" style="font-size: .7em;">
@@ -125,7 +124,7 @@
                             <option value="0">Choose debug app</option>
                         </select>
                         <span style="font-size: .8em;">Port:</span>
-                        <input type="text" id="portIN" name="portText" value="" style="height: 18px; width: 100px;">
+                        <input type="text" id="portIN" name="portText" value="" style="height: 18px; width: 100px; font-size: .8em;">
                         <span id="debugBT" class="csButton greyButton">Debug</span>
                         <div>
                             <span id="openLogFolder" class="csButton greyButton">Open Log Folder</span>

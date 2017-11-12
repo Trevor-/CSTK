@@ -1,5 +1,5 @@
 // C:\Program Files\Common Files\Adobe\CEP\extensions\CSTK\js\debug.js
-/* globals exec, log, csInterface, path, fs, isMac */
+/* globals exec, log, csInterface, path, fs, os, isMac, jsx */
 (function() {
     var launchDebug, selectDebugFile, addDropdownOption, loadMenuFromFile, updateVersions;
     var cstkFolder, defaultChromePath, cookieFile, debugAppFile, appSelection, openFolderApp, openFolderAppFile;
@@ -571,192 +571,7 @@
             // definitely lacking error checking!
             // TODO add error checking! 
             try {
-                displayExtensions = function(extensions) {
-                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    // each extension should have at least some of the following keys                                              //
-                    // "appName": "Adobe InDesign CC 2018",                                                                        //
-                    // "appCode": "IDSN",                                                                                          //
-                    // "appVersion": "13.0",                                                                                       //
-                    // "id": "com.creative-scripts.cstk.1",                                                                        //
-                    // "dirName": "C:\\Program Files\\Common Files\\Adobe\\CEP\\extensions\\CSTK",                                 //
-                    // "name": "CSTK",                                                                                             //
-                    // "log": "C:\\Users\\Trevor\\AppData\\Local\\Temp\\CEPHtmlEngine8-IDSN-13.0-com.creative-scripts.cstk.1.log", //
-                    // "logLevel": "4 - verbose",                                                                                  //
-                    // "debugPort": "127.0.0.1:9073"                                                                               //
-                    // It would be best to sort them per app                                                                       //
-                    // current app at top then app alphabetically then version then extension alphabetically                       //
-                    // active / inactive shown by green and red icons                                                              //
-                    // In the event that there are multiple instances of the same version of the same app running                  //
-                    // some minor details could be inaccurate                                                                      //
-                    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-                    var extension, l, n, extensionSort, openFolder;
-                    openFolder = function(folder) {
-                        if (openFolderApp) {
-                            exec((isMac ? 'open "_openFolderApp_" "_folder_"' : '"_openFolderApp_" "_folder_"')
-                                .replace(/_openFolderApp_/, openFolderApp)
-                                .replace(/_folder_/, folder));
-                        } else {
-                            exec((isMac ? 'open "_folder_"' : 'start "" "_folder_"')
-                                .replace(/_folder_/, folder));
-                        }
-                    };
-                    extensionSort = function(a, b) {
-                        var aa, bb;
-                        // Sort by current app
-                        if (a.isCurrentApp > b.isCurrentApp) {
-                            return -1;
-                        }
-                        if (a.isCurrentApp < b.isCurrentApp) {
-                            return 1;
-                        }
-                        if ((a.appCode === appId) && (b.appCode !== appId)) {
-                            return -1;
-                        }
-                        if ((a.appCode !== appId) && (b.appCode === appId)) {
-                            return 1;
-                        }
-                        // Sort by app
-                        if (a.appCode > b.appCode) {
-                            return 1;
-                        }
-                        if (a.appCode < b.appCode) {
-                            return -1;
-                        }
-                        // sort by version - most recent at top
-                        // major / minor / micro
-                        aa = a.appVersion.split('.');
-                        bb = b.appVersion.split('.');
-                        if (+aa[0] < +bb[0]) {
-                            return -1;
-                        }
-                        if (+aa[0] > +bb[0]) {
-                            return 1;
-                        }
-                        if (+aa[1] < +bb[1]) {
-                            return -1;
-                        }
-                        if (+aa[1] > +bb[1]) {
-                            return 1;
-                        }
-                        if (+aa[2] < +bb[2]) {
-                            return -1;
-                        }
-                        if (+aa[2] > +bb[2]) {
-                            return 1;
-                        }
-                        // sort by extension id
-                        if (a.id.toLowerCase() > b.id.toLowerCase()) {
-                            return -1;
-                        }
-                        if (a.id.toLowerCase() < b.id.toLowerCase()) {
-                            return 1;
-                        }
-                        return 0;
-                    };
-
-                    var oldApp = '',
-                        html = [];
-                    l = extensions.length;
-                    extensions.sort(extensionSort);
-                    // log(JSON.stringify(extensions));
-                    for (n = 0; n < l; n++) {
-                        extension = extensions[n];
-                        if (oldApp !== extension.appCode + extension.appVersion) {
-                            oldApp = extension.appCode + extension.appVersion;
-                            html.push(
-                                '<img src="../img/Forum_Icons/APPID.png" style="height:48px;top:0px;position: relative;padding:10px 10px 0 0;" id="" />'
-                                .replace(/APPID/, appMap[extension.appCode] ? extension.appCode : 'CLOD') +
-                                '<b>' +
-                                extension.appName + ' - ' +
-                                extension.appCode + ' ' +
-                                extension.appVersion +
-                                (oldApp === appId + appVersion ? ' (Current App)<br><span style="font-size: .8em;"><span style="color: green;">Active</span> &amp; <span style="color: Red;">inactive</span> extensions listed</span>' : '<br><span style="font-size: .8em;"">Only <span style="color: green;">active</span> listed</span>') +
-                                '</b>'
-                            );
-                        }
-                        html.push(
-                            '<div>' +
-                            '<img src="../img/Forum_Icons/APPID.png" style="height:22px;top:4px;position: relative;padding-right:4px;" id="" />'
-                            .replace(/APPID/, appMap[extension.appCode] ? extension.appCode : 'CLOD') +
-                            '<span style="font-size:.7em;">' + extension.appVersion + '</span>' +
-                            '<span> ' + extension.id + '' + (extension.name && (extension.name !== extension.id) ? ' - [' + extension.name + ']' : '') +
-                            '</span>' +
-                            '<img src="../img/ICON.png" style="top:0px;position: relative;padding:0 4px 0 4px;"/>'
-                            .replace(/ICON/, extension.active ? 'greenLED' : 'redLED') +
-                            '<span class="csButton blueButton" id="OpenFolder_' + n + '" title="Click to open with ' + (isMac ? 'Finder' : 'Explorer') + '.\nShift click to open with selected application."> Open Folder</span>' +
-                            '<span class="csButton blueButton" id="OpenLog_' + n + '"> Open Log<span style="font-size:.7em;">@</span></span>'.replace('@', extension.logLevel ? ' ' + extension.logLevel : '') +
-                            (extension.debugPort ? '<span class="csButton greyButton"  id="OpenDebug_' + n + '" title="Debug port _PORT_">Debug</span>'.replace(/_PORT_/, extension.debugPort) : '') +
-                            '</div>'
-                        );
-                    }
-                    // var debugHTML = [];
-                    // debugHTML.push('<div>');
-                    // debugHTML.push('Debug Tool');
-                    // debugHTML.push('<select id="debugTool" name="" class="pretty">');
-                    // debugHTML.push('<option value="1">Chrome</option>');
-                    // debugHTML.push('<option value="2">Add new debug tool</option>');
-                    // debugHTML.push('</select>');
-                    // debugHTML.push('</div>');
-                    // debugHTML.push('<div>');
-                    // debugHTML.push('Debug Port');
-                    // debugHTML.push('    <input type="text" id="sudoText" name="portText" value="" style="height: 18px;width:200px;">');
-                    // debugHTML.push('<span id="chromeDebug" name="" value="" class="csButton greyButton">Debug</span>');
-                    // debugHTML.push('<span id="refreshDebug" name="" value="" class="csButton blueButton">Refresh List</span>');
-                    // debugHTML.push('</div>');
-
-                    // $('#folderHeader').html(debugHTML.join('\n'));
-                    var $debugTool;
-                    $debugTool = $("#debugTool").prettyDropdown({
-                        height: 29,
-                        classic: true
-                    });
-                    $("#folderBody").html(html.join('\n'));
-
-                    setUpButtons = function(n) {
-                        var extension = extensions[n];
-                        if (extension.dirName) {
-                            $('#OpenFolder_' + n).click(function(event) {
-                                // The folder shouldn't have permissions issues regarding opening it
-                                // using exec will cause the log to come to the foreground
-                                // execute() will not when called called by jsx.eval as the app goes back or stays in focus
-
-                                if (event.shiftKey) {
-                                    openFolder(extension.dirName);
-                                } else {
-                                    exec((isMac ? 'open "' : 'start "" "') + extension.dirName + '"');
-                                }
-                            });
-                        }
-                        if (extension.log) {
-                            $('#OpenLog_' + n).click(function() {
-                                // The log could have permissions issues regarding opening it
-                                // using execute() will circumvent besides we can provide some prettier feedback
-                                var script = [];
-                                script.push('if (!(new File("__file__").execute())){');
-                                script.push('alert(!(new File("__file__").exists) ?');
-                                script.push('"The log probably hasn\'t been created and couldn\'t be opened.\\n" +');
-                                script.push('"Start the extension to created the log." :');
-                                script.push('"Make sure you\'ve there\'s an assigned program for opening \\".log\\" files");}');
-                                jsx.eval(script.join('\n'), { file: extension.log.replace(/\\/g, '\\\\\\\\') });
-                            });
-                        }
-                        if (extension.debugPort) {
-                            $('#OpenDebug_' + n).click(function() {
-                                launchDebug(extension.debugPort);
-                                // jsx('new File("__file__").execute();', { file: extension.debugPort.replace(/\\/g, '\\\\') });
-                            });
-                        }
-
-
-                    };
-
-                    l = extensions.length;
-                    for (n = 0; n < l; n++) {
-                        setUpButtons(n);
-                    }
-
-                }; //end of displayExtensions
                 var l, n, extensionMap, cepProcess, gpuMap, params_extensionuuid, cepPid, dirName, pidMap, portMap, port, portUrl, extension, extensions, hostExtensions, hostExtensionsMap;
                 extensionMap = {};
                 pidMap = {};
@@ -766,18 +581,14 @@
                 extensions = [];
                 hostExtensions = JSON.parse(window.__adobe_cep__.getExtensions());
                 l = cepProcesses.length;
-                // log('cepPorts: ' + cepPorts);
-                // log('cepProcesses: ' + cepProcesses);
-                // log('l: ' + l);
 
                 // We now need to categorize the process but unlike on the Mac
-                // there is no element which is common to all 3 CEP types
-                // So we have to first map against one property and then loop again for another
-                // 
+                // there are 3 CEP types for each extension: parent, renderer and gpu
+
                 for (n = 0; n < l; n++) {
                     cepProcess = cepProcesses[n];
                     if (/--type=renderer/.test(cepProcess)) {
-                        // renderer_helpers.push(cepProcess);
+                        // the renderer process contains useful data let's get it.
                         params_extensionuuid = cepProcess.match(/--params_extensionuuid=(\S+)/);
                         params_extensionuuid = params_extensionuuid && params_extensionuuid[1];
                         if (params_extensionuuid) {
@@ -792,21 +603,13 @@
                         continue;
                     }
                     if (/--type=gpu-process/.test(cepProcess)) {
+                        // we don't need the gpu-process
                         continue;
-                        // params_extensionuuid = cepProcess.match(/--params_extensionuuid=(\S+)/);
-                        // params_extensionuuid = params_extensionuuid && params_extensionuuid[1];
-                        // if (params_extensionuuid) {
-                        //     cepPid = '' + cepProcess.match(/\d+/);
-
-                        //     if (extensionMap[params_extensionuuid]) {
-                        //         extensionMap[params_extensionuuid].gpuPid = cepPid;
-                        //     } else {
-                        //         extensionMap[params_extensionuuid] = { gpuPid: cepPid };
-                        //     }
-                        // }
                     }
-                    // CEPHtmlEngine.app/Contents/MacOS/CEPHtmlEngine
-                    // log(cepProcess);
+                    // if it's not the renderer or gpu-process then it's the main parent process
+                    // The only thing we need from this is it's PID
+                    // so we can compare with the PIDs of the ports being listened to
+                    // Then we can know if there's a debug port
                     params_extensionuuid = cepProcess.match(/" ([^"\s]+)/);
                     params_extensionuuid = params_extensionuuid && params_extensionuuid[1];
                     dirName = cepProcess.match(/" [^"]+?"([^"]+)/);
@@ -823,7 +626,6 @@
                     }
                 }
 
-                // we now have a useful map of the 3 separate cep processes for each extension and of the main PIDs to server ids
                 // let's make a map of the cep ports to pids
 
                 l = cepPorts.length;
@@ -836,7 +638,11 @@
                 }
                 // log(JSON.stringify(portMap));
 
-                // map paths to known extension names
+                // map paths to known extension names that way we can get some of the names of the extensions
+                // this info is not available from the command line argument of the processes
+                // one could fetch it for all the processes by scanning all the manifest files but that could be slow
+                // instead we're just going to fetch the one of the active app list is easier and quicker
+                // but as a result the names for extensions that aren't also running on the current app will not be retrieved
 
                 var basePath, hostExt;
                 l = hostExtensions.length;
@@ -853,7 +659,6 @@
                 for (extension in extensionMap) {
                     // extensions
                     extension = extensionMap[extension];
-                    // alert(JSON.stringify(extension))
                     render = extension.renderer;
                     ext = {};
                     // Adobe app
@@ -889,15 +694,6 @@
                     }
                     ext.active = true;
 
-                    // commandLine Parameters
-                    // Some apps / versions not providing this
-                    // The way to get the info properly would be to parse the manifest files
-                    // info = render.match(/--type=renderer (.+?) --primordial-pipe-token/);
-                    // info = info && info[1].split(/ /);
-                    // ext.commandLineParameters = info || undefined;
-                    // Lang
-                    // ext.lang = render.match(/--lang=(.+?) --/)[1];
-
                     extensions.push(ext);
                 } // end of for
                 // add inactive extensions that are on the host app
@@ -925,29 +721,189 @@
                 // to complete the picture, but were not going to bother for now!
                 // scanning all the individual app CEP folder would be more work
 
-                // alert(JSON.stringify(extensions));
-                // jsx.eval('alert("""__cep__""")', { cep: (JSON.stringify(extensions)) });
-                // log(JSON.stringify(extensions), 'v', 'smile');
-                // log.open();
-
                 // create the html for the extensions
                 displayExtensions(extensions);
-                // alert('cepPorts:' + cepPorts);
             } catch (e) {
                 log(e.stack);
                 alert(e.stack);
             }
         }; // end of processCeps
 
-
-
-
-
         getCeps();
     } // end  of windows
 
 
+    displayExtensions = function(extensions) {
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // each extension should have at least some of the following keys                                              //
+        // "appName": "Adobe InDesign CC 2018",                                                                        //
+        // "appCode": "IDSN",                                                                                          //
+        // "appVersion": "13.0",                                                                                       //
+        // "id": "com.creative-scripts.cstk.1",                                                                        //
+        // "dirName": "C:\\Program Files\\Common Files\\Adobe\\CEP\\extensions\\CSTK",                                 //
+        // "name": "CSTK",                                                                                             //
+        // "log": "C:\\Users\\Trevor\\AppData\\Local\\Temp\\CEPHtmlEngine8-IDSN-13.0-com.creative-scripts.cstk.1.log", //
+        // "logLevel": "4 - verbose",                                                                                  //
+        // "debugPort": "127.0.0.1:9073"                                                                               //
+        // It would be best to sort them per app                                                                       //
+        // current app at top then app alphabetically then version then extension alphabetically                       //
+        // active / inactive shown by green and red icons                                                              //
+        // In the event that there are multiple instances of the same version of the same app running                  //
+        // some minor details could be inaccurate                                                                      //
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        var extension, l, n, extensionSort, openFolder;
+        openFolder = function(folder) {
+            if (openFolderApp) {
+                exec((isMac ? 'open "_openFolderApp_" "_folder_"' : '"_openFolderApp_" "_folder_"')
+                    .replace(/_openFolderApp_/, openFolderApp)
+                    .replace(/_folder_/, folder));
+            } else {
+                exec((isMac ? 'open "_folder_"' : 'start "" "_folder_"')
+                    .replace(/_folder_/, folder));
+            }
+        };
+        extensionSort = function(a, b) {
+            var aa, bb;
+            // Sort by current app
+            if (a.isCurrentApp > b.isCurrentApp) {
+                return -1;
+            }
+            if (a.isCurrentApp < b.isCurrentApp) {
+                return 1;
+            }
+            if ((a.appCode === appId) && (b.appCode !== appId)) {
+                return -1;
+            }
+            if ((a.appCode !== appId) && (b.appCode === appId)) {
+                return 1;
+            }
+            // Sort by app
+            if (a.appCode > b.appCode) {
+                return 1;
+            }
+            if (a.appCode < b.appCode) {
+                return -1;
+            }
+            // sort by version - most recent at top
+            // major / minor / micro
+            aa = a.appVersion.split('.');
+            bb = b.appVersion.split('.');
+            if (+aa[0] < +bb[0]) {
+                return -1;
+            }
+            if (+aa[0] > +bb[0]) {
+                return 1;
+            }
+            if (+aa[1] < +bb[1]) {
+                return -1;
+            }
+            if (+aa[1] > +bb[1]) {
+                return 1;
+            }
+            if (+aa[2] < +bb[2]) {
+                return -1;
+            }
+            if (+aa[2] > +bb[2]) {
+                return 1;
+            }
+            // sort by extension id
+            if (a.id.toLowerCase() > b.id.toLowerCase()) {
+                return -1;
+            }
+            if (a.id.toLowerCase() < b.id.toLowerCase()) {
+                return 1;
+            }
+            return 0;
+        };
+
+        var oldApp = '',
+            html = [];
+        l = extensions.length;
+        extensions.sort(extensionSort);
+        // log(JSON.stringify(extensions));
+        for (n = 0; n < l; n++) {
+            extension = extensions[n];
+            if (oldApp !== extension.appCode + extension.appVersion) {
+                oldApp = extension.appCode + extension.appVersion;
+                html.push(
+                    '<img src="../img/Forum_Icons/APPID.png" style="height:48px;top:0px;position: relative;padding:10px 10px 0 0;" id="" />'
+                    .replace(/APPID/, appMap[extension.appCode] ? extension.appCode : 'CLOD') +
+                    '<b>' +
+                    extension.appName + ' - ' +
+                    extension.appCode + ' ' +
+                    extension.appVersion +
+                    (oldApp === appId + appVersion ? ' (Current App)<br><span style="font-size: .8em;"><span style="color: green;">Active</span> &amp; <span style="color: Red;">inactive</span> extensions listed</span>' : '<br><span style="font-size: .8em;"">Only <span style="color: green;">active</span> listed</span>') +
+                    '</b>'
+                );
+            }
+            html.push(
+                '<div>' +
+                '<img src="../img/Forum_Icons/APPID.png" style="height:22px;top:4px;position: relative;padding-right:4px;" id="" />'
+                .replace(/APPID/, appMap[extension.appCode] ? extension.appCode : 'CLOD') +
+                '<span style="font-size:.7em;">' + extension.appVersion + '</span>' +
+                '<span> ' + extension.id + '' + (extension.name && (extension.name !== extension.id) ? ' - [' + extension.name + ']' : '') +
+                '</span>' +
+                '<img src="../img/ICON.png" style="top:0px;position: relative;padding:0 4px 0 4px;"/>'
+                .replace(/ICON/, extension.active ? 'greenLED' : 'redLED') +
+                '<span class="csButton blueButton" id="OpenFolder_' + n + '" title="Click to open with ' + (isMac ? 'Finder' : 'Explorer') + '.\nShift click to open with selected application."> Open Folder</span>' +
+                '<span class="csButton blueButton" id="OpenLog_' + n + '"> Open Log<span style="font-size:.7em;">@</span></span>'.replace('@', extension.logLevel ? ' ' + extension.logLevel : '') +
+                (extension.debugPort ? '<span class="csButton greyButton"  id="OpenDebug_' + n + '" title="Port: _PORT_">Debug</span>'.replace(/_PORT_/, extension.debugPort) : '') +
+                '</div>'
+            );
+        }
+
+        var $debugTool;
+        $debugTool = $("#debugTool").prettyDropdown({
+            height: 29,
+            classic: true
+        });
+        $("#folderBody").html(html.join('\n'));
+
+        setUpButtons = function(n) {
+            var extension = extensions[n];
+            if (extension.dirName) {
+                $('#OpenFolder_' + n).click(function(event) {
+                    // The folder shouldn't have permissions issues regarding opening it
+                    // using exec will cause the log to come to the foreground
+                    // execute() will not when called called by jsx.eval as the app goes back or stays in focus
+
+                    if (event.shiftKey) {
+                        openFolder(extension.dirName);
+                    } else {
+                        exec((isMac ? 'open "' : 'start "" "') + extension.dirName + '"');
+                    }
+                });
+            }
+            if (extension.log) {
+                $('#OpenLog_' + n).click(function() {
+                    // The log could have permissions issues regarding opening it
+                    // using execute() will circumvent besides we can provide some prettier feedback
+                    var script = [];
+                    script.push('if (!(new File("__file__").execute())){');
+                    script.push('alert(!(new File("__file__").exists) ?');
+                    script.push('"The log probably hasn\'t been created and couldn\'t be opened.\\n" +');
+                    script.push('"Start the extension to created the log." :');
+                    script.push('"Make sure you\'ve there\'s an assigned program for opening \\".log\\" files");}');
+                    jsx.eval(script.join('\n'), { file: extension.log.replace(/\\/g, '\\\\\\\\') });
+                });
+            }
+            if (extension.debugPort) {
+                $('#OpenDebug_' + n).click(function() {
+                    launchDebug(extension.debugPort);
+                    // jsx('new File("__file__").execute();', { file: extension.debugPort.replace(/\\/g, '\\\\') });
+                });
+            }
+
+
+        };
+
+        l = extensions.length;
+        for (n = 0; n < l; n++) {
+            setUpButtons(n);
+        }
+
+    }; //end of displayExtensions
 
     loadMenuFromFile = function() {
         try {
@@ -1072,7 +1028,7 @@
         debugApp = '' + $('#debugApps').val();
         port = undefined ? '' : '' + port;
         if (!(/:/.test(port))) {
-            port = 'localhost:' + port;
+            port = 'http://localhost:' + port;
         } else if (!(/http/.test(port))) {
             port = 'http://' + port;
         }
