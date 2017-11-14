@@ -329,14 +329,7 @@
 
     var getCeps, getDebugPorts, processCeps, appMap, appName, app, appId,
         appLocale, appVersion, logFile, extId, displayExtensions, setUpButtons;
-    // to get app version use 
-    // app = csInterface.getHostEnvironment();
-    // app.appId + ' ' +app.appVersion
-    // window.__adobe_cep__.getCurrentApiVersion()
-    // csInterface.getCurrentApiVersion().major
-    // Win: C:\Users\USERNAME\AppData\Local\Temp
-    // C:\Users\Trevor\AppData\Local\Temp\CEPHtmlEngine8-IDSN-13.0-com.adobe.ccx.start.log
-    //  Mac: /Users/USERNAME/Library/Logs/CSXS
+
     appMap = {
         "PHSP": "Adobe Photoshop", // OLD non extended version
         "PHXS": "Adobe Photoshop",
@@ -826,31 +819,23 @@
             extension = extensions[n];
             if (oldApp !== extension.appCode + extension.appVersion) {
                 oldApp = extension.appCode + extension.appVersion;
-                html.push(
-                    '<img src="../img/Forum_Icons/APPID.png" style="height:48px;top:0px;position: relative;padding:10px 10px 0 0;" id="" />'
-                    .replace(/APPID/, appMap[extension.appCode] ? extension.appCode : 'CLOD') +
-                    '<b>' +
-                    extension.appName + ' - ' +
-                    extension.appCode + ' ' +
-                    extension.appVersion +
-                    (oldApp === appId + appVersion ? ' (Current App)<br><span style="font-size: .8em;"><span style="color: green;">Active</span> &amp; <span style="color: Red;">inactive</span> extensions listed</span>' : '<br><span style="font-size: .8em;"">Only <span style="color: green;">active</span> listed</span>') +
-                    '</b>'
-                );
+                html.push(`
+                    <img src="../img/Forum_Icons/${appMap[extension.appCode] ? extension.appCode : 'CLOD'}.png" style="height:48px;top:0px;position: relative;padding:10px 10px 0 0;" />
+                    <b> ${extension.appName} - ${extension.appCode} ${extension.appVersion} ${(oldApp === appId + appVersion ? ' (Current App)<br><span style="font-size: .8em;"><span style="color: green;">Active</span> &amp; <span style="color: Red;">inactive</span> extensions listed</span>' : '<br><span style="font-size: .8em;"">Only <span style="color: green;">active</span> listed</span>')}
+                    </b>
+                `);
             }
-            html.push(
-                '<div>' +
-                '<img src="../img/Forum_Icons/APPID.png" style="height:22px;top:4px;position: relative;padding-right:4px;" id="" />'
-                .replace(/APPID/, appMap[extension.appCode] ? extension.appCode : 'CLOD') +
-                '<span style="font-size:.7em;">' + extension.appVersion + '</span>' +
-                '<span> ' + extension.id + '' + (extension.name && (extension.name !== extension.id) ? ' - [' + extension.name + ']' : '') +
-                '</span>' +
-                '<img src="../img/ICON.png" style="top:0px;position: relative;padding:0 4px 0 4px;"/>'
-                .replace(/ICON/, extension.active ? 'greenLED' : 'redLED') +
-                '<span class="csButton blueButton" id="OpenFolder_' + n + '" title="Click to open with ' + (isMac ? 'Finder' : 'Explorer') + '.\nShift click to open with selected application."> Open Folder</span>' +
-                '<span class="csButton blueButton" id="OpenLog_' + n + '"> Open Log<span style="font-size:.7em;">@</span></span>'.replace('@', extension.logLevel ? ' ' + extension.logLevel : '') +
-                (extension.debugPort ? '<span class="csButton greyButton"  id="OpenDebug_' + n + '" title="Port: _PORT_">Debug</span>'.replace(/_PORT_/, extension.debugPort) : '') +
-                '</div>'
-            );
+            html.push(` <div>
+                            <img src="../img/Forum_Icons/${appMap[extension.appCode] ? extension.appCode : 'CLOD'}.png" style="height:22px;top:4px;position: relative;padding-right:4px;" />
+                            <span style="font-size:.7em;">${extension.appVersion}</span>
+                            <span> ${extension.id} ${((extension.name && (extension.name !== extension.id)) ? ` - [${extension.name}]` : '')}
+                            </span>
+                            <img src="../img/${extension.active ? 'green' : 'red'}LED.png" style="top:0px;position: relative;padding:0 4px 0 4px;"/>
+                            <span class="csButton blueButton" id="OpenFolder_${n}" title="Click to open with ${(isMac ? 'Finder' : 'Explorer')}.\nShift click to open with selected application."> Open Folder</span>
+                            <span class="csButton blueButton" id="OpenLog_${n}"> Open Log<span style="font-size:.7em;">${extension.logLevel ? ' ' + extension.logLevel : ''}</span></span>
+                            ${extension.debugPort ? '<span class="csButton greyButton"  id="OpenDebug_${n}" title="Port: ${extension.debugPort}">Debug</span>' : ''}
+                        </div>
+            `);
         }
 
         var $debugTool;
@@ -879,19 +864,22 @@
                 $('#OpenLog_' + n).click(function() {
                     // The log could have permissions issues regarding opening it
                     // using execute() will circumvent besides we can provide some prettier feedback
-                    var script = [];
-                    script.push('if (!(new File("__file__").execute())){');
-                    script.push('alert(!(new File("__file__").exists) ?');
-                    script.push('"The log probably hasn\'t been created and couldn\'t be opened.\\n" +');
-                    script.push('"Start the extension to created the log." :');
-                    script.push('"Make sure you\'ve there\'s an assigned program for opening \\".log\\" files");}');
+                    var script = `
+                        if (!(new File("__file__").execute())){
+                            alert(
+                                !(new File("__file__").exists) ?
+                                "The log probably hasn't been created and couldn't be opened.\\n" +
+                                "Start the extension to created the log." :
+                                "Make sure you've there's an assigned program for opening \\".log\\" files"
+                                );
+                        }
+                        `;
                     jsx.eval(script.join('\n'), { file: extension.log.replace(/\\/g, '\\\\\\\\') });
                 });
             }
             if (extension.debugPort) {
                 $('#OpenDebug_' + n).click(function() {
                     launchDebug(extension.debugPort);
-                    // jsx('new File("__file__").execute();', { file: extension.debugPort.replace(/\\/g, '\\\\') });
                 });
             }
 
