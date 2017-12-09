@@ -51,7 +51,7 @@
     overflow: auto !important;
     margin-top: 0px;
     margin-bottom: 0px;
-    font-size: 12px;
+    font-size: 14px;
     font-family:"Free Monospaced";
     /*font-family: DejaVu Sans Mono, Monaco, Consolas, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;*/
 }
@@ -65,7 +65,7 @@
     border-radius: 5px;
     margin-top: 5px;
     resize: vertical;
-    font-size: 12px;
+    font-size: 14px;
     font-family:"Free Monospaced";
     /*font-family: DejaVu Sans Mono, Monaco, Consolas, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;*/
     /*font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;*/

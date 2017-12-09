@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <link id="hostStyle" rel="stylesheet" href="../css/styles.css" />
     <link rel="stylesheet" href="../js/libs/pretty-dropdowns/dist/css/prettydropdowns.css">
+    <link rel="stylesheet" href="../js/libs/jquery-ui-1.12.1.custom/jquery-ui.css">
     <script>
     if (typeof module === 'object') {
         window.module = module;
@@ -22,6 +23,55 @@
     <script src="../js/libs/jquery-3.1.1.min.js"></script>
     <script src="../js/libs/pretty-dropdowns/dist/js/jquery.prettydropdowns.js"></script>
     <script src="../js/libs/jquery.selection.js"></script>
+    <script src="../js/libs/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+    <script>
+    $(function() {
+        $(document).tooltip({});
+        $( "#cepVersion, #debugLevel, #logLevel" ).selectmenu({
+          position: { collision: "flip" },
+        });
+    });
+    </script>
+    <style>
+    .ui-tooltip {
+        padding: 10px 10;
+        color: black;
+        border-radius: 4px;
+        font: bold 12px "Helvetica Neue", Sans-Serif;
+        /*text-transform: uppercase;*/
+        box-shadow: 0 0 7px black;
+        max-width: 600px;
+        /*min-width: 300px;*/
+    }
+    .ui-selectmenu-button.ui-button {
+        width: auto !important;
+        font-size: .7em;
+        padding: 8px 10px 4px!important;
+        border-radius: 4px;
+        font-weight: bold;
+        background: white;
+        border: 1px solid #888;
+        line-height: 1em;
+        bottom: 1px;
+        color: black;
+    }
+    .ui-selectmenu-button.ui-button:focus, .ui-selectmenu-menu .ui-menu:focus {
+        outline-width: 0;
+    }
+    .ui-menu .ui-menu-item-wrapper {
+        position: relative;
+        padding: 6px 10px!important;
+        /*padding: 2px 4px!important;*/
+        font-size: .7em;
+        font-weight: bold;
+    }
+
+    .ui-selectmenu-menu .ui-menu {
+        max-height: 250px;
+        /*border: 1px solid #a9a9a9;*/
+    }
+   
+    </style>
     <script>
     if (window.module) module = window.module;
     if (window.exports) exports = window.exports;
@@ -74,7 +124,7 @@
                     <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help" title="Open CSTK Github page">
                     <span id="hostAppInfo"></span>
                 </div>
-                <div id="versions" style="font-size: .7em;">
+                <div id="versions" style="font-size: .7em;font-stretch: condensed;text-decoration-style: all;text-decoration-style: dashed;color-rendering: all;">
                 </div>
             </div>
             <div id="folders">
@@ -120,20 +170,24 @@
                         </select>
                     </div>
                     <div>
+                        <div>
                         <select id="debugApps" class="pretty">
-                            <option value="0">Choose debug app</option>
+                            <option></option>
                         </select>
                         <span style="font-size: .8em;">Port:</span>
-                        <input type="text" id="portIN" name="portText" value="" style="height: 18px; width: 100px; font-size: .8em;">
-                        <span id="debugBT" class="csButton greyButton">Debug</span>
+                        <input type="text" id="portIN" name="portText" value="" style="height: 18px; width: 80px; font-size: .8em;">
+                        <span id="debugBT" class="csButton greyButton" title="Debug given port with the selected app">Debug</span>
+                        <span id="debugAddBT" class="csButton greyButton" title="Add a debug app to the list">Add</span>
+                        <span id="debugRemoveBT" class="csButton greyButton" title="Remove a debug app from the list">Remove</span>
+                        </div>
                         <div>
                             <span id="openLogFolder" class="csButton greyButton">Open Log Folder</span>
                             <span id="refeshAppList" class="csButton greyButton">Refresh</span>
                         </div>
                         <div>
                             <!-- <span id="openFolderApp" class="csButton blueButton">Set Open Folders Application</span> -->
-                            <span><span style="color: cyan">Shift</span> Click the <span class="csButton blueButton" style="cursor: default;">Open Folder</span> buttons to open the folders with </span>
-                            <span id="openFolderApp" style="color: cyan"></span>
+                            <span><span style="color: chocolate">Shift</span> Click the <span class="csButton blueButton" style="cursor: default;">Open Folder</span> buttons to open the folders with </span>
+                            <span id="openFolderApp" style="color: chocolate"></span>
                             <span id="openFolderAppBT" class="csButton greyButton">Change</span>
                         </div>
                     </div>

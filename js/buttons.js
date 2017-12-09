@@ -147,7 +147,7 @@ var run, Jfy, log, exec, isMac, __dirname, path, os, csInterface, fs;
         evalOnEnter(key, 1);
     });
 
-    
+
 
     /////////////
     // JS Eval //
@@ -365,7 +365,7 @@ var run, Jfy, log, exec, isMac, __dirname, path, os, csInterface, fs;
     $("#folders").hide();
     $("#SetWarning").hide();
 
-    $("#openFolders").click(function() {
+    $("#openFolders").mousedown(function() {
         if ($('#folders').is(":visible")) {
             $('#folders').hide();
             $("#openFolders").text('Show Extensions Tools');
@@ -379,5 +379,33 @@ var run, Jfy, log, exec, isMac, __dirname, path, os, csInterface, fs;
             $('#folders').show();
         }
     });
+
+    var appMap = {
+        "PHSP": "Adobe Photoshop", // OLD non extended version
+        "PHXS": "Adobe Photoshop",
+        "IDSN": "Adobe InDesign",
+        "AICY": "Adobe InCopy",
+        "ILST": "Adobe Illustrator",
+        "PPRO": "Adobe Premiere Pro",
+        "PRLD": "Adobe Prelude",
+        "AEFT": "Adobe After Effects",
+        "FLPR": "Adobe Animate",
+        "AUDT": "Adobe Audition",
+        "DRWV": "Adobe Dreamweaver",
+        "MUSE": "Adobe Muse",
+        "KBRG": "Adobe Bridge",
+        "undefined": "Unknown App"
+    };
+    var app = csInterface.getHostEnvironment();
+    var appId = app.appId;
+    var appVersion = app.appVersion;
+    var appName = '' + csInterface.getSystemPath('hostApplication').match(/Adobe[^\/\\]+/);
+
+
+    $('#hostAppInfo').html(
+        '<img src="../img/Forum_Icons/APPID.png" style="height: 25px; top: 8px; position: relative;" id="" />'
+        .replace(/APPID/, appMap[appId] ? appId : 'CLOD') +
+        '<span style="font-size: .7em"> ' + appName.replace('Adobe', '') + ' (' + appVersion + ')</span>'
+    );
 
 })();

@@ -1,0 +1,4 @@
+Message: Uncaught SyntaxError: Unexpected reserved word
+Source: http://localhost:9073/devtools/inspector.js
+Line: 2
+-----------------------
