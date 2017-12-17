@@ -1,12 +1,18 @@
 // C:\Program Files\Common Files\Adobe\CEP\extensions\CSTK\js\debug.js
 /* globals exec, log, csInterface, path, fs, os, isMac, jsx */
+
+// https://www.petri.com/how-to-query-the-windows-search-index-using-sql-and-powershell
+// $sql = "SELECT System.ItemPathDisplay, System.DateCreated, System.DateModified FROM SYSTEMINDEX WHERE CONTAINS (System.FileName, '""Google Chrome"" OR Cefclient.exe')"
+// $provider = "provider=search.collatordso;extended properties='application=windows';"
+// $connector = new-object system.data.oledb.oledbdataadapter -argument $sql, $provider
+// $dataset = new-object system.data.dataset
+// if ($connector.fill($dataset)) { $dataset.tables[0] }
+
 (function() {
     var launchDebug, selectDebugFile, addDropdownOption, loadMenuFromFile, updateVersions;
-    var cstkFolder, defaultChromePath, cookieFile, debugAppFile, appSelection, openFolderApp, openFolderAppFile;
-    var $debugApps = $("#debugApps").prettyDropdown({
-        height: 29,
-        classic: true
-    });
+    // var cstkFolder, defaultChromePath, cookieFile, debugAppFile, appSelection, openFolderApp, openFolderAppFile;
+    var cstkFolder, defaultChromePath, cookieFile, debugAppFile, openFolderApp, openFolderAppFile;
+    var $debugApps = $("#debugApps");
 
     defaultChromePath = 'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe';
     cstkFolder = path.join(csInterface.getSystemPath('userData'), 'Creative Scripts', 'CSTK');
@@ -36,135 +42,7 @@
         fs.outputFile(openFolderAppFile, openFolderApp, function() {});
     });
 
-    ///////////////////////////////////////////
-    // Set and Get LogLevel and Debug Values //
-    ///////////////////////////////////////////
-
-    $(document).ready(function() {
-        {
-            $('#SetWarning').hide();
-            var $log, $cep, $debug, $debugA, getValue, processValue, setValue, cep, setUI;
-            $log = $("#logLevel").prettyDropdown({
-                height: 29,
-                classic: true
-            });
-            $debug = $("#debugLevel").prettyDropdown({
-                height: 29,
-                classic: true
-            });
-            $cep = $("#cepVersion").prettyDropdown({
-                height: 29,
-                classic: true
-            });
-            $debugA = $("#debugApps").prettyDropdown({
-                height: 29,
-                classic: true
-            });
-
-            processValue = function(key, value) {
-                if (!isMac) value = value.replace(/\s/g, '').match(/\d+$/);
-                if (key === 'LogLevel') {
-                    $("#logLevel").val('' + (value ? +value : 7));
-                    $log.refresh();
-                } else if (key === 'PlayerDebugMode') {
-                    $("#debugLevel").val('' + (value ? +value : 2));
-                    $debug.refresh();
-                }
-            };
-
-            setUI = function(error, result, warning) {
-                'use strict';
-                let m;
-                // The error on the Mac kill cfprefsd command does not seem to effect the reset
-                // i.e. it looks like cfprefsd is reset even if it says it's not
-                // this is because the call is made 2 times consequently so by the second call it's already dead
-                // Seeing as the second kill should not be needed we can ignore errors for now
-                if (isMac) error = false;
-                m = warning || error || result + (isMac ? '' : '<br>') + 'The apps need to be restarted to reflect the changes';
-                $('#SetWarning').html(m);
-                $('#SetWarning').show();
-                $('#SetWarning').fadeOut(warning ? 2000 : 3000);
-                // of now this will never happen!
-                if (isMac && error) {
-                    $('#sudo').show();
-                }
-            };
-
-            setValue = function(key, value, cep) {
-                var command;
-                command = isMac ? 'defaults write com.adobe.CSXS._CEP_.plist _KEY_ _VALUE_ && killall -u `whoami` cfprefsd' :
-                    'reg add HKEY_CURRENT_USER\\SOFTWARE\\Adobe\\CSXS._CEP_ /t REG_SZ /v _KEY_ /d _VALUE_ /f';
-                command = command.replace(/_CEP_/, '' + cep).replace(/_KEY_/, '' + key).replace(/_VALUE_/, '' + value);
-                exec(command, function(err, result) {
-                    setUI(err, result);
-                });
-            };
-
-
-            getValue = function(key, cep) {
-                var command;
-                command = isMac ? 'defaults read com.adobe.CSXS._CEP_.plist _KEY_' :
-                    'reg query HKEY_CURRENT_USER\\SOFTWARE\\Adobe\\CSXS._CEP_ /v _KEY_';
-                command = command.replace(/_CEP_/, '' + cep).replace(/_KEY_/, '' + key);
-                exec(command, function(err, result) {
-                    if (err) {
-                        log('getValue error: ' + err, 'e', 'ping');
-                    }
-                    processValue(key, result);
-                });
-            };
-
-            cep = csInterface.getCurrentApiVersion().major;
-            $("#cepVersion").val(cep);
-            $cep.refresh();
-            getValue('LogLevel', cep);
-            getValue('PlayerDebugMode', cep);
-            $("#cepVersion").change(function() {
-                var cep = '' + $("#cepVersion").val();
-                getValue('LogLevel', cep);
-                getValue('PlayerDebugMode', cep);
-                setUI(false, false, 'REMEMBER to click SET to apply the changes');
-            });
-            $("#logLevel").change(function() {
-                setUI(false, false, 'REMEMBER to click SET to apply the changes');
-            });
-            $("#debugLevel").change(function() {
-                setUI(false, false, 'REMEMBER to click SET to apply the changes');
-            });
-            $('#Set').click(function() {
-                var logValue, cepValue, debugValue;
-                logValue = $('#logLevel').val();
-                cepValue = $('#cepVersion').val();
-                debugValue = $('#debugLevel').val();
-                if (logValue !== '7') {
-                    setValue('LogLevel', logValue, cepValue);
-                }
-                if (debugValue !== '2') {
-                    setValue('PlayerDebugMode', debugValue, cepValue);
-                }
-            });
-
-            $('#sudoEnter').click(function() {
-                var command, password;
-                password = $('#sudoText').val();
-                if (!password) {
-                    return;
-                }
-                command = 'echo _PASSWORD_ | sudo -S killall cfprefsd'.replace(/_PASSWORD_/, password);
-                $('#sudoText').val('');
-
-                exec(command);
-                $('#sudo').hide();
-            });
-            $('#sudoClose').click(function() {
-                $('#sudo').hide();
-            });
-            $('#sudo').hide();
-
-
-        }
-    });
-
+ 
 
 
     /////////////////////
@@ -220,7 +98,7 @@
 
         // after the 1st exec one can know how many apps there are
         // one can use loop the mdls exec and on callback check the filled array count
-        // 
+        //
         // on Windows
         // wmic datafile where name='C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe' get Version /value
         // Version=61.0.3163.100
@@ -231,10 +109,10 @@
         // 61.0.3163.100    61.0.3163.100    C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
         // looks like the best way to go
         // powershell "(Get-Item 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe').VersionInfo"
-        // 
-        // 
+        //
+        //
         // To check out open ports
-        // Mac - 
+        // Mac -
         // lsof -PiTCP -sTCP:LISTEN | grep CEPHtmlEn
         // Windows -
         // netstat -aon | findstr 127.0 | findstr 0.0.0.0:0
@@ -251,7 +129,7 @@
         //   TCP    127.0.0.1:65000        0.0.0.0:0              LISTENING       3704
         //   TCP    127.0.0.1:65001        0.0.0.0:0              LISTENING       4952
         //   Then need to compare the PIDs to the CEF pids
-        //   nope do the other way around  
+        //   nope do the other way around
         //   netstat -aon | findstr 27864
         //   TCP    127.0.0.1:9072         0.0.0.0:0              LISTENING       27864
         //   need to then check that the finds are the PIDs and not the ports, that can be done on the js side
@@ -363,154 +241,7 @@
     );
 
 
-    if (isMac) {
-        processCeps = function(err, cepPorts, cepProcesses) {
-            // definitely lacking error checking!
-            // TODO add error checking! 
-            try {
-                var l, n, extensionMap, cepProcess, params_extensionuuid, cepPid, logFiles, pidMap, portMap, port, portUrl, extension, extensions, hostExtensions, hostExtensionsMap;
-                logFiles = {};
-                extensionMap = {};
-                pidMap = {};
-                portMap = {};
-                hostExtensionsMap = {};
-                extensions = [];
-                hostExtensions = window.__adobe_cep__.getExtensions().split('"id":');
-                cepProcesses = cepProcesses && cepProcesses.split(/[\n\r]/);
-                cepPorts = cepPorts && cepPorts.split(/[\n\r]/);
-                l = cepProcesses.length;
-                for (n = 0; n < l; n++) {
-                    cepProcess = cepProcesses[n];
-                    if (/--type=renderer/.test(cepProcess)) {
-                        // renderer_helpers.push(cepProcess);
-                        params_extensionuuid = cepProcess.match(/--params_extensionuuid=(\S+)/);
-                        params_extensionuuid = params_extensionuuid && params_extensionuuid[1];
-                        if (params_extensionuuid) {
-                            cepPid = '' + cepProcess.match(/\d+/);
-                            if (extensionMap[params_extensionuuid]) {
-                                extensionMap[params_extensionuuid].renderer = cepProcess;
-                                extensionMap[params_extensionuuid].renderPid = cepPid;
-                            } else {
-                                extensionMap[params_extensionuuid] = { renderer: cepProcess, renderPid: cepPid };
-                            }
-                        }
-                        continue;
-                    }
-                    if (/--type=gpu-process/.test(cepProcess)) {
-                        // we are no longer going to bother with processing the gpu-process type
-                        continue;
-                    }
-                    // CEPHtmlEngine.app/Contents/MacOS/CEPHtmlEngine
-                    params_extensionuuid = cepProcess.match(/" (\S+)/);
-                    params_extensionuuid = params_extensionuuid && params_extensionuuid[1];
-                    if (params_extensionuuid) {
-                        cepPid = '' + cepProcess.match(/\d+/);
-                        pidMap[cepPid] = params_extensionuuid;
-                        if (extensionMap[params_extensionuuid]) {
-                            extensionMap[params_extensionuuid].cepPid = cepPid;
-                        } else {
-                            extensionMap[params_extensionuuid] = { cepPid: cepPid };
-                        }
-                    }
-                }
-
-                // we now have a useful map of the 3 separate cep processes for each extension and of the main PIDs to server ids
-                // let's make a map of the cep ports to pids
-
-                l = cepPorts.length;
-                for (n = 0; n < l; n++) {
-                    port = '' + cepPorts[n];
-                    //alert(port)
-                    portUrl = port.match(/TCP (\S+)/);
-                    portUrl = portUrl && portUrl[1];
-                    if (portUrl) portMap['' + port.match(/\d+/)] = portUrl;
-                }
-                // alert(JSON.stringify(portMap));
-
-                // map paths to known extension names
-
-                var extName, basePath, hostExt;
-
-
-                // alert(JSON.stringify(hostExtensionsMap));
-                // now we can go through the extensionMap map and extract some useful data
-                var ext, info, render;
-                for (extension in extensionMap) {
-                    // extensions
-                    extension = extensionMap[extension];
-                    // alert(JSON.stringify(extension))
-                    render = extension.renderer;
-                    ext = {};
-                    // Adobe app
-                    info = render.match(/\/.+?\.app/);
-                    ext.appName = info && info[0].match(/\/([^\/]+?)\/[^\/]+$/)[1];
-                    // app code
-                    ext.appCode = render.match(/--params_ppid=(.+?) --/)[1];
-                    // app version
-                    ext.appVersion = render.match(/--params_ppversion=(.+?) --/)[1];
-                    // extension id
-                    ext.id = render.match(/--params_extensionid=(.+?) --/)[1];
-                    // --node-module-dir - log
-                    ext.dirName = render.match(/--node-module-dir=(.+?) --/)[1];
-                    if (hostExtensionsMap[ext.dirName]) {
-                        ext.name = hostExtensionsMap[ext.dirName].name;
-                        hostExtensionsMap[ext.dirName].active = true;
-                    }
-                    // logFile
-                    ext.log = render.match(/--log-file="([^"]?) --/)[1];
-                    // logFile
-                    ext.log = render.match(/--log-file="([^"]?) --/)[1];
-                    // logLevel and severity
-                    ext.logLevel = render.match(/--params_loglevel=(.+?) --/)[1] + ' - ' + render.match(/--log-severity=(.+?) --/)[1];
-                    ext.cepPid = extension.cepPid;
-                    ext.renderPid = extension.renderPid;
-                    ext.gpuPid = extension.gpuPid;
-                    // debugPort
-                    info = portMap[ext.cepPid];
-                    ext.debugPort = info;
-                    // commandLine Parameters
-                    info = render.match(/--type=renderer (.+?) --primordial-pipe-token/);
-                    info = info && info[1].split(/ /);
-                    ext.commandLineParameters = info;
-                    // Lang
-                    ext.lang = render.match(/--lang=(.+?) --/)[1];
-                    ext.active = true;
-                    // do PIDs
-                    extensions.push(ext);
-                } // end of extension loop
-                // add for inactive extensions which have no CEP engine process
-                l = hostExtensions.length;
-                for (n = 0; n < l; n++) {
-                    hostExt = hostExtensions[n];
-                    basePath = hostExt.match(/"basePath":"([^"]+)/);
-                    basePath = basePath && basePath[1];
-                    extName = hostExt.match(/"name":"([^"]+)/);
-                    extName = extName && extName[1];
-                    hostExtensionsMap[basePath] = { name: extName, ext: hostExt };
-                }
-
-
-                // log(JSON.stringify(extensions));
-                log.open();
-                // alert('cepPorts:' + cepPorts);
-            } catch (e) {
-                log(e.stack, 'e');
-                alert(e.stack);
-            }
-        };
-
-        getDebugPorts = function(err, cepProcesses) {
-            exec('lsof -PiTCP -sTCP:LISTEN | grep CEPHtmlEn', function(err, result) {
-                processCeps(err, result, cepProcesses);
-            });
-        };
-
-        getCeps = function() {
-            exec('ps ax | grep "CEPHtmlEngine.app"', getDebugPorts);
-        };
-
-        getCeps();
-    } else { // windows
+    if (1) { // windows
 
         getCeps = function() {
             var powershell = 'powershell "Get-WmiObject win32_process -Filter \\"name=\'CEPHTMLEngine.exe\'\\" handle, commandLine"';
@@ -562,7 +293,7 @@
 
         processCeps = function(err, cepPorts, cepProcesses) {
             // definitely lacking error checking!
-            // TODO add error checking! 
+            // TODO add error checking!
             try {
 
                 var l, n, extensionMap, cepProcess, gpuMap, params_extensionuuid, cepPid, dirName, pidMap, portMap, port, portUrl, extension, extensions, hostExtensions, hostExtensionsMap;
@@ -709,7 +440,7 @@
 
                     extensions.push(ext);
                 }
-                // if we wanted to we could search all the extension folders 
+                // if we wanted to we could search all the extension folders
                 // or at least the user and system extension folders and read the manifest files
                 // to complete the picture, but were not going to bother for now!
                 // scanning all the individual app CEP folder would be more work
@@ -831,18 +562,18 @@
                             <span> ${extension.id} ${((extension.name && (extension.name !== extension.id)) ? ` - [${extension.name}]` : '')}
                             </span>
                             <img src="../img/${extension.active ? 'green' : 'red'}LED.png" style="top:0px;position: relative;padding:0 4px 0 4px;"/>
-                            <span class="csButton blueButton" id="OpenFolder_${n}" title="Click to open with ${(isMac ? 'Finder' : 'Explorer')}.\nShift click to open with selected application."> Open Folder</span>
-                            <span class="csButton blueButton" id="OpenLog_${n}"> Open Log<span style="font-size:.7em;">${extension.logLevel ? ' ' + extension.logLevel : ''}</span></span>
-                            ${extension.debugPort ? '<span class="csButton greyButton"  id="OpenDebug_${n}" title="Port: ${extension.debugPort}">Debug</span>' : ''}
+                            <span class="csButton blueButton" id="OpenFolder_${n}" title="Click to open with ${(isMac ? 'Finder' : 'Explorer')}. SHIFT click to open with selected application."> Open Folder</span>
+                            <span class="csButton blueButton" id="OpenLog_${n}" title="Open the extension's main log (IF IT EXISTS)"> Open Log<span style="font-size:.7em;">${extension.logLevel ? ' ' + extension.logLevel : ''}</span></span>
+                            ${extension.debugPort ? '<span class="csButton greyButton"  id="OpenDebug_' + n + '" title="Port: ' + extension.debugPort + '">Debug</span>' : ''}
                         </div>
             `);
         }
 
-        var $debugTool;
-        $debugTool = $("#debugTool").prettyDropdown({
-            height: 29,
-            classic: true
-        });
+        // var $debugTool;
+        // $debugTool = $("#debugTool").prettyDropdown({
+        //     height: 29,
+        //     classic: true
+        // });
         $("#folderBody").html(html.join('\n'));
 
         setUpButtons = function(n) {
@@ -911,7 +642,7 @@
                         appSelection = appSelection.value || '0';
                         fs.outputFile(cookieFile, appSelection);
                         $("#debugApps").val(appSelection);
-                        $debugApps.refresh();
+                        $debugApps.selectmenu('refresh');
                         updateVersions();
                     });
                 } else {
@@ -929,10 +660,10 @@
                                     result = (newHtml.length > 1) ? '' + (appSelection || newHtml[1].match(/[^"=]+(?=")/)) : 0;
                                     fs.outputFile(cookieFile, result);
                                 }
-                                // $debugApps.refresh();
+                                // $debugApps.selectmenu('refresh');
                                 appSelection = '' + result;
                                 $('#debugApps').val(appSelection);
-                                $debugApps.refresh();
+                                $debugApps.selectmenu('refresh');
                                 updateVersions();
                             });
                             return;
@@ -970,11 +701,43 @@
 
 
     updateVersions = function(newHtml) {
+        /**
+         * we can chain all the items together which will greatly improve performance
+         * powershell "(Get-Item 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe', 'C:\Program Files (x86)\Google\Chrome\Application\chrome2.exe', 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe').FullName; (Get-Item 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe', 'C:\Program Files (x86)\Google\Chrome\Application\chrome2.exe', 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe').VersionInfo; (Get-Item 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe', 'C:\Program Files (x86)\Google\Chrome\Application\chrome2.exe', 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe') | ft CreationTime;"
+         * programs that don't exits will produce and error but not interfere with the result
+         * Result
+         *  C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+            C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+
+            ProductVersion   FileVersion      FileName                                                                             
+            --------------   -----------      --------                                                                             
+            62.0.3202.94     62.0.3202.94     C:\Program Files (x86)\Google\Chrome\Application\chrome.exe                          
+            62.0.3202.94     62.0.3202.94     C:\Program Files (x86)\Google\Chrome\Application\chrome.exe                          
+
+
+
+            CreationTime      
+            ------------      
+            14-Nov-17 01:29:05
+            14-Nov-17 01:29:05
+
+
+
+            ---------------------------
+
+            We can then grep this info
+            The file paths can be retrieved by searching the first lines for a ':'
+            We then will know the valid paths (the invalid ones won't appear)
+            The version info and creation date will come in the same order
+            To find the file info we can just look for the line 'ProductVersion   FileVersion      FileName' and go 2 lines down
+            Same method for CreationTime
+
+         */
         try {
             if (newHtml) {
                 $("#debugApps").html(newHtml);
                 $("#debugApps").val(appSelection);
-                $debugApps.refresh();
+                $debugApps.selectmenu('refresh');
                 return;
             }
             var debugAppList, option, getVersion;
@@ -1020,20 +783,19 @@
         } else if (!(/http/.test(port))) {
             port = 'http://' + port;
         }
-        if (debugApp === '0') {
-            debugApp = selectDebugFile();
-            if (!debugApp) return;
-        }
         if (!/\d/.test(port)) { return; }
-        if (/chrome.exe/i.test(debugApp)) {
+        if (/chrome\./i.test(debugApp)) {
             cmd = '"' + debugApp + '" ' + port;
-        } else if (/cefclient\.exe/i.test(debugApp)) {
+        } else if (/cefclient\./i.test(debugApp)) {
             cmd = '"' + debugApp + '" --url=' + port;
         } else {
             alert('Sorry at present only Chrome.exe and Cefclient.exe are supported :-<');
         }
         exec(cmd, function(err) {
-            if (err !== null) alert('err:' + err + '@');
+            if (err !== null) {
+                log('CSTK launch debug error:' + err, 'e');
+                alert('CSTK launch debug error:' + err);
+            }
             // should offer to remove app from list
         });
     }; // end of launchDebug
@@ -1042,7 +804,7 @@
         var debugApp;
         debugApp = window.cep.fs.showOpenDialogEx(false, false, 'Please select a file (chrome.exe or cefclient.exe only!)');
         debugApp = '' + debugApp.data[0];
-        if (/chrome.exe|cefclient.exe/i.test(debugApp)) {
+        if (/chrome.exe|cefclient.exe|chrome.lnk|cefclient.lnk/i.test(debugApp)) {
             addDropdownOption(debugApp);
             return debugApp;
         }
@@ -1070,21 +832,11 @@
         }
         // $("#debugApps").val(value || appSelection);
         fs.outputFile(cookieFile, value || appSelection);
-        // $debugApps.refresh();
+        // $debugApps.selectmenu('refresh');
         updateVersions();
     }; // end of addDropdownOption
 
 
-
-    $("#debugApps").change(function() {
-        var debugApp;
-        appSelection = '' + $("#debugApps").val();
-        fs.outputFile(cookieFile, appSelection);
-        if (appSelection === '0') {
-            debugApp = selectDebugFile();
-        }
-        // if val is 0 open file dialog
-    });
 
     $('#debugBT').click(function() {
         launchDebug($('#portIN').val());
@@ -1096,6 +848,6 @@
         getCeps();
     });
 
-    loadMenuFromFile();
+    // loadMenuFromFile();
     getCeps();
 })();

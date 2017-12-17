@@ -12,7 +12,7 @@
     openFolderAppFile = path.join(cstkFolder, 'OpenFolderApp.txt');
 
     dummy = function(err) {
-        // this function might be needed at some point to stop asynchronous node functions throwing errors
+        //  function might be needed at some point to stop asynchronous node functions throwing errors
         // because no callback has been provided
         // this would be more according to the letter than the spirit of the law ;-{
         if (err) {
@@ -63,10 +63,10 @@
             $debugA.selectmenu({
                 change: function(event, ui) {
                     appSelection = ui && ui.item && ui.item.value;
-                    fs.outputFile(cookieFile, appSelection, function(err, result) {
-                        log('outputFile cookieFile: ' + (err || result));
-                    });
                     if (appSelection) {
+                        fs.outputFile(cookieFile, appSelection, function(err, result) {
+                            log('outputFile cookieFile: ' + (err || result));
+                        });
                         // the tooltip had problems :-/
                         // $('#debugApps-button')
                         //     .attr('title',
@@ -319,14 +319,6 @@
     ////////////////////
     // Set Log Levels //
     ////////////////////
-
-    $("#logLevel").click(function() {
-        if (/\bshow\b/.test('' + $('#myDropdown').attr('class'))) {
-            $("#myDropdown").removeClass("show");
-        } else {
-            $("#myDropdown").addClass("show");
-        }
-    });
 
     $("#restartExt").click(function() {
         try {
@@ -683,11 +675,11 @@
             `);
         } // /Users/Trevor/Documents/SDKs/CEP-Resources/CEP_7.x/cefclient.app/Contents/MacOS/cefclient
 
-        var $debugTool;
-        $debugTool = $("#debugTool").prettyDropdown({
-            height: 29,
-            classic: true
-        });
+        // var $debugTool;
+        // $debugTool = $("#debugTool").prettyDropdown({
+        //     height: 29,
+        //     classic: true
+        // });
         $("#folderBody").html(html.join('\n'));
 
         setUpButtons = function(n) {

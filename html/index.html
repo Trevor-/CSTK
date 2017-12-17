@@ -27,8 +27,8 @@
     <script>
     $(function() {
         $(document).tooltip({});
-        $( "#cepVersion, #debugLevel, #logLevel" ).selectmenu({
-          position: { collision: "flip" },
+        $("#cepVersion, #debugLevel, #logLevel, #debugApps").selectmenu({
+            position: { collision: "flip" },
         });
     });
     </script>
@@ -43,6 +43,7 @@
         max-width: 600px;
         /*min-width: 300px;*/
     }
+
     .ui-selectmenu-button.ui-button {
         width: auto !important;
         font-size: .7em;
@@ -55,22 +56,28 @@
         bottom: 1px;
         color: black;
     }
-    .ui-selectmenu-button.ui-button:focus, .ui-selectmenu-menu .ui-menu:focus {
+
+    .ui-selectmenu-button.ui-button:focus,
+    .ui-selectmenu-menu .ui-menu:focus {
         outline-width: 0;
     }
+
     .ui-menu .ui-menu-item-wrapper {
         position: relative;
         padding: 6px 10px!important;
         /*padding: 2px 4px!important;*/
         font-size: .7em;
         font-weight: bold;
+        white-space: nowrap;
     }
 
     .ui-selectmenu-menu .ui-menu {
         max-height: 250px;
         /*border: 1px solid #a9a9a9;*/
     }
-   
+    .ui-selectmenu-icon.ui-icon{
+        top: -2px;;
+    }
     </style>
     <script>
     if (window.module) module = window.module;
@@ -131,7 +138,7 @@
                 <div id="folderHeader">
                     <div>
                         <span id="Set" class="csButton greyButton">Set</span>
-                        <select id="logLevel" name="logLevel" class="pretty">
+                        <select id="logLevel" name="logLevel">
                             <option value="0">Log Level 0 - Off</option>
                             <option value="1">Log Level 1 - Error</option>
                             <option value="2">Log Level 2 - Warn</option>
@@ -141,12 +148,12 @@
                             <option value="6">Log Level 6 - All</option>
                             <option value="7">Log Level Not Set</option>
                         </select>
-                        <select id="debugLevel" name="debugLevel" class="pretty" style="margin: 0 10px 0 10px">
+                        <select id="debugLevel" name="debugLevel" style="margin: 0 10px 0 10px">
                             <option value="1">Debug level 1</option>
                             <option value="0">Debug level 0</option>
                             <option value="2">Debug Not Set</option>
                         </select>
-                        <select id="cepVersion" name="cepVersion" class="pretty">
+                        <select id="cepVersion" name="cepVersion" style="min-width: 200px;">
                             <option value="1">for CEP 1</option>
                             <option value="2">for CEP 2</option>
                             <option value="3">for CEP 3</option>
@@ -171,14 +178,14 @@
                     </div>
                     <div>
                         <div>
-                        <select id="debugApps" class="pretty">
-                            <option></option>
-                        </select>
-                        <span style="font-size: .8em;">Port:</span>
-                        <input type="text" id="portIN" name="portText" value="" style="height: 18px; width: 80px; font-size: .8em;">
-                        <span id="debugBT" class="csButton greyButton" title="Debug given port with the selected app">Debug</span>
-                        <span id="debugAddBT" class="csButton greyButton" title="Add a debug app to the list">Add</span>
-                        <span id="debugRemoveBT" class="csButton greyButton" title="Remove a debug app from the list">Remove</span>
+                            <select id="debugApps">
+                                <option>Please Wait</option>
+                            </select>
+                            <span style="font-size: .8em;">Port:</span>
+                            <input type="text" id="portIN" name="portText" value="" style="height: 18px; width: 80px; font-size: .8em;">
+                            <span id="debugBT" class="csButton greyButton" title="Debug given port with the selected app">Debug</span>
+                            <span id="debugAddBT" class="csButton greyButton" title="Add a debug app to the list">Add</span>
+                            <span id="debugRemoveBT" class="csButton greyButton" title="Remove a debug app from the list">Remove</span>
                         </div>
                         <div>
                             <span id="openLogFolder" class="csButton greyButton">Open Log Folder</span>

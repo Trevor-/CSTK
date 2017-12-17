@@ -33,7 +33,7 @@
             <!-- Dreamweaver -->
             <Host Name="DRWV" Version="16" />
             <!-- Muse -->
-            <Host Name="DRWV" Version="2017" />
+            <Host Name="MUSE" Version="2017" />
             <!-- Bridge -->
             <Host Name="KBRG" Version="[8.0,99.9]" />
             <Host Name="BRDG" Version="[8.0,99.9]" />
@@ -55,7 +55,6 @@
                     <CEFCommandLine>
                         <Parameter>--enable-nodejs</Parameter>
                         <Parameter>--mixed-context</Parameter>
-                        <Parameter>--disable-asynchronous-spellchecking</Parameter>
                     </CEFCommandLine>
                 </Resources>
                 <Lifecycle>
@@ -78,8 +77,8 @@
                             <Width>600</Width>
                         </MinSize>
                         <MaxSize>
-                            <Height>1000</Height>
-                            <Width>1000</Width>
+                            <Height>10000</Height>
+                            <Width>10000</Width>
                         </MaxSize>
                     </Geometry>
                     <Icons>
