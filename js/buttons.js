@@ -409,6 +409,7 @@ var __log, __result;
             $('#folderBody').text('Please wait a few (upto 10) seconds for the apps to be processed');
             // run(isMac ? 'debug_tools_mac.js' : 'debug_tools_windows.js');
             getCeps();
+            searchForandAddDebugApps();
             $("#openFolders").text('Show Console');
             $('#folders').show();
         }
@@ -494,7 +495,7 @@ var __log, __result;
                         // The general select option widget does not have a tooltip                                     //
                         // The problem might have been OS specific so please make sure it works on both Windows and Mac //
                         //////////////////////////////////////////////////////////////////////////////////////////////////
-                        setUI(false, false, 'The default debug app has been set to <br>' + appSelection);
+                        // setUI(false, false, 'The default debug app has been set to <br>' + appSelection);
                     } else {
                         appSelection = '';
                     }
@@ -1613,8 +1614,8 @@ var __log, __result;
                     .replace(/_openFolderApp_/, openFolderApp)
                     .replace(/_folder_/, folder));
             } else {
-                exec((isMac ? 'open "_folder_"' : 'start "" "_folder_"')
-                    .replace(/_folder_/, folder));
+                __log(isMac ? `open "${folder}"` : `Explorer.exe "${folder}"`);
+                exec(isMac ? `open "${folder}"` : `Explorer.exe "${folder}"`);
             }
         };
         extensionSort = function(a, b) {
@@ -1711,7 +1712,7 @@ var __log, __result;
                     if (event.shiftKey) {
                         openFolder(extension.dirName);
                     } else {
-                        exec((isMac ? 'open "' : 'start "" "') + extension.dirName + '"');
+                        exec((isMac ? 'open "' : 'explorer.exe "') + extension.dirName + '"');
                     }
                 });
             }
@@ -1796,5 +1797,5 @@ var __log, __result;
         getCeps();
     });
     searchForandAddDebugApps();
-
+    getCeps();
 })();
