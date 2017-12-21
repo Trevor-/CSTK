@@ -56,7 +56,7 @@ var __log, __result;
     // On Enter Mode //
     ///////////////////
 
-    evalMode = 0; // default value
+    evalMode = 1; // default value
 
     $('#jsModeRB').click(function() {
         $('#evalCode').css({ borderColor: 'blue' });
@@ -86,8 +86,10 @@ var __log, __result;
         evalCallBack = function(result, execResult) {
             // In exec mode the "result" parameter is the error value and the "execResult" is the real result
             // If there's an error we ant to show that and if there's not then we want to show the real result
-            if (execResult === undefined) { execResult = result; }
-            result = result || execResult;
+            // if (execResult === undefined) { execResult = result; }
+            // result = result || execResult;
+            result = (result && execResult) ? result + '\n' + execResult : result || execResult;
+
             var contents, modes;
             modes = ['JS', 'JSX', 'SHELL'];
             contents = $("#evalResult").val();
@@ -224,7 +226,8 @@ var __log, __result;
         $('#execModeRB').click();
         var evalCallBack = function(error, stdout) {
             var result;
-            result = error || stdout;
+            result = error;
+            result = (result && stdout) ? result + '\n' + stdout : stdout;
             result = $("#evalResult").val +
                 $("#evalCode").val() +
                 '\n---------------------------\n' +
@@ -273,7 +276,13 @@ var __log, __result;
     // run('snippets/debugAppsList.js', 'f()');                             //
     //////////////////////////////////////////////////////////////////////////
 
-    run = function(url, success, error) {
+    run = function(url, success, error, console) {
+        if (typeof url === 'object') {
+            success = url.success;
+            error = url.error;
+            console = url.console;
+            url = url.url;
+        }
         var s, e;
         // need to check for mac and windows
         if (!(/^file:/.test(url))) {
@@ -303,15 +312,9 @@ var __log, __result;
                 }
             }
         }).done(function() {
-            // This will allow for console feedback
-            // if (success === false || error === false) { return; }
-            // not doing this now
-            // if (s || e) {
-            //     $("#evalResult").val(
-            //         $("#evalResult").val() +
-            //         (s || e) + '\n'
-            //     );
-            // }
+            if (console) {
+                __result(e, s);
+            }
         });
 
     };
@@ -485,6 +488,12 @@ var __log, __result;
                         //     .attr('title',
                         //      $("#debugApps option[value='_VALUE_']".replace(/_VALUE_/, appSelection)).attr('title')
                         //     );
+                        //////////////////////////////////////////////////////////////////////////////////////////////////
+                        // IF SOMEONE CAN GET THE TOOLTIP TO WORK PROPERLY ON SEND A PULL REQUEST                       //
+                        // as of now the tool tip is only on the individual select options                              //
+                        // The general select option widget does not have a tooltip                                     //
+                        // The problem might have been OS specific so please make sure it works on both Windows and Mac //
+                        //////////////////////////////////////////////////////////////////////////////////////////////////
                         setUI(false, false, 'The default debug app has been set to <br>' + appSelection);
                     } else {
                         appSelection = '';
@@ -517,11 +526,10 @@ var __log, __result;
                 } else if (key === 'PlayerDebugMode') {
                     $("#debugLevel").val('' + (value ? +value : 2));
                     $log.selectmenu('refresh');
-                    // $log.selectmenu('refresh');
                 }
             };
 
-
+            // sets the CEP debugPlayerMode and logLevels
             setValue = function(key, value, cep) {
                 var command;
                 command = isMac ? 'defaults write com.adobe.CSXS._CEP_.plist _KEY_ _VALUE_ && killall -u `whoami` cfprefsd' :
@@ -532,7 +540,7 @@ var __log, __result;
                 });
             };
 
-
+            // gets the CEP debugPlayerMode and logLevels
             getValue = function(key, cep) {
                 var command;
                 command = isMac ? 'defaults read com.adobe.CSXS._CEP_.plist _KEY_' :
@@ -600,7 +608,7 @@ var __log, __result;
     // Use Windows Search or Spotlight to search for instances of Chrome and cefclient //
     /////////////////////////////////////////////////////////////////////////////////////
 
-    var windowsSearchCallBack, macSearchCallBack, windowsAddFileInfo, macAddFileInfo, d, addThisIfNotInArray, removeThisIfInArray, removeDropdownOption, addDropdownOption, selectDebugFile;
+    var windowsSearchCallBack, macSearchCallBack, windowsAddFileInfo, macAddFileInfo, debugAppSelectionFromCookie, d, addThisIfNotInArray, removeThisIfInArray, removeDropdownOption, addDropdownOption, selectDebugFile;
     d = new Date();
     addThisIfNotInArray = function(value, array) {
         if (array.indexOf(value) === -1) { array.push(value); }
@@ -619,7 +627,7 @@ var __log, __result;
             apps = result.replace(/[\n\r]+[^:\n\r]+[\n\r]/g, '')
                 .replace(/^[\n\r]+/, '')
                 .replace(/[\n\r]+$/, '')
-                .split(/ *[\n\r]+/);
+                .split(/ *[\n\r]+/) || [];
             // Add some potential locations for Chrome as Windows search might only index the start folder
             // If they don't exists they will just be filtered out later by the Get-Item command.
             addThisIfNotInArray('C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe', apps);
@@ -675,7 +683,8 @@ var __log, __result;
             __log(err.stack);
             alert(err.stack);
         }
-    };
+    }; // end of windowsSearchCallBack
+
     windowsAddFileInfo = function(err, result) {
         try {
             var paths, info, n, l, html, app, version, date, name;
@@ -693,7 +702,6 @@ var __log, __result;
             html = [];
             for (n = 0; n < l; n++) {
                 app = paths[n];
-                // name = '' + app.match(/[^\\\/]+$/);
                 name = app.match(/Chrome|CefClient/i);
                 version = '' + (info[n].match(/^\S+/) || 'Unknown Version');
                 date = new Date(info[l + n], info[l * 2 + n], info[l * 3 + n])
@@ -703,132 +711,123 @@ var __log, __result;
             }
             $("#debugApps").html(html.join('\n'));
             $("#debugApps").selectmenu('refresh');
+            debugAppSelectionFromCookie();
 
         } catch (e) {
             // __log(e.stack);
             // alert(e.stack);
         }
-    };
+    }; // end of windowsAddFileInfo
 
-    /////////
-    // Mac //
-    /////////
 
-    macSearchCallBack = function(error, result) {
-        var debugApps;
-        debugApps = result && result
-            .replace(/^[\n\r]+/, '')
-            .replace(/[\n\r]+$/, '')
-            .split(/[\n\r]+/);
-        macAddFileInfo(debugApps);
-        // addDropdownOption(debugApps, false);
+    //////////////////////////
+    // Mac Spotlight Search //
+    //////////////////////////
+
+    macSearchCallBack = function(err, result) {
+        try {
+            var apps, fileList, cmd, n, l, manDebugApps;
+            apps = result && result
+                .replace(/^[\n\r]+/, '')
+                .replace(/[\n\r]+$/, '')
+                .split(/[\n\r]+/) || [];
+            // Add some potential locations for Chrome as Spotlight search might only index the start folder
+            // If they don't exists they will just be filtered out later by the Get-Item command.
+            addThisIfNotInArray('/Applications/Google Chrome.app', apps);
+            // At some point Chrome will change?
+
+            //////////////////////////////////////
+            // add / remove manually added apps //
+            //////////////////////////////////////
+            try {
+                manDebugApps = fs.readFileSync(debugAppFile) + '';
+                manDebugApps = manDebugApps.replace(/^[\n\r]+/, '')
+                    .replace(/[\n\r]+$/, '')
+                    .split(/[\n\r]+/);
+                l = manDebugApps.length;
+                // if the file is designated to be removed by having a :- appended to the path
+                // then remove from the app list else if it's not been picked up by spotlight then add it
+                for (n = 0; n < l; n++) {
+                    app = manDebugApps[n];
+                    if (/:-$/.test(app)) {
+                        app = app.replace(/:-$/, '');
+                        removeThisIfInArray(app, apps);
+                    } else {
+                        addThisIfNotInArray(app, apps);
+                    }
+                }
+            } catch (err) {
+                // __log(err.stack);
+                //  alert(err.stack);
+                // no debugAppFile
+            }
+            apps.sort();
+            fileList = '"' + apps.join('\u0800\u1800" "') + '\u0800\u1800"';
+            cmd = 'stat ' + fileList.replace(/\u0800\u1800/g, '') + '; plutil -p ' + fileList.replace(/\u0800\u1800/g, '/Contents/Info.plist') + ' | grep CFBundleShortVersionString;';
+            // __log(cmd);
+            exec(cmd, macAddFileInfo);
+        } catch (err) {
+            __log(err.stack);
+            alert(err.stack);
+        }
     }; // end of macSearchCallBack
 
-    macAddFileInfo = function(debugApps) {
-        var apps, n, l, app, i, appMap, addInfo;
+    macAddFileInfo = function(error, result) {
         try {
-            apps = fs.readFileSync(debugAppFile) + '';
-            apps = apps.replace(/^[\n\r]+/, '')
-                .replace(/[\n\r]+$/, '')
-                .split(/[\n\r]+/);
-            l = apps.length;
-            // if the file is designated to be removed by having a :- appended to the path
-            // then remove from the app list else if it's not been picked up by spotlight then add it
+            var info, n, l, html, app, version, date, name;
+            var stats, versions, fileCount;
+            var statReg, versionReg;
+            result = result || '';
+            result = result.replace(/^[\r\n]+/, '').replace(/[\r\n]+$/, '');
+            result = result.split(/[\n\r]/);
+            fileCount = result.length / 2;
+            stats = result.slice(0, fileCount);
+            versions = result.slice(fileCount);
+            l = stats.length;
+            statReg = /[^"]+"[^"]+" "([^"]+)" "[^"]+" "[^"]+" \d+ \d+ \d+ (\/.+)/;
+            versionReg = / => "([^"]+)"$/;
+            html = [];
             for (n = 0; n < l; n++) {
-                app = apps[n];
-                if (/:-$/.test(app)) {
-                    app = app.replace(/:-$/, '');
-                    i = debugApps.indexOf(app);
-                    if (i > -1) {
-                        debugApps.splice(i, 1);
-                    }
-                } else {
-                    if (debugApps.indexOf(app) === -1) {
-                        debugApps.push(app);
-                    }
-                }
+                info = statReg.exec(stats[n]);
+                date = info && info[1];
+                date = (date && new Date(date).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })) || '';
+                app = (info && info[2]) || '';
+                version = versionReg.exec(versions[n]);
+                version = (version && version[1]) || '';
+                name = app.match(/Chrome|CefClient/i);
+                // html.push({path: path, modDate: date, version: version});
+                html.push(`<option value="${app}" title="${app + '&nbsp; Last&nbsp;modified:&nbsp;' + date}">${name + ' (' + version})</option>`);
             }
-        } catch (err) {
-            log(err.stack);
-            // no debugAppFile
-        }
-        appMap = [];
-        var dApps = [];
-        addInfo = function(error, result) {
-            var app, l, version, contentUpdate, name;
-            l = debugApps.length;
-            app = debugApps[l - 1];
-            if (error) {
-                // remove the app from the list
-                debugApps.pop();
-                return addInfo();
-            } else if (result) {
-                name = result.match(/Chrome|CefClient/i);
-                version = result.match(/kMDItemVersion += "([^"]+)/);
-                version = version && version[1];
+            html = html.join('\n');
+            $("#debugApps").html(html);
+            $("#debugApps").selectmenu('refresh');
+            debugAppSelectionFromCookie();
 
-                contentUpdate = result.match(/kMDItemFSContentChangeDate += (\S+)/);
-                contentUpdate = contentUpdate && '' + new Date(contentUpdate[1]).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
-                if (!name) {
-                    debugApps.pop();
-                    return addInfo();
-                }
-                appMap.push(`<option value="${app}" title="${app + '&nbsp; Last&nbsp;modified:&nbsp;' + contentUpdate}">${name + ' (' + version})</option>`);
-                dApps.push(debugApps.pop());
-            }
-            l = debugApps.length;
-            app = debugApps[l - 1];
-            if (l) {
-                try {
-                    var cmd;
-                    cmd = 'mdls "app"'.replace(/app/, '' + app);
-                    return exec(cmd, addInfo);
-                } catch (e) {
-                    log(e.stack, 'e');
-                }
-            }
-            // no more results time to update the dropdown
-            // The order picked up by spotlight is as far as we are concerned somewhat random
-            // It would be nicer if the order was consistent hence the sort according to the file path
-            appMap.sort();
-            $("#debugApps").html(appMap.join('\n'));
-            // get selection from cookie
-            fs.readFile(cookieFile, function(err, result) {
-                if (result) {
-                    appSelection = '' + result;
-                    if (dApps.indexOf(appSelection) > -1) {
-                        // fs.outputFile(cookieFile, appSelection);
-                        $('#debugApps').val(appSelection);
-                        // $debugApps.selectmenu('refresh');
-                    } else {
-                        appSelection = $("#debugApps").val();
-                    }
-                } else {
-                    appSelection = $("#debugApps").val();
-                }
-                // try {
-                // $('#debugApps-button').attr('title',
-                //     $("#debugApps option[value='_VALUE_']".replace(/_VALUE_/, '' + appSelection)).attr('title')
-                // );
-                // } catch (e) {}
-                $("#debugApps").selectmenu('refresh');
-            });
-        }; // end of addInfo
-        addInfo();
+        } catch (e) {
+            __log(e.stack);
+            // alert(e.stack);
+        }
     }; // end of macAddFileInfo
 
     /////////////////////
     // Windows and Mac //
     /////////////////////
 
+    debugAppSelectionFromCookie = function() {
+        fs.readFile(cookieFile, function(err, result) {
+            if (result) {
+                result = '' + result;
+                result = result.replace(/\\/g, '\\\\');
+                if ($("#debugApps option[value='" + result + "']").length) {
+                    // fs.outputFile(cookieFile, appSelection);
+                    $('#debugApps').val(result);
+                    $("#debugApps").selectmenu('refresh');
+                }
+            }
+        });
+    };
+
     addDropdownOption = function(value) {
-        // TODO change function
-        // if value not in html using jquery
-        // then check the values version info
-        // split the html into an array
-        // add the new entry if the info is good
-        // sort array and update the html and bebugApps file
-        // select the value and update the cookie file
 
         var optionsHtml, appsArray, cmd, addPathAndVersion, name, version, contentUpdate;
         optionsHtml = $('#debugApps').html();
@@ -838,13 +837,16 @@ var __log, __result;
         }
         appsArray = optionsHtml.replace(/^[\s\n\r]+/).replace(/[\s\n\r]+$/).split(/[\n\r]/);
         addPathAndVersion = function(error, result) {
+            __result(error, result);
             if (result) {
-                name = result.match(/Chrome|CefClient/i);
+                result = result.replace(/^[\r\n]+/, '').replace(/[\r\n]+$/, '');
+                name = result.match(/CefClient|Chrome/i);
                 if (isMac) {
-                    version = result.match(/kMDItemVersion += "([^"]+)/);
+                    version = result.match(/[\n\r]+.+? => "([^"]+)"$/);
                     version = version && version[1];
-                    contentUpdate = result.match(/kMDItemFSContentChangeDate += (\S+)/);
+                    contentUpdate = result.match(/[^"]+"[^"]+" "([^"]+)"/);
                     contentUpdate = contentUpdate && '' + new Date(contentUpdate[1]).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+                    __log(`version: ${version} contentUpdate: ${contentUpdate} name: ${name}`);
                 } else {
                     result = result.split(/----+ +-----+ +-----+ *[\n\r]*/);
                     result = result[1] || '';
@@ -881,7 +883,8 @@ var __log, __result;
 
         var getItems;
         if (isMac) {
-            cmd = 'mdls "app"'.replace(/app/, '' + value);
+            cmd = `stat "${value}"; plutil -p "${value}/Contents/Info.plist" | grep CFBundleShortVersionString;`;
+            // cmd = 'mdls "app"'.replace(/app/, '' + value);
         } else {
             getItems = function(path, field) {
                 var getTemplate, filePath;
@@ -899,6 +902,7 @@ var __log, __result;
         }
         return exec(cmd, addPathAndVersion);
     }; // end of addDropdownOption
+
     removeDropdownOption = function() {
         var value, selection;
         value = $('#debugApps').val();
@@ -941,13 +945,16 @@ var __log, __result;
         return false;
     }; // end of selectDebugFile
 
-    var addDebugApps;
-    addDebugApps = function() {
+    var searchForandAddDebugApps;
+    searchForandAddDebugApps = function() {
         var cmd;
         if (isMac) {
+            // use spotlight to find Chrome and Client instances
             cmd = 'mdfind \'kMDItemCFBundleIdentifier == "com.google.Chrome" || kMDItemCFBundleIdentifier == "org.cef.cefclient"\'';
             exec(cmd, macSearchCallBack);
         } else {
+            // Access Windows search data base
+            // This site was a big help https://www.petri.com/how-to-query-the-windows-search-index-using-sql-and-powershell
             cmd = `powershell "$connector = new-object system.data.oledb.oledbdataadapter -argument \\"SELECT System.ItemPathDisplay FROM SYSTEMINDEX WHERE CONTAINS (System.FileName, '\\"\\"Google Chrome\\"\\" OR Cefclient.exe')\\", \\"provider=search.collatordso;extended properties='application=windows';\\"; $dataset = new-object system.data.dataset; if ($connector.fill($dataset)) { $dataset.tables[0] }"`;
             exec(cmd, windowsSearchCallBack);
         }
@@ -957,26 +964,28 @@ var __log, __result;
     $("#debugAddBT").click(selectDebugFile);
     $("#debugRemoveBT").click(removeDropdownOption);
 
-    // C:\Program Files\Common Files\Adobe\CEP\extensions\CSTK\js\debug.js
-
-    // https://www.petri.com/how-to-query-the-windows-search-index-using-sql-and-powershell
-    // $sql = "SELECT System.ItemPathDisplay, System.DateCreated, System.DateModified FROM SYSTEMINDEX WHERE CONTAINS (System.FileName, '""Google Chrome"" OR Cefclient.exe')"
-    // $provider = "provider=search.collatordso;extended properties='application=windows';"
-    // $connector = new-object system.data.oledb.oledbdataadapter -argument $sql, $provider
-    // $dataset = new-object system.data.dataset
-    // if ($connector.fill($dataset)) { $dataset.tables[0] }
 
     var launchDebug, openFolderApp;
     //var cstkFolder, defaultChromePath, cookieFile, debugAppFile, appSelection, openFolderApp, openFolderAppFile;
     // var cstkFolder, defaultChromePath, cookieFile, debugAppFile, appSelection, openFolderApp, openFolderAppFile;
 
     fs.readFile(openFolderAppFile, function(err, result) {
+        var baseName, defaultApp;
+        defaultApp = isMac ? "Finder" : "Windows Explorer";
         if (err) {
-            $('#openFolderApp').text(isMac ? "Finder" : "Windows Explorer");
+            $('#openFolderApp').text(defaultApp);
             openFolderApp = false;
         } else {
             openFolderApp = '' + result;
-            $('#openFolderApp').text('' + openFolderApp.match(/[^\/\\]+$/));
+            try{
+                fs.statSync(openFolderApp);
+                baseName = openFolderApp.match(/[^\/\\]+$/);
+                baseName = baseName && ('' + baseName).replace(/\.[^\.]+$/,'');
+            $('#openFolderApp').text(baseName || defaultApp);
+            }catch(e){
+                $('#openFolderApp').text(defaultApp);
+                openFolderApp = false;
+            }
         }
     });
 
@@ -988,7 +997,7 @@ var __log, __result;
             return;
         }
         openFolderApp = newApp;
-        $('#openFolderApp').text(('' + openFolderApp.match(/[^\/\\]+$/)).replace(/\.[^\.]+$/,''));
+        $('#openFolderApp').text(('' + openFolderApp.match(/[^\/\\]+$/)).replace(/\.[^\.]+$/, ''));
         fs.outputFile(openFolderAppFile, openFolderApp, dummy);
     });
 
@@ -1782,10 +1791,10 @@ var __log, __result;
         launchDebug($('#portIN').val());
     });
     $('#refeshAppList').click(function() {
-        $('#folderBody').text('Please wait a few (upto 10) seconds for the apps to be processed');
-        addDebugApps();
+       // $('#folderBody').text('Please wait a few (upto 10) seconds for the apps to be processed');
+        searchForandAddDebugApps();
         getCeps();
     });
-    addDebugApps();
+    searchForandAddDebugApps();
 
 })();

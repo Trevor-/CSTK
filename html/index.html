@@ -40,7 +40,8 @@
         font: bold 12px "Helvetica Neue", Sans-Serif;
         /*text-transform: uppercase;*/
         box-shadow: 0 0 7px black;
-        max-width: 600px;
+        white-space: nowrap;
+        max-width: 3000px;
         /*min-width: 300px;*/
     }
 
@@ -103,16 +104,16 @@
             </h2>
             <h2>To execute the whole snippet click on one of the Eval buttons.</h2>
             <form style="font-size: .75em;">To execute the selected lines in
-                <input class="chbx" type="radio" id="jsModeRB" name="evalMode" value="true" checked="1">
+                <input class="chbx" type="radio" id="jsModeRB" name="evalMode" value="false">
                 <label id="jsModeLB" class="label" for="jsModeRB" style="color: blue;text-shadow: 0px 0px 1px white !important;">JS</label>
-                <input class="chbx" type="radio" id="jsxModeRB" name="evalMode" value="false">
+                <input class="chbx" type="radio" id="jsxModeRB" name="evalMode" value="true" checked="1">
                 <label id="jsxMode" class="label" for="jsxModeRB" style="color: green;">JSX</label>
                 <input class="chbx" type="radio" id="execModeRB" name="evalMode" value="false">
                 <label id="execMode" class="label" for="execModeRB" style="color: red;">Shell</label>
                 mode press Shift + Enter
             </form>
             <div class="center" style="margin-top: 4px;">
-                <textarea id="evalCode" name="evalCode" class="codeBox">jsx.file({ file:'fileName.jsx', callBack: function(r){alert(r);}, replacements:{replaceMe: 'File Paths'}, eval: false }) </textarea>
+                <textarea id="evalCode" name="evalCode" class="codeBox" style="border-color: green;"></textarea>
                 <span id="zoomOut" class="csButton blueButton">-</span>
                 <span id="eval" class="csButton blueButton">JS ENGINE EVAL</span>
                 <span id="evaljsx" class="csButton greenButton">JSX ENGINE EVAL</span>
