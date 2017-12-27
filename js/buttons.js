@@ -25,6 +25,18 @@ var __log, __result;
     os = require('os');
     fs = require('fs-extra');
 
+    ////////////////////////
+    // setup config files //
+    ////////////////////////
+
+    var cstkFolder, debugAppFile, cookieFile, openFolderAppFile;
+    cstkFolder = path.join(csInterface.getSystemPath('userData'), 'Creative Scripts', 'CSTK');
+    debugAppFile = path.join(cstkFolder, 'debugAppsList.txt');
+    cookieFile = path.join(cstkFolder, 'debugAppSelection.txt');
+    openFolderAppFile = path.join(cstkFolder, 'OpenFolderApp.txt');
+
+    var searchForandAddDebugApps;
+
     $("#zoomOut").click(function() {
         var newFontSize;
         newFontSize = $('.result').css('font-size').replace(/[\.\d]+/, function(n) {
@@ -57,20 +69,26 @@ var __log, __result;
     ///////////////////
 
     evalMode = 1; // default value
-
+    var cwd = csInterface.getSystemPath('myDocuments');
+    if (!isMac) {cwd = cwd.replace(/\//g,'\\');}
+    $('#pwd').text(cwd);
     $('#jsModeRB').click(function() {
         $('#evalCode').css({ borderColor: 'blue' });
         evalMode = 0;
+        if ($('#cwd').is(":visible")) {$('#cwd').hide();}
+
     });
 
     $('#jsxModeRB').click(function() {
         $('#evalCode').css({ borderColor: 'green' });
+        if ($('#cwd').is(":visible")) {$('#cwd').hide();}
         evalMode = 1;
     });
 
     $('#execModeRB').click(function() {
         $('#evalCode').css({ borderColor: 'red' });
         evalMode = 2;
+        if (!($('#cwd').is(":visible"))) {$('#cwd').show();}
     });
 
 
@@ -222,17 +240,25 @@ var __log, __result;
 
 
     $("#evalExec").click(function() {
-        var result;
+        var result, pwd, cmd;
         $('#execModeRB').click();
+        if (!($('#cwd').is(":visible"))) {$('#cwd').show();}
         var evalCallBack = function(error, stdout) {
-            var result;
+            __result(error,stdout)
+            var result, dir;
+            // result = (result && execResult) ? result + '\n' + execResult : result || execResult;
+            stdout = stdout && stdout.replace(/[\n\r]+$/,'');
+            dir = stdout && '' + stdout.match(/[^\n\r]+$/);
+            stdout = stdout && stdout.replace(/[^\n\r]+$/,'');
+            if (!dir) {dir = cwd; } else {cwd = dir;} // !!!!!!!!!!!!!!
+            $('#pwd').text(cwd);
             result = error;
-            result = (result && stdout) ? result + '\n' + stdout : stdout;
-            result = $("#evalResult").val +
+            result = (result && stdout) ? result + '\n' + stdout : result || stdout;
+            result = $("#evalResult").val() +
                 $("#evalCode").val() +
                 '\n---------------------------\n' +
                 ('' + new Date()).substr(16, 8) +
-                ' EXEC ==> ' +
+                ` ${dir}> ` +
                 (/.[\n\r]/.test(result) ? '\n' : '') +
                 result +
                 '\n---------------------------\n';
@@ -242,10 +268,18 @@ var __log, __result;
                 scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
             }, 200);
         };
-        try {
-            result = exec($("#evalCode").val(), { cwd: __dirname }, evalCallBack);
-        } catch (err) {
-            evalCallBack(err);
+        cmd = $("#evalCode").val();
+        cmd = cmd.replace(/[ \n\r]+$/, '').replace(/^[ \n\r]+/, '');
+        cmd = cmd.split(/[\n\r]+/).join(isMac ? ';' : ' & ');
+        pwd = isMac ? '; echo $PWD' : ' & cd';
+        if (cmd !== '') {
+            cmd += pwd;
+            try {
+                result = exec(cmd, { cwd: cwd }, evalCallBack);
+            } catch (err) {
+                __log('Some bad error here: ' + err);
+                evalCallBack(err);
+            }
         }
     });
 
@@ -394,19 +428,19 @@ var __log, __result;
 
     $("#openFolders").mousedown(function() {
         if ($('#folders').is(":visible")) {
-            $('#folders').attr({
-                height: '0px'
-            });
+            // $('#folders').attr({
+            //     height: '0px'
+            // });
             $('#folders').hide();
             $("#openFolders").text('Show Extensions Tools');
             // $("#openFolders").removeClass("blueButton");
             $('#console').show();
         } else {
             $('#console').hide();
-            $('#folders').attr({
-                height: 'auto'
-            });
-            $('#folderBody').text('Please wait a few (upto 10) seconds for the apps to be processed');
+            // $('#folders').attr({
+            //     height: 'auto'
+            // });
+            // $('#folderBody').text('Please wait a few (upto 10) seconds for the apps to be processed');
             // run(isMac ? 'debug_tools_mac.js' : 'debug_tools_windows.js');
             getCeps();
             searchForandAddDebugApps();
@@ -455,155 +489,18 @@ var __log, __result;
         m = warning || error || result + (isMac ? '' : '<br>') + 'The apps need to be restarted to reflect the changes';
         $('#SetWarning').html(m);
         $('#SetWarning').show();
-        $('#SetWarning').fadeOut(warning ? 2000 : 3000);
+        $('#SetWarning').fadeOut(3500);
         // of now this will never happen!
         if (isMac && error) {
             $('#sudo').show();
         }
     };
 
-    ///////////////////////////////////////////
-    // Set and Get LogLevel and Debug Values //
-    ///////////////////////////////////////////
 
-    var appSelection;
-    $(document).ready(function() {
-        {
-            $('#SetWarning').hide();
-            var $log, $cep, $debug, $debugA, getValue, processValue, setValue, cep;
-
-            $debugA = $("#debugApps");
-            $log = $("#logLevel");
-            $debug = $("#debugLevel");
-            $cep = $("#cepVersion");
-
-            $debugA.selectmenu({
-                change: function(event, ui) {
-                    appSelection = ui && ui.item && ui.item.value;
-                    fs.outputFile(cookieFile, appSelection, function(err, result) {
-                        log('outputFile cookieFile: ' + (err || result));
-                    });
-                    if (appSelection) {
-                        // the tooltip had problems :-/
-                        // $('#debugApps-button')
-                        //     .attr('title',
-                        //      $("#debugApps option[value='_VALUE_']".replace(/_VALUE_/, appSelection)).attr('title')
-                        //     );
-                        //////////////////////////////////////////////////////////////////////////////////////////////////
-                        // IF SOMEONE CAN GET THE TOOLTIP TO WORK PROPERLY ON SEND A PULL REQUEST                       //
-                        // as of now the tool tip is only on the individual select options                              //
-                        // The general select option widget does not have a tooltip                                     //
-                        // The problem might have been OS specific so please make sure it works on both Windows and Mac //
-                        //////////////////////////////////////////////////////////////////////////////////////////////////
-                        // setUI(false, false, 'The default debug app has been set to <br>' + appSelection);
-                    } else {
-                        appSelection = '';
-                    }
-                },
-                position: { collision: "flip" }
-            });
-
-
-            $log.selectmenu({
-                change: function(event, ui) {
-                    var cep = '' + $("#cepVersion").val();
-                    getValue('LogLevel', cep);
-                    getValue('PlayerDebugMode', cep);
-                    setUI(false, false, 'REMEMBER to click SET to apply the changes');
-                }
-            });
-            $("#logLevel, #debugLevel").selectmenu({
-                change: function(event, ui) {
-                    setUI(false, false, 'REMEMBER to click SET to apply the changes');
-                }
-            });
-
-            processValue = function(key, value) {
-                if (!isMac) value = value.replace(/\s/g, '').match(/\d+$/);
-                if (key === 'LogLevel') {
-                    $("#logLevel").val('' + (value ? +value : 7));
-                    // $log.selectmenu('refresh');
-                    $log.selectmenu('refresh');
-                } else if (key === 'PlayerDebugMode') {
-                    $("#debugLevel").val('' + (value ? +value : 2));
-                    $log.selectmenu('refresh');
-                }
-            };
-
-            // sets the CEP debugPlayerMode and logLevels
-            setValue = function(key, value, cep) {
-                var command;
-                command = isMac ? 'defaults write com.adobe.CSXS._CEP_.plist _KEY_ _VALUE_ && killall -u `whoami` cfprefsd' :
-                    'reg add HKEY_CURRENT_USER\\SOFTWARE\\Adobe\\CSXS._CEP_ /t REG_SZ /v _KEY_ /d _VALUE_ /f';
-                command = command.replace(/_CEP_/, '' + cep).replace(/_KEY_/, '' + key).replace(/_VALUE_/, '' + value);
-                exec(command, function(err, result) {
-                    setUI(err, result);
-                });
-            };
-
-            // gets the CEP debugPlayerMode and logLevels
-            getValue = function(key, cep) {
-                var command;
-                command = isMac ? 'defaults read com.adobe.CSXS._CEP_.plist _KEY_' :
-                    'reg query HKEY_CURRENT_USER\\SOFTWARE\\Adobe\\CSXS._CEP_ /v _KEY_';
-                command = command.replace(/_CEP_/, '' + cep).replace(/_KEY_/, '' + key);
-                exec(command, function(err, result) {
-                    if (err) {
-                        log('getValue error: ' + err, 'e', 'ping');
-                    }
-                    processValue(key, result);
-                });
-            };
-
-            cep = csInterface.getCurrentApiVersion().major;
-            $("#cepVersion").val(cep);
-            // $cep.selectmenu('refresh');
-            $cep.selectmenu('refresh');
-            getValue('LogLevel', cep);
-            getValue('PlayerDebugMode', cep);
-            $('#Set').click(function() {
-                var logValue, cepValue, debugValue;
-                logValue = $('#logLevel').val();
-                cepValue = $('#cepVersion').val();
-                debugValue = $('#debugLevel').val();
-                if (logValue !== '7') {
-                    setValue('LogLevel', logValue, cepValue);
-                }
-                if (debugValue !== '2') {
-                    setValue('PlayerDebugMode', debugValue, cepValue);
-                }
-            });
-
-            $('#sudoEnter').click(function() {
-                var command, password;
-                password = $('#sudoText').val();
-                if (!password) {
-                    return;
-                }
-                command = 'echo _PASSWORD_ | sudo -S killall cfprefsd'.replace(/_PASSWORD_/, password);
-                $('#sudoText').val('');
-
-                exec(command);
-                $('#sudo').hide();
-            });
-            $('#sudoClose').click(function() {
-                $('#sudo').hide();
-            });
-            $('#sudo').hide();
-
-
-        }
-    });
 
     //////////////////////////////////////
     // Setup The debug application list //
     //////////////////////////////////////
-
-    var cstkFolder, debugAppFile, cookieFile, openFolderAppFile;
-    cstkFolder = path.join(csInterface.getSystemPath('userData'), 'Creative Scripts', 'CSTK');
-    debugAppFile = path.join(cstkFolder, 'debugAppsList.txt');
-    cookieFile = path.join(cstkFolder, 'debugAppSelection.txt');
-    openFolderAppFile = path.join(cstkFolder, 'OpenFolderApp.txt');
 
     /////////////////////////////////////////////////////////////////////////////////////
     // Use Windows Search or Spotlight to search for instances of Chrome and cefclient //
@@ -678,7 +575,6 @@ var __log, __result;
             psGetItems += getItems(apps, 'CreationTime.Month');
             psGetItems += getItems(apps, 'CreationTime.Day');
             psGetItems += '"';
-            // __log(apps);
             exec(psGetItems, windowsAddFileInfo);
         } catch (err) {
             __log(err.stack);
@@ -688,12 +584,10 @@ var __log, __result;
 
     windowsAddFileInfo = function(err, result) {
         try {
-            var paths, info, n, l, html, app, version, date, name;
+            var paths, info, n, l, html, app, version, date, name, appSelection;
             result = result.split(/----+ +-----+ +-----+ *[\n\r]*/);
             paths = result[0] || '';
-            // __log('paths: ' + paths);
             info = result[1] || '';
-            // __log('info: ' + info);
             paths = paths.replace(/[\n\r]+[^:\n\r]+[\n\r]/g, '')
                 .replace(/^[\n\r]+/, '')
                 .replace(/[\n\r]+$/, '')
@@ -710,9 +604,14 @@ var __log, __result;
                 html.push(`<option value="${app}" title="${app + '&nbsp; Last&nbsp;modified:&nbsp;' + date}">${name + ' (' + version})</option>`);
 
             }
-            $("#debugApps").html(html.join('\n'));
-            $("#debugApps").selectmenu('refresh');
-            debugAppSelectionFromCookie();
+            appSelection = $("#debugApps").val();
+            $("#debugApps").html(html);
+            if (appSelection && appSelection !== 'Please Wait') {
+                $("#debugApps").val(appSelection);
+                $("#debugApps").selectmenu('refresh');
+            } else {
+                debugAppSelectionFromCookie();
+            }
 
         } catch (e) {
             // __log(e.stack);
@@ -777,7 +676,7 @@ var __log, __result;
         try {
             var info, n, l, html, app, version, date, name;
             var stats, versions, fileCount;
-            var statReg, versionReg;
+            var statReg, versionReg, appSelection;
             result = result || '';
             result = result.replace(/^[\r\n]+/, '').replace(/[\r\n]+$/, '');
             result = result.split(/[\n\r]/);
@@ -800,8 +699,10 @@ var __log, __result;
                 html.push(`<option value="${app}" title="${app + '&nbsp; Last&nbsp;modified:&nbsp;' + date}">${name + ' (' + version})</option>`);
             }
             html = html.join('\n');
+            appSelection = $("#debugApps").val();
             $("#debugApps").html(html);
-            $("#debugApps").selectmenu('refresh');
+            if (appSelection) { $("#debugApps").val(appSelection); }
+            // $("#debugApps").selectmenu('refresh');
             debugAppSelectionFromCookie();
 
         } catch (e) {
@@ -816,15 +717,15 @@ var __log, __result;
 
     debugAppSelectionFromCookie = function() {
         fs.readFile(cookieFile, function(err, result) {
+            var r;
             if (result) {
-                result = '' + result;
+                r = result = '' + result;
                 result = result.replace(/\\/g, '\\\\');
                 if ($("#debugApps option[value='" + result + "']").length) {
-                    // fs.outputFile(cookieFile, appSelection);
-                    $('#debugApps').val(result);
-                    $("#debugApps").selectmenu('refresh');
+                    $('#debugApps').val(r);
                 }
             }
+            $("#debugApps").selectmenu('refresh');
         });
     };
 
@@ -847,7 +748,6 @@ var __log, __result;
                     version = version && version[1];
                     contentUpdate = result.match(/[^"]+"[^"]+" "([^"]+)"/);
                     contentUpdate = contentUpdate && '' + new Date(contentUpdate[1]).toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
-                    __log(`version: ${version} contentUpdate: ${contentUpdate} name: ${name}`);
                 } else {
                     result = result.split(/----+ +-----+ +-----+ *[\n\r]*/);
                     result = result[1] || '';
@@ -861,7 +761,6 @@ var __log, __result;
                 appsArray.sort();
                 $('#debugApps').html(appsArray.join('\n'));
                 $('#debugApps').val(value);
-                appSelection = value;
                 $('#debugApps').selectmenu('refresh');
                 fs.outputFile(cookieFile, value);
                 // add the file to the debug File list
@@ -946,7 +845,6 @@ var __log, __result;
         return false;
     }; // end of selectDebugFile
 
-    var searchForandAddDebugApps;
     searchForandAddDebugApps = function() {
         var cmd;
         if (isMac) {
@@ -978,12 +876,12 @@ var __log, __result;
             openFolderApp = false;
         } else {
             openFolderApp = '' + result;
-            try{
+            try {
                 fs.statSync(openFolderApp);
                 baseName = openFolderApp.match(/[^\/\\]+$/);
-                baseName = baseName && ('' + baseName).replace(/\.[^\.]+$/,'');
-            $('#openFolderApp').text(baseName || defaultApp);
-            }catch(e){
+                baseName = baseName && ('' + baseName).replace(/\.[^\.]+$/, '');
+                $('#openFolderApp').text(baseName || defaultApp);
+            } catch (e) {
                 $('#openFolderApp').text(defaultApp);
                 openFolderApp = false;
             }
@@ -1186,406 +1084,404 @@ var __log, __result;
     );
 
 
-    if (1) { // windows
 
-        getCeps = isMac ? function() {
-                exec('ps ax | grep "CEPHtmlEngine.app"', getDebugPorts);
-            } :
-            function() { // Windows
-                var powershell = 'powershell "Get-WmiObject win32_process -Filter \\"name=\'CEPHTMLEngine.exe\'\\" handle, commandLine"';
-                exec(powershell, function(e, r) {
-                    if (e) {
-                        log('getCeps error: ' + e, 'e', 'ping');
-                    }
-                    //log(e||r)
-                    r = r.replace(/[\r\n]\s{15,}/g, '').replace(/[\n\r]+Handle +:/g, '').match(/CommandLine[^\r\n]+/g);
-                    // log(r, 'v', 'ping')
-                    getDebugPorts(e, r);
-                });
-            }; // end of getCeps
-
-
-        getDebugPorts = isMac ? function(err, cepProcesses) {
-                exec('lsof -PiTCP -sTCP:LISTEN | grep CEPHtmlEn', function(err, result) {
-
-                    processCeps(err, result, cepProcesses);
-                });
-            } :
-            function(err, cepProcesses) { // Windows
-                var n, l;
-                // alert(cepProcesses)
-                l = cepProcesses.length;
-                for (n = 0; n < l; n++) {
-                    cepProcesses[n] = cepProcesses[n].replace(/(CommandLine .+?)(\d+$)/g, '$2 $1');
+    getCeps = isMac ? function() {
+            exec('ps ax | grep "CEPHtmlEngine.app"', getDebugPorts);
+        } :
+        function() { // Windows
+            var powershell = 'powershell "Get-WmiObject win32_process -Filter \\"name=\'CEPHTMLEngine.exe\'\\" handle, commandLine"';
+            exec(powershell, function(e, r) {
+                if (e) {
+                    log('getCeps error: ' + e, 'e', 'ping');
                 }
-                // jsx.eval('alert("""__cep__""")',{cep:(JSON.stringify(cepProcesses))});
-                exec('netstat -aon |  findstr 0.0.0.0:0', function(err, result) {
-                    var n, l, r, port, pid;
-                    if (err) {
-                        alert(err);
-                        return;
-                    }
-
-                    result = result.split(/[\r\n]+/g);
-                    l = result.length;
-                    for (n = 0; n < l; n++) {
-                        r = '' + result[n];
-                        port = r.match(/[\d:\.]+/);
-                        pid = r.match(/\d+\s*$/);
-                        port = port && port[0];
-                        pid = pid && pid[0];
-
-                        result[n] = (pid | '0') + ' TCP ' + (port || '0.0.0.0:0') + ' ';
-                        // result[n] =  r.match(/\d+\s*$/);
-
-                    }
-                    //jsx.eval('alert("""__cep__""")', { cep: (JSON.stringify(result)) });
-                    processCeps(err, result, cepProcesses);
-                });
-            }; // end of getDebugPorts
+                //log(e||r)
+                r = r.replace(/[\r\n]\s{15,}/g, '').replace(/[\n\r]+Handle +:/g, '').match(/CommandLine[^\r\n]+/g);
+                // log(r, 'v', 'ping')
+                getDebugPorts(e, r);
+            });
+        }; // end of getCeps
 
 
-        processCeps = isMac ? function(err, cepPorts, cepProcesses) {
-                // definitely lacking error checking!
-                // TODO add error checking!
-                try {
-                    var l, n, extensionMap, dirName, cepProcess, params_serverid, cepPid, logFiles, pidMap, portMap, port, portUrl, extension, extensions, hostExtensions, hostExtensionsMap, dirNameMap;
-                    logFiles = {};
-                    extensionMap = {};
-                    dirNameMap = {};
-                    pidMap = {};
-                    portMap = {};
-                    hostExtensionsMap = {};
-                    extensions = [];
-                    hostExtensions = csInterface.getExtensions();
-                    cepProcesses = cepProcesses && cepProcesses.split(/[\n\r]/);
-                    cepPorts = cepPorts && cepPorts.split(/[\n\r]/);
-                    l = cepProcesses.length;
+    getDebugPorts = isMac ? function(err, cepProcesses) {
+            exec('lsof -PiTCP -sTCP:LISTEN | grep CEPHtmlEn', function(err, result) {
 
-                    // We now need to categorize the processes
-                    // there are 3 CEP types for each extension: parent, renderer and gpu
-                    // The process with the most useful information stored in it's command line parameter is the renderer
-                    // The parent process has the PID which can be compared to the PID in the listening ports to fetch the debug port
+                processCeps(err, result, cepProcesses);
+            });
+        } :
+        function(err, cepProcesses) { // Windows
+            var n, l;
+            // alert(cepProcesses)
+            l = cepProcesses.length;
+            for (n = 0; n < l; n++) {
+                cepProcesses[n] = cepProcesses[n].replace(/(CommandLine .+?)(\d+$)/g, '$2 $1');
+            }
+            // jsx.eval('alert("""__cep__""")',{cep:(JSON.stringify(cepProcesses))});
+            exec('netstat -aon |  findstr 0.0.0.0:0', function(err, result) {
+                var n, l, r, port, pid;
+                if (err) {
+                    alert(err);
+                    return;
+                }
 
-                    for (n = 0; n < l; n++) {
-                        cepProcess = cepProcesses[n];
-                        if (/--type=renderer/.test(cepProcess)) {
-                            // renderer_helpers.push(cepProcess);
-                            params_serverid = cepProcess.match(/--params_serverid=(\S+)/);
-                            params_serverid = params_serverid && params_serverid[1];
-                            if (params_serverid) {
-                                cepPid = '' + cepProcess.match(/\d+/);
-                                if (extensionMap[params_serverid]) {
-                                    extensionMap[params_serverid].renderer = cepProcess;
-                                    extensionMap[params_serverid].renderPid = cepPid;
-                                } else {
-                                    extensionMap[params_serverid] = {
-                                        renderer: cepProcess,
-                                        renderPid: cepPid
-                                    };
-                                }
-                            }
-                            continue;
-                        }
-                        if (/--type=gpu-process/.test(cepProcess)) {
-                            // we don't need the gpu-process
-                            continue;
-                        }
-                        // if it's not the renderer or gpu-process then it's the main parent process
-                        // The only thing we need from this is it's PID and dirName
-                        // so we can compare with the PIDs of the ports being listened to
-                        // Then we can know if there's a debug port
-                        params_serverid = cepProcess.match(/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}/);
-                        // log('params_serverid: ' + params_serverid);
-                        // params_serverid = params_serverid && (params_serverid[1]) + '';
-                        dirName = cepProcess.match(
-                            /[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12} [\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}[^\/]+(.+?)(?= \d+ [^ ]{12,}?= )/
-                        );
-                        // 9421f897-0ea4-403f-a504-4564154bd694 3e9b1810-7520-42c5-bc46-e7d5c4cfbe14
-                        dirName = dirName && dirName[1];
-                        // log('cepProcess: ' + cepProcess);
-                        // log('dirName: ' + dirName);
-                        // log('params_serverid: ' + params_serverid);
+                result = result.split(/[\r\n]+/g);
+                l = result.length;
+                for (n = 0; n < l; n++) {
+                    r = '' + result[n];
+                    port = r.match(/[\d:\.]+/);
+                    pid = r.match(/\d+\s*$/);
+                    port = port && port[0];
+                    pid = pid && pid[0];
+
+                    result[n] = (pid | '0') + ' TCP ' + (port || '0.0.0.0:0') + ' ';
+                    // result[n] =  r.match(/\d+\s*$/);
+
+                }
+                //jsx.eval('alert("""__cep__""")', { cep: (JSON.stringify(result)) });
+                processCeps(err, result, cepProcesses);
+            });
+        }; // end of getDebugPorts
+
+
+    processCeps = isMac ? function(err, cepPorts, cepProcesses) {
+            // definitely lacking error checking!
+            // TODO add error checking!
+            try {
+                var l, n, extensionMap, dirName, cepProcess, params_serverid, cepPid, logFiles, pidMap, portMap, port, portUrl, extension, extensions, hostExtensions, hostExtensionsMap, dirNameMap;
+                logFiles = {};
+                extensionMap = {};
+                dirNameMap = {};
+                pidMap = {};
+                portMap = {};
+                hostExtensionsMap = {};
+                extensions = [];
+                hostExtensions = csInterface.getExtensions();
+                cepProcesses = cepProcesses && cepProcesses.split(/[\n\r]/);
+                cepPorts = cepPorts && cepPorts.split(/[\n\r]/);
+                l = cepProcesses.length;
+
+                // We now need to categorize the processes
+                // there are 3 CEP types for each extension: parent, renderer and gpu
+                // The process with the most useful information stored in it's command line parameter is the renderer
+                // The parent process has the PID which can be compared to the PID in the listening ports to fetch the debug port
+
+                for (n = 0; n < l; n++) {
+                    cepProcess = cepProcesses[n];
+                    if (/--type=renderer/.test(cepProcess)) {
+                        // renderer_helpers.push(cepProcess);
+                        params_serverid = cepProcess.match(/--params_serverid=(\S+)/);
+                        params_serverid = params_serverid && params_serverid[1];
                         if (params_serverid) {
                             cepPid = '' + cepProcess.match(/\d+/);
-                            pidMap[cepPid] = params_serverid;
                             if (extensionMap[params_serverid]) {
-                                extensionMap[params_serverid].cepPid = cepPid;
-                                extensionMap[params_serverid].dirName = dirName;
-
+                                extensionMap[params_serverid].renderer = cepProcess;
+                                extensionMap[params_serverid].renderPid = cepPid;
                             } else {
                                 extensionMap[params_serverid] = {
-                                    cepPid: cepPid,
-                                    dirName: dirName
+                                    renderer: cepProcess,
+                                    renderPid: cepPid
                                 };
                             }
-                            dirNameMap[dirName] = params_serverid;
                         }
+                        continue;
                     }
-
-                    // let's make a map of the cep ports to pids
-
-                    l = cepPorts.length;
-                    for (n = 0; n < l; n++) {
-                        port = '' + cepPorts[n];
-                        //alert(port)
-                        portUrl = port.match(/TCP (\S+)/);
-                        portUrl = portUrl && portUrl[1];
-                        if (portUrl) portMap['' + port.match(/\d+/)] = portUrl;
+                    if (/--type=gpu-process/.test(cepProcess)) {
+                        // we don't need the gpu-process
+                        continue;
                     }
-                    // alert(JSON.stringify(portMap));
+                    // if it's not the renderer or gpu-process then it's the main parent process
+                    // The only thing we need from this is it's PID and dirName
+                    // so we can compare with the PIDs of the ports being listened to
+                    // Then we can know if there's a debug port
+                    params_serverid = cepProcess.match(/[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}/);
+                    // log('params_serverid: ' + params_serverid);
+                    // params_serverid = params_serverid && (params_serverid[1]) + '';
+                    dirName = cepProcess.match(
+                        /[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12} [\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}[^\/]+(.+?)(?= \d+ [^ ]{12,}?= )/
+                    );
+                    // 9421f897-0ea4-403f-a504-4564154bd694 3e9b1810-7520-42c5-bc46-e7d5c4cfbe14
+                    dirName = dirName && dirName[1];
+                    // log('cepProcess: ' + cepProcess);
+                    // log('dirName: ' + dirName);
+                    // log('params_serverid: ' + params_serverid);
+                    if (params_serverid) {
+                        cepPid = '' + cepProcess.match(/\d+/);
+                        pidMap[cepPid] = params_serverid;
+                        if (extensionMap[params_serverid]) {
+                            extensionMap[params_serverid].cepPid = cepPid;
+                            extensionMap[params_serverid].dirName = dirName;
 
-                    // map paths to known extension names
-                    // map paths to known extension names that way we can get some of the names of the extensions
-                    // this info is not available from the command line argument of the processes
-                    // one could fetch it for all the processes by scanning all the manifest files but that could be slow
-                    // instead we're just going to fetch the one of the active app list is easier and quicker
-                    // but as a result the names for extensions that aren't also running on the current app will not be retrieved
-
-                    var basePath, hostExt, ext;
-                    l = hostExtensions.length;
-                    for (n = 0; n < l; n++) {
-                        hostExt = hostExtensions[n];
-                        basePath = hostExt.basePath;
-                        if (dirNameMap[basePath]) {
-                            ext = extensionMap[dirNameMap[basePath]];
-                            if (ext) {
-                                ext.name = hostExt.name;
-                                ext.isCurrentApp = 1;
-                            }
-                            // log('extensionMap[' + dirNameMap[basePath] + ']: ' + Jfy(extensionMap[dirNameMap[basePath]]));
                         } else {
-                            ext = {};
-                            ext.appName = appName;
-                            ext.appCode = appId;
-                            ext.appVersion = appVersion;
-                            ext.id = hostExt.id;
-                            ext.dirName = hostExt.basePath;
-                            ext.name = hostExt.name;
-                            ext.log = logFile.replace('__EXTID__', '' + ext.id);
-                            ext.isCurrentApp = 1;
-                            ext.active = false;
-                            extensions.push(ext);
+                            extensionMap[params_serverid] = {
+                                cepPid: cepPid,
+                                dirName: dirName
+                            };
                         }
+                        dirNameMap[dirName] = params_serverid;
                     }
-
-                    // alert(JSON.stringify(hostExtensionsMap));
-                    // now we can go through the extensionMap map and extract some useful data
-                    var info, render;
-                    for (extension in extensionMap) {
-                        // extensions
-                        extension = extensionMap[extension];
-                        // alert(JSON.stringify(extension))
-                        render = extension.renderer;
-                        if (!render) {
-                            continue;
-                        }
-                        ext = {};
-                        // Adobe app
-                        info = render.match(/\/.+?\.app/);
-                        ext.appName = info && info[0].match(/\/([^\/]+?)\/[^\/]+$/)[1];
-                        // app code
-                        ext.appCode = render.match(/--params_ppid=(.+?) --/)[1];
-                        // app version
-                        ext.appVersion = render.match(/--params_ppversion=(.+?) --/)[1];
-                        // extension id
-                        ext.id = render.match(/--params_extensionid=(.+?) --/)[1];
-                        // --node-module-dir - log
-                        ext.dirName = extension.dirName;
-                        // logFile
-                        ext.log = render.match(/--log-file=(.+?) --log/);
-                        // logFile
-                        ext.log = ext.log ? ext.log[1] : undefined;
-                        // logLevel and severity
-                        ext.logLevel = render.match(/--params_loglevel=(.+?) --/)[1] + ' - ' + render.match(/--log-severity=(.+?) --/)[1];
-                        // debugPort
-                        info = portMap[extension.cepPid];
-                        ext.debugPort = info;
-                        // is current app
-                        ext.isCurrentApp = extension.isCurrentApp || 0;
-                        ext.name = extension.name;
-                        // is Extension active
-                        // var dirN;
-                        // dirN = ext.dirName && ext.dirName.replace(/[\/\\]/g, ':');
-                        // if (hostExtensionsMap[dirN]) {
-                        //     ext.name = hostExtensionsMap[dirN].name;
-                        //     hostExtensionsMap[dirN].active = true;
-                        // }
-                        ext.active = true;
-
-                        extensions.push(ext);
-                    } // end of extension loop
-                    displayExtensions(extensions);
-                } catch (e) {
-                    log(e.stack, '  e');
-                    alert(e.stack);
                 }
-            } : // Windows
-            function(err, cepPorts, cepProcesses) {
-                // definitely lacking error checking!
-                // TODO add error checking!
-                try {
 
-                    var l, n, extensionMap, cepProcess, gpuMap, params_extensionuuid, cepPid, dirName, pidMap, portMap, port, portUrl, extension, extensions, hostExtensions, hostExtensionsMap;
-                    extensionMap = {};
-                    pidMap = {};
-                    portMap = {};
-                    gpuMap = {};
-                    hostExtensionsMap = {};
-                    extensions = [];
-                    hostExtensions = JSON.parse(window.__adobe_cep__.getExtensions());
-                    l = cepProcesses.length;
+                // let's make a map of the cep ports to pids
 
-                    // We now need to categorize the process but unlike on the Mac
-                    // there are 3 CEP types for each extension: parent, renderer and gpu
+                l = cepPorts.length;
+                for (n = 0; n < l; n++) {
+                    port = '' + cepPorts[n];
+                    //alert(port)
+                    portUrl = port.match(/TCP (\S+)/);
+                    portUrl = portUrl && portUrl[1];
+                    if (portUrl) portMap['' + port.match(/\d+/)] = portUrl;
+                }
+                // alert(JSON.stringify(portMap));
 
-                    for (n = 0; n < l; n++) {
-                        cepProcess = cepProcesses[n];
-                        if (/--type=renderer/.test(cepProcess)) {
-                            // the renderer process contains useful data let's get it.
-                            params_extensionuuid = cepProcess.match(/--params_extensionuuid=(\S+)/);
-                            params_extensionuuid = params_extensionuuid && params_extensionuuid[1];
-                            if (params_extensionuuid) {
-                                cepPid = '' + cepProcess.match(/\d+/);
-                                if (extensionMap[params_extensionuuid]) {
-                                    extensionMap[params_extensionuuid].renderer = cepProcess;
-                                    extensionMap[params_extensionuuid].renderPid = cepPid;
-                                } else {
-                                    extensionMap[params_extensionuuid] = { renderer: cepProcess, renderPid: cepPid };
-                                }
-                            }
-                            continue;
+                // map paths to known extension names
+                // map paths to known extension names that way we can get some of the names of the extensions
+                // this info is not available from the command line argument of the processes
+                // one could fetch it for all the processes by scanning all the manifest files but that could be slow
+                // instead we're just going to fetch the one of the active app list is easier and quicker
+                // but as a result the names for extensions that aren't also running on the current app will not be retrieved
+
+                var basePath, hostExt, ext;
+                l = hostExtensions.length;
+                for (n = 0; n < l; n++) {
+                    hostExt = hostExtensions[n];
+                    basePath = hostExt.basePath;
+                    if (dirNameMap[basePath]) {
+                        ext = extensionMap[dirNameMap[basePath]];
+                        if (ext) {
+                            ext.name = hostExt.name;
+                            ext.isCurrentApp = 1;
                         }
-                        if (/--type=gpu-process/.test(cepProcess)) {
-                            // we don't need the gpu-process
-                            continue;
-                        }
-                        // if it's not the renderer or gpu-process then it's the main parent process
-                        // The only thing we need from this is it's PID
-                        // so we can compare with the PIDs of the ports being listened to
-                        // Then we can know if there's a debug port
-                        params_extensionuuid = cepProcess.match(/" ([^"\s]+)/);
-                        params_extensionuuid = params_extensionuuid && params_extensionuuid[1];
-                        dirName = cepProcess.match(/" [^"]+?"([^"]+)/);
-                        dirName = dirName && dirName[1];
-                        if (params_extensionuuid) {
-                            cepPid = '' + cepProcess.match(/\d+/);
-                            pidMap[cepPid] = params_extensionuuid;
-                            if (extensionMap[params_extensionuuid]) {
-                                extensionMap[params_extensionuuid].cepPid = cepPid;
-                                extensionMap[params_extensionuuid].dirName = dirName;
-                            } else {
-                                extensionMap[params_extensionuuid] = { cepPid: cepPid, dirName: dirName };
-                            }
-                        }
-                    }
-
-                    // let's make a map of the cep ports to pids
-
-                    l = cepPorts.length;
-                    for (n = 0; n < l; n++) {
-                        port = '' + cepPorts[n];
-                        //alert(port)
-                        portUrl = port.match(/TCP (\S+)/);
-                        portUrl = portUrl && portUrl[1];
-                        if (portUrl) portMap['' + port.match(/\d+/)] = portUrl;
-                    }
-                    // log(JSON.stringify(portMap));
-
-                    // map paths to known extension names that way we can get some of the names of the extensions
-                    // this info is not available from the command line argument of the processes
-                    // one could fetch it for all the processes by scanning all the manifest files but that could be slow
-                    // instead we're just going to fetch the one of the active app list is easier and quicker
-                    // but as a result the names for extensions that aren't also running on the current app will not be retrieved
-
-                    var basePath, hostExt;
-                    l = hostExtensions.length;
-                    for (n = 0; n < l; n++) {
-                        hostExt = hostExtensions[n];
-                        basePath = hostExt.basePath;
-                        basePath = basePath && basePath.replace(/[\/\\]+/g, ':');
-                        hostExtensionsMap[basePath] = { name: hostExt.name, ext: hostExt };
-                    }
-
-                    // log('hostExtensionsMap:' + JSON.stringify(hostExtensionsMap),'v', 'happy');
-                    // now we can go through the extensionMap map and extract some useful data
-                    var ext, info, render;
-                    for (extension in extensionMap) {
-                        // extensions
-                        extension = extensionMap[extension];
-                        render = extension.renderer;
-                        ext = {};
-                        // Adobe app
-                        info = render.match(/\\Adobe\\([^\\]+)/);
-                        ext.appName = info && info[1];
-                        // app code
-                        ext.appCode = render.match(/--params_ppid=(.+?) --/)[1];
-                        // app version
-                        ext.appVersion = render.match(/--params_ppversion=(.+?) --/)[1];
-                        // extension id
-                        ext.id = render.match(/--params_extensionid=(.+?) --/)[1];
-                        // --node-module-dir - dirName
-                        // for now
-                        // info = render.match(/--node-module-dir="([^"]+)/);
-                        ext.dirName = extension.dirName;
-                        // logFile
-                        ext.log = render.match(/--log-file="([^"]+)/)[1];
-                        // logLevel and severity
-                        ext.logLevel = render.match(/--params_loglevel=(.+?) --/)[1] + ' - ' + render.match(/--log-severity=(.+?) --/)[1];
-
-
-                        // debugPort
-                        info = portMap[extension.cepPid];
-                        ext.debugPort = info;
-                        // is current app
-                        ext.isCurrentApp = +((ext.appCode == appId) && (ext.appVersion == appVersion));
-                        // is Extension active
-                        var dirN;
-                        dirN = ext.dirName && ext.dirName.replace(/[\/\\]/g, ':');
-                        if (hostExtensionsMap[dirN]) {
-                            ext.name = hostExtensionsMap[dirN].name;
-                            hostExtensionsMap[dirN].active = true;
-                        }
-                        ext.active = true;
-
-                        extensions.push(ext);
-                    } // end of for
-                    // add inactive extensions that are on the host app
-                    for (hostExt in hostExtensionsMap) {
-                        if (hostExtensionsMap[hostExt].active) {
-                            continue;
-                        }
-                        hostExt = hostExtensionsMap[hostExt].ext;
-                        // log('hostExt: ' + hostExt);
+                        // log('extensionMap[' + dirNameMap[basePath] + ']: ' + Jfy(extensionMap[dirNameMap[basePath]]));
+                    } else {
                         ext = {};
                         ext.appName = appName;
                         ext.appCode = appId;
                         ext.appVersion = appVersion;
-                        ext.id = hostExt && hostExt.id;
-                        ext.dirName = hostExt && hostExt.basePath;
-                        ext.name = hostExt && hostExt.name;
+                        ext.id = hostExt.id;
+                        ext.dirName = hostExt.basePath;
+                        ext.name = hostExt.name;
                         ext.log = logFile.replace('__EXTID__', '' + ext.id);
                         ext.isCurrentApp = 1;
                         ext.active = false;
-
                         extensions.push(ext);
                     }
-                    // if we wanted to we could search all the extension folders
-                    // or at least the user and system extension folders and read the manifest files
-                    // to complete the picture, but were not going to bother for now!
-                    // scanning all the individual app CEP folder would be more work
-
-                    // create the html for the extensions
-                    displayExtensions(extensions);
-                } catch (e) {
-                    log(e.stack);
-                    alert(e.stack);
                 }
-            }; // end of processCeps
+
+                // alert(JSON.stringify(hostExtensionsMap));
+                // now we can go through the extensionMap map and extract some useful data
+                var info, render;
+                for (extension in extensionMap) {
+                    // extensions
+                    extension = extensionMap[extension];
+                    // alert(JSON.stringify(extension))
+                    render = extension.renderer;
+                    if (!render) {
+                        continue;
+                    }
+                    ext = {};
+                    // Adobe app
+                    info = render.match(/\/.+?\.app/);
+                    ext.appName = info && info[0].match(/\/([^\/]+?)\/[^\/]+$/)[1];
+                    // app code
+                    ext.appCode = render.match(/--params_ppid=(.+?) --/)[1];
+                    // app version
+                    ext.appVersion = render.match(/--params_ppversion=(.+?) --/)[1];
+                    // extension id
+                    ext.id = render.match(/--params_extensionid=(.+?) --/)[1];
+                    // --node-module-dir - log
+                    ext.dirName = extension.dirName;
+                    // logFile
+                    ext.log = render.match(/--log-file=(.+?) --log/);
+                    // logFile
+                    ext.log = ext.log ? ext.log[1] : undefined;
+                    // logLevel and severity
+                    ext.logLevel = render.match(/--params_loglevel=(.+?) --/)[1] + ' - ' + render.match(/--log-severity=(.+?) --/)[1];
+                    // debugPort
+                    info = portMap[extension.cepPid];
+                    ext.debugPort = info;
+                    // is current app
+                    ext.isCurrentApp = extension.isCurrentApp || 0;
+                    ext.name = extension.name;
+                    // is Extension active
+                    // var dirN;
+                    // dirN = ext.dirName && ext.dirName.replace(/[\/\\]/g, ':');
+                    // if (hostExtensionsMap[dirN]) {
+                    //     ext.name = hostExtensionsMap[dirN].name;
+                    //     hostExtensionsMap[dirN].active = true;
+                    // }
+                    ext.active = true;
+
+                    extensions.push(ext);
+                } // end of extension loop
+                displayExtensions(extensions);
+            } catch (e) {
+                log(e.stack, '  e');
+                alert(e.stack);
+            }
+        } : // Windows
+        function(err, cepPorts, cepProcesses) {
+            // definitely lacking error checking!
+            // TODO add error checking!
+            try {
+
+                var l, n, extensionMap, cepProcess, gpuMap, params_extensionuuid, cepPid, dirName, pidMap, portMap, port, portUrl, extension, extensions, hostExtensions, hostExtensionsMap;
+                extensionMap = {};
+                pidMap = {};
+                portMap = {};
+                gpuMap = {};
+                hostExtensionsMap = {};
+                extensions = [];
+                hostExtensions = JSON.parse(window.__adobe_cep__.getExtensions());
+                l = cepProcesses.length;
+
+                // We now need to categorize the process but unlike on the Mac
+                // there are 3 CEP types for each extension: parent, renderer and gpu
+
+                for (n = 0; n < l; n++) {
+                    cepProcess = cepProcesses[n];
+                    if (/--type=renderer/.test(cepProcess)) {
+                        // the renderer process contains useful data let's get it.
+                        params_extensionuuid = cepProcess.match(/--params_extensionuuid=(\S+)/);
+                        params_extensionuuid = params_extensionuuid && params_extensionuuid[1];
+                        if (params_extensionuuid) {
+                            cepPid = '' + cepProcess.match(/\d+/);
+                            if (extensionMap[params_extensionuuid]) {
+                                extensionMap[params_extensionuuid].renderer = cepProcess;
+                                extensionMap[params_extensionuuid].renderPid = cepPid;
+                            } else {
+                                extensionMap[params_extensionuuid] = { renderer: cepProcess, renderPid: cepPid };
+                            }
+                        }
+                        continue;
+                    }
+                    if (/--type=gpu-process/.test(cepProcess)) {
+                        // we don't need the gpu-process
+                        continue;
+                    }
+                    // if it's not the renderer or gpu-process then it's the main parent process
+                    // The only thing we need from this is it's PID
+                    // so we can compare with the PIDs of the ports being listened to
+                    // Then we can know if there's a debug port
+                    params_extensionuuid = cepProcess.match(/" ([^"\s]+)/);
+                    params_extensionuuid = params_extensionuuid && params_extensionuuid[1];
+                    dirName = cepProcess.match(/" [^"]+?"([^"]+)/);
+                    dirName = dirName && dirName[1];
+                    if (params_extensionuuid) {
+                        cepPid = '' + cepProcess.match(/\d+/);
+                        pidMap[cepPid] = params_extensionuuid;
+                        if (extensionMap[params_extensionuuid]) {
+                            extensionMap[params_extensionuuid].cepPid = cepPid;
+                            extensionMap[params_extensionuuid].dirName = dirName;
+                        } else {
+                            extensionMap[params_extensionuuid] = { cepPid: cepPid, dirName: dirName };
+                        }
+                    }
+                }
+
+                // let's make a map of the cep ports to pids
+
+                l = cepPorts.length;
+                for (n = 0; n < l; n++) {
+                    port = '' + cepPorts[n];
+                    //alert(port)
+                    portUrl = port.match(/TCP (\S+)/);
+                    portUrl = portUrl && portUrl[1];
+                    if (portUrl) portMap['' + port.match(/\d+/)] = portUrl;
+                }
+                // log(JSON.stringify(portMap));
+
+                // map paths to known extension names that way we can get some of the names of the extensions
+                // this info is not available from the command line argument of the processes
+                // one could fetch it for all the processes by scanning all the manifest files but that could be slow
+                // instead we're just going to fetch the one of the active app list is easier and quicker
+                // but as a result the names for extensions that aren't also running on the current app will not be retrieved
+
+                var basePath, hostExt;
+                l = hostExtensions.length;
+                for (n = 0; n < l; n++) {
+                    hostExt = hostExtensions[n];
+                    basePath = hostExt.basePath;
+                    basePath = basePath && basePath.replace(/[\/\\]+/g, ':');
+                    hostExtensionsMap[basePath] = { name: hostExt.name, ext: hostExt };
+                }
+
+                // log('hostExtensionsMap:' + JSON.stringify(hostExtensionsMap),'v', 'happy');
+                // now we can go through the extensionMap map and extract some useful data
+                var ext, info, render;
+                for (extension in extensionMap) {
+                    // extensions
+                    extension = extensionMap[extension];
+                    render = extension.renderer;
+                    if (!render) { continue; }
+                    ext = {};
+                    // Adobe app
+                    info = render.match(/\\Adobe\\([^\\]+)/);
+                    ext.appName = info && info[1];
+                    // app code
+                    ext.appCode = render.match(/--params_ppid=(.+?) --/)[1];
+                    // app version
+                    ext.appVersion = render.match(/--params_ppversion=(.+?) --/)[1];
+                    // extension id
+                    ext.id = render.match(/--params_extensionid=(.+?) --/)[1];
+                    // --node-module-dir - dirName
+                    // for now
+                    // info = render.match(/--node-module-dir="([^"]+)/);
+                    ext.dirName = extension.dirName;
+                    // logFile
+                    ext.log = render.match(/--log-file="([^"]+)/)[1];
+                    // logLevel and severity
+                    ext.logLevel = render.match(/--params_loglevel=(.+?) --/)[1] + ' - ' + render.match(/--log-severity=(.+?) --/)[1];
 
 
-        // getCeps();
-    } // end  of windows
+                    // debugPort
+                    info = portMap[extension.cepPid];
+                    ext.debugPort = info;
+                    // is current app
+                    ext.isCurrentApp = +((ext.appCode == appId) && (ext.appVersion == appVersion));
+                    // is Extension active
+                    var dirN;
+                    dirN = ext.dirName && ext.dirName.replace(/[\/\\]/g, ':');
+                    if (hostExtensionsMap[dirN]) {
+                        ext.name = hostExtensionsMap[dirN].name;
+                        hostExtensionsMap[dirN].active = true;
+                    }
+                    ext.active = true;
+
+                    extensions.push(ext);
+                } // end of for
+                // add inactive extensions that are on the host app
+                for (hostExt in hostExtensionsMap) {
+                    if (hostExtensionsMap[hostExt].active) {
+                        continue;
+                    }
+                    hostExt = hostExtensionsMap[hostExt].ext;
+                    // log('hostExt: ' + hostExt);
+                    ext = {};
+                    ext.appName = appName;
+                    ext.appCode = appId;
+                    ext.appVersion = appVersion;
+                    ext.id = hostExt && hostExt.id;
+                    ext.dirName = hostExt && hostExt.basePath;
+                    ext.name = hostExt && hostExt.name;
+                    ext.log = logFile.replace('__EXTID__', '' + ext.id);
+                    ext.isCurrentApp = 1;
+                    ext.active = false;
+
+                    extensions.push(ext);
+                }
+                // if we wanted to we could search all the extension folders
+                // or at least the user and system extension folders and read the manifest files
+                // to complete the picture, but were not going to bother for now!
+                // scanning all the individual app CEP folder would be more work
+
+                // create the html for the extensions
+                displayExtensions(extensions);
+            } catch (e) {
+                log(e.stack);
+                alert(e.stack);
+            }
+        }; // end of processCeps
+
+
 
 
     displayExtensions = function(extensions) {
@@ -1614,7 +1510,6 @@ var __log, __result;
                     .replace(/_openFolderApp_/, openFolderApp)
                     .replace(/_folder_/, folder));
             } else {
-                __log(isMac ? `open "${folder}"` : `Explorer.exe "${folder}"`);
                 exec(isMac ? `open "${folder}"` : `Explorer.exe "${folder}"`);
             }
         };
@@ -1792,10 +1687,139 @@ var __log, __result;
         launchDebug($('#portIN').val());
     });
     $('#refeshAppList').click(function() {
-       // $('#folderBody').text('Please wait a few (upto 10) seconds for the apps to be processed');
+        // $('#folderBody').text('Please wait a few (upto 10) seconds for the apps to be processed');
         searchForandAddDebugApps();
         getCeps();
     });
-    searchForandAddDebugApps();
-    getCeps();
+
+
+    ///////////////////////////////////////////
+    // Set and Get LogLevel and Debug Values //
+    ///////////////////////////////////////////
+
+    $(document).ready(function() {
+        var appSelection;
+        $('#SetWarning').hide();
+        var $log, $cep, $debug, $debugA, getValue, processValue, setValue, cep;
+
+        $debugA = $("#debugApps");
+        $log = $("#logLevel");
+        $debug = $("#debugLevel");
+        $cep = $("#cepVersion");
+
+        $debugA.selectmenu({
+            change: function() {
+                appSelection = $('#debugApps').val();
+                fs.outputFile(cookieFile, appSelection, function() {});
+                if (appSelection) {
+                    // the tooltip had problems :-/
+                    // $('#debugApps-button')
+                    //     .attr('title',
+                    //      $("#debugApps option[value='_VALUE_']".replace(/_VALUE_/, appSelection)).attr('title')
+                    //     );
+                    //////////////////////////////////////////////////////////////////////////////////////////////////
+                    // IF SOMEONE CAN GET THE TOOLTIP TO WORK PROPERLY ON SEND A PULL REQUEST                       //
+                    // as of now the tool tip is only on the individual select options                              //
+                    // The general select option widget does not have a tooltip                                     //
+                    // The problem might have been OS specific so please make sure it works on both Windows and Mac //
+                    //////////////////////////////////////////////////////////////////////////////////////////////////
+                    // setUI(false, false, 'The default debug app has been set to <br>' + appSelection);
+                } else {
+                    appSelection = '';
+                }
+            },
+            position: { collision: "flip" }
+        });
+
+
+        $log.selectmenu({
+            change: function() {
+                var cep = '' + $("#cepVersion").val();
+                getValue('LogLevel', cep);
+                getValue('PlayerDebugMode', cep);
+                setUI(false, false, 'REMEMBER to click SET to apply the changes');
+            }
+        });
+        $("#logLevel, #debugLevel").selectmenu({
+            change: function(event, ui) {
+                setUI(false, false, 'REMEMBER to click SET to apply the changes');
+            }
+        });
+
+        processValue = function(key, value) {
+            if (!isMac) value = value.replace(/\s/g, '').match(/\d+$/);
+            if (key === 'LogLevel') {
+                $("#logLevel").val('' + (value ? +value : 7));
+                // $log.selectmenu('refresh');
+                $log.selectmenu('refresh');
+            } else if (key === 'PlayerDebugMode') {
+                $("#debugLevel").val('' + (value ? +value : 2));
+                $log.selectmenu('refresh');
+            }
+        };
+
+        // sets the CEP debugPlayerMode and logLevels
+        setValue = function(key, value, cep) {
+            var command;
+            command = isMac ? 'defaults write com.adobe.CSXS._CEP_.plist _KEY_ _VALUE_ && killall -u `whoami` cfprefsd' :
+                'reg add HKEY_CURRENT_USER\\SOFTWARE\\Adobe\\CSXS._CEP_ /t REG_SZ /v _KEY_ /d _VALUE_ /f';
+            command = command.replace(/_CEP_/, '' + cep).replace(/_KEY_/, '' + key).replace(/_VALUE_/, '' + value);
+            exec(command, function(err, result) {
+                setUI(err, result);
+            });
+        };
+
+        // gets the CEP debugPlayerMode and logLevels
+        getValue = function(key, cep) {
+            var command;
+            command = isMac ? 'defaults read com.adobe.CSXS._CEP_.plist _KEY_' :
+                'reg query HKEY_CURRENT_USER\\SOFTWARE\\Adobe\\CSXS._CEP_ /v _KEY_';
+            command = command.replace(/_CEP_/, '' + cep).replace(/_KEY_/, '' + key);
+            exec(command, function(err, result) {
+                if (err) {
+                    log('getValue error: ' + err, 'e', 'ping');
+                }
+                processValue(key, result);
+            });
+        };
+
+        cep = csInterface.getCurrentApiVersion().major;
+        $("#cepVersion").val(cep);
+        // $cep.selectmenu('refresh');
+        $cep.selectmenu('refresh');
+        getValue('LogLevel', cep);
+        getValue('PlayerDebugMode', cep);
+        $('#Set').click(function() {
+            var logValue, cepValue, debugValue;
+            logValue = $('#logLevel').val();
+            cepValue = $('#cepVersion').val();
+            debugValue = $('#debugLevel').val();
+            if (logValue !== '7') {
+                setValue('LogLevel', logValue, cepValue);
+            }
+            if (debugValue !== '2') {
+                setValue('PlayerDebugMode', debugValue, cepValue);
+            }
+        });
+
+        $('#sudoEnter').click(function() {
+            var command, password;
+            password = $('#sudoText').val();
+            if (!password) {
+                return;
+            }
+            command = 'echo _PASSWORD_ | sudo -S killall cfprefsd'.replace(/_PASSWORD_/, password);
+            $('#sudoText').val('');
+
+            exec(command);
+            $('#sudo').hide();
+        });
+        $('#sudoClose').click(function() {
+            $('#sudo').hide();
+        });
+        $('#sudo').hide();
+        searchForandAddDebugApps();
+        getCeps();
+    });
+
 })();

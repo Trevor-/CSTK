@@ -76,8 +76,10 @@
         max-height: 250px;
         /*border: 1px solid #a9a9a9;*/
     }
-    .ui-selectmenu-icon.ui-icon{
-        top: -2px;;
+
+    .ui-selectmenu-icon.ui-icon {
+        top: -2px;
+        ;
     }
     </style>
     <script>
@@ -94,7 +96,7 @@
 <body class="hostElt body">
     <div id="main" class="hostElt whiteBox">
         <div id="console" style="text-align: center;">
-            <h2 style="font-size: 18px" title="Ver 2.0 Last Modified 9 Nov 17">
+            <h2 style="font-size: 18px" title="Ver 2.0 Last Modified 22 Dec 17">
                 CSTK
                 <span style="font-size: .6em;">
                     &copy; by Trevor&nbsp;
@@ -102,7 +104,11 @@
                     </span>
             </span>
             </h2>
-            <h2>To execute the whole snippet click on one of the Eval buttons.</h2>
+            <div style="font-size: .75em;">To execute the whole snippet click
+                <span id="eval" class="csButton blueButton smallButton">JS ENGINE EVAL</span>
+                <span id="evaljsx" class="csButton greenButton smallButton">JSX ENGINE EVAL</span> or
+                <span id="evalExec" class="csButton redButton smallButton">EXEC EVAL</span>
+            </div>
             <form style="font-size: .75em;">To execute the selected lines in
                 <input class="chbx" type="radio" id="jsModeRB" name="evalMode" value="false">
                 <label id="jsModeLB" class="label" for="jsModeRB" style="color: blue;text-shadow: 0px 0px 1px white !important;">JS</label>
@@ -112,19 +118,26 @@
                 <label id="execMode" class="label" for="execModeRB" style="color: red;">Shell</label>
                 mode press Shift + Enter
             </form>
-            <div class="center" style="margin-top: 4px;">
+            <form style="font-size: .75em;">
+                <label id="resultModeLB" class="label" for="resultModeRB">Include script / command in results</label>
+                <input class="chbx" type="checkbox" id="resultModeRB" name="evalMode" value="true" checked="true" style="width: 20px;">
+                <!-- Zoom icons from Font Awesome -->
+                <span id="zoomOut" class="csButton blueButton smallButton" style="padding: 0px 4px 0px;margin-right: 0px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -100 512 612" style="width: 16px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12H124c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
+                </span>
+                <span id="zoomIn" class="csButton blueButton smallButton" style="padding: 0px 4px 0px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -100 512 612" style="width: 16px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12h-56v56c0 6.6-5.4 12-12 12h-32c-6.6 0-12-5.4-12-12v-56h-56c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h56v-56c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v56h56c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
+                </span>
+
+            </form>
+            <div style="margin-top: 4px;">
+                <div id="cwd" class="" style="background: white; color: red;text-align: left;width: 95%;margin: auto;display: none;padding: 5px;font-size: .75em;font-family:'Free Monospaced';line-height:1.2em;"><span id="pwd"></span>&gt;
+                </div>
                 <textarea id="evalCode" name="evalCode" class="codeBox" style="border-color: green;"></textarea>
-                <span id="zoomOut" class="csButton blueButton">-</span>
-                <span id="eval" class="csButton blueButton">JS ENGINE EVAL</span>
-                <span id="evaljsx" class="csButton greenButton">JSX ENGINE EVAL</span>
-                <span id="evalExec" class="csButton redButton">EXEC EVAL</span>
-                <span id="zoomIn" class="csButton blueButton">+</span>
                 <textarea id="evalResult" name="evalResult" class="result"></textarea>
             </div>
         </div>
         <div>
             <div class="center">
-                <div id="SetWarning" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px; margin-bottom: 15px;">
+                <div id="SetWarning" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px; margin-bottom: 15px; display: none;">
                 </div>
                 <div>
                     <span id="openFolders" class="csButton blueButton">Show Extensions Tools</span>
@@ -193,7 +206,6 @@
                             <span id="refeshAppList" class="csButton greyButton">Refresh</span>
                         </div>
                         <div>
-                            <!-- <span id="openFolderApp" class="csButton blueButton">Set Open Folders Application</span> -->
                             <span><span style="color: chocolate">Shift</span> Click the <span class="csButton blueButton" style="cursor: default;">Open Folder</span> buttons to open the folders with </span>
                             <span id="openFolderApp" style="color: chocolate"></span>
                             <span id="openFolderAppBT" class="csButton greyButton">Change</span>

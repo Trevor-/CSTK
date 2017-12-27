@@ -58,7 +58,7 @@
                     </CEFCommandLine>
                 </Resources>
                 <Lifecycle>
-                    <AutoVisible>false</AutoVisible>
+                    <AutoVisible>true</AutoVisible>
                     <StartOn>
                         <!-- <Event>applicationActivate</Event> -->
                         <!-- <Event>documentAfterActivate</Event> -->
@@ -73,8 +73,8 @@
                             <Width>600</Width>
                         </Size>
                         <MinSize>
-                            <Height>600</Height>
-                            <Width>600</Width>
+                            <Height>300</Height>
+                            <Width>300</Width>
                         </MinSize>
                         <MaxSize>
                             <Height>10000</Height>

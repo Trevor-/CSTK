@@ -28,7 +28,7 @@ LogFactory = function(logFile) {
             if (isMac) {
                 exec('open "' + URL + '"');
             } else {
-                jsx.eval('new File("__path__").execute()', { path: URL.replace(/\\/g, '\\\\') });
+                exec(`explorer.exe "${URL}"`);
             }
 
             // log((isMac ? 'open "' : 'start "" "') + URL + '"');
@@ -541,5 +541,6 @@ LogFactory = function(logFile) {
     }; // end of LOG
 
     LOG.file = logFile;
+    LOG();
     return LOG;
 }; // end of LogFactory

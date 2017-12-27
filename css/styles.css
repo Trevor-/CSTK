@@ -42,7 +42,7 @@
 }
 
 .codeBox {
-    height: 200px;
+    height: 150px;
     width: 97%;
     resize: vertical;
     border-color: blue;
@@ -57,7 +57,7 @@
 }
 
 .result {
-    height: 150px;
+    height: 80px;
     width: 96%;
     overflow: auto !important;
     padding: 5px;
@@ -146,6 +146,15 @@
     top: 1px;
 }
 
+.smallButton {
+    font-size: 0.75em;
+    font-weight: bold;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-shadow: none !important;
+    line-height: 1.3em !important;
+    margin: 5px 2px;
+};
 .greenButton:active {
     position: relative;
     top: 1px;
