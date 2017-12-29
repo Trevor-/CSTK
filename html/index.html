@@ -104,35 +104,29 @@
                     </span>
             </span>
             </h2>
-            <div style="font-size: .75em;">To execute the whole snippet click
-                <span id="eval" class="csButton blueButton smallButton">JS ENGINE EVAL</span>
-                <span id="evaljsx" class="csButton greenButton smallButton">JSX ENGINE EVAL</span> or
-                <span id="evalExec" class="csButton redButton smallButton">EXEC EVAL</span>
-            </div>
-            <form style="font-size: .75em;">To execute the selected lines in
+            <form style="font-size: .75em;">Eval Mode
                 <input class="chbx" type="radio" id="jsModeRB" name="evalMode" value="false">
-                <label id="jsModeLB" class="label" for="jsModeRB" style="color: blue;text-shadow: 0px 0px 1px white !important;">JS</label>
+                <label id="jsModeLB" class="label csButton blueButton smallButton" for="jsModeRB" style="color: blue;position: relative;bottom: 2px;margin-left:-2px;">JS</label>
                 <input class="chbx" type="radio" id="jsxModeRB" name="evalMode" value="true" checked="1">
-                <label id="jsxMode" class="label" for="jsxModeRB" style="color: green;">JSX</label>
+                <label id="jsxMode" class="label csButton greenButton smallButton" for="jsxModeRB" style="color: green;position: relative;bottom: 2px;margin-left:-2px;">JSX</label>
                 <input class="chbx" type="radio" id="execModeRB" name="evalMode" value="false">
-                <label id="execMode" class="label" for="execModeRB" style="color: red;">Shell</label>
-                mode press Shift + Enter
+                <label id="execMode" class="label csButton redButton smallButton" for="execModeRB" style="color: #faa;position: relative;bottom: 2px;margin-left:-2px;">Shell</label>&nbsp;
+                <label id="resultModeLB">Include snippet in results</label>
+                <input class="chbx" type="checkbox" id="resultModeRB" name="evalMode" value="true" checked="true" style="position: relative;top:2px;">
             </form>
-            <form style="font-size: .75em;">
-                <label id="resultModeLB" class="label" for="resultModeRB">Include script / command in results</label>
-                <input class="chbx" type="checkbox" id="resultModeRB" name="evalMode" value="true" checked="true" style="width: 20px;">
+            <div style="font-size: .75em;">
+                <span id="EVAL" class="csButton greenButton" style="margin: 0 4px 4px 4px;">EVAL SNIPPET</span> Press Shift + Enter to execute only selected lines
                 <!-- Zoom icons from Font Awesome -->
-                <span id="zoomOut" class="csButton blueButton smallButton" style="padding: 0px 4px 0px;margin-right: 0px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -100 512 612" style="width: 16px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12H124c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
+                <span id="zoomOut" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 4px;" title="Decrease Console Font Size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12H124c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
                 </span>
-                <span id="zoomIn" class="csButton blueButton smallButton" style="padding: 0px 4px 0px;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -100 512 612" style="width: 16px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12h-56v56c0 6.6-5.4 12-12 12h-32c-6.6 0-12-5.4-12-12v-56h-56c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h56v-56c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v56h56c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
+                <span id="zoomIn" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0" title="Increase Console Font Size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12h-56v56c0 6.6-5.4 12-12 12h-32c-6.6 0-12-5.4-12-12v-56h-56c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h56v-56c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v56h56c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
                 </span>
-
-            </form>
+            </div>
             <div style="margin-top: 4px;">
                 <div id="cwd" class="" style="background: white; color: red;text-align: left;width: 95%;margin: auto;display: none;padding: 5px;font-size: .75em;font-family:'Free Monospaced';line-height:1.2em;"><span id="pwd"></span>&gt;
                 </div>
-                <textarea id="evalCode" name="evalCode" class="codeBox" style="border-color: green;"></textarea>
-                <textarea id="evalResult" name="evalResult" class="result"></textarea>
+                <textarea id="evalCode" name="evalCode" class="codeBox" style="border-color: green;background: white;color: black;" contenteditable="true"></textarea>
+                <div id="evalResult" name="evalResult" class="result" contenteditable="true" style="font-size: 18px;"></div>
             </div>
         </div>
         <div>
@@ -140,8 +134,10 @@
                 <div id="SetWarning" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px; margin-bottom: 15px; display: none;">
                 </div>
                 <div>
-                    <span id="openFolders" class="csButton blueButton">Show Extensions Tools</span>
-                    <a href="./index.html"><img src="../img/refresh.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="restartExt3" title="Restart CSTK"></a>
+                    <span id="openFolders" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;" title="Show Extension Tools"><path fill="#FFF" d="M128 116V76c0-8.837 7.163-16 16-16h352c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H144c-8.837 0-16-7.163-16-16zm16 176h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM16 144h64c8.837 0 16-7.163 16-16V64c0-8.837-7.163-16-16-16H16C7.163 48 0 55.163 0 64v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16z"/></svg>
+                    </span>
+                     <a href="./index.html">                <span id="restartExt3" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0" title="Restart CSTK"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"/></svg>
+                </span></a>
                     <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help" title="Open CSTK Github page">
                     <span id="hostAppInfo"></span>
                 </div>

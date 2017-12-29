@@ -9,7 +9,7 @@
 // Set these as global to help out for console and external scripts
 // Would be good to have them also as locals
 var run, Jfy, log, exec, isMac, __dirname, path, os, csInterface, fs;
-var __log, __result;
+var __log, __result, __error;
 
 ////////////////////////////////////////////////////////
 // Set up button for opening Creative Scripts folder  //
@@ -70,25 +70,52 @@ var __log, __result;
 
     evalMode = 1; // default value
     var cwd = csInterface.getSystemPath('myDocuments');
-    if (!isMac) {cwd = cwd.replace(/\//g,'\\');}
+    if (!isMac) { cwd = cwd.replace(/\//g, '\\'); }
     $('#pwd').text(cwd);
     $('#jsModeRB').click(function() {
+        var colorClass;
         $('#evalCode').css({ borderColor: 'blue' });
         evalMode = 0;
-        if ($('#cwd').is(":visible")) {$('#cwd').hide();}
-
+        if ($('#cwd').is(":visible")) { $('#cwd').hide(); }
+        colorClass = '' + $('#EVAL').attr('class');
+        if (/blue/.test(colorClass)) { return; }
+        if (/red/.test(colorClass)) {
+            $("#EVAL").removeClass("redButton");
+        } else {
+            $("#EVAL").removeClass("greenButton");
+        }
+        $("#EVAL").addClass("blueButton");
     });
 
     $('#jsxModeRB').click(function() {
+        var colorClass;
         $('#evalCode').css({ borderColor: 'green' });
-        if ($('#cwd').is(":visible")) {$('#cwd').hide();}
+        if ($('#cwd').is(":visible")) { $('#cwd').hide(); }
         evalMode = 1;
+        colorClass = '' + $('#EVAL').attr('class');
+        if (/green/.test(colorClass)) { return; }
+        if (/red/.test(colorClass)) {
+            $("#EVAL").removeClass("redButton");
+        } else {
+            $("#EVAL").removeClass("blueButton");
+        }
+        $("#EVAL").addClass("greenButton");
     });
 
+
     $('#execModeRB').click(function() {
+        var colorClass;
         $('#evalCode').css({ borderColor: 'red' });
         evalMode = 2;
-        if (!($('#cwd').is(":visible"))) {$('#cwd').show();}
+        if (!($('#cwd').is(":visible"))) { $('#cwd').show(); }
+        colorClass = '' + $('#EVAL').attr('class');
+        if (/red/.test(colorClass)) { return; }
+        if (/green/.test(colorClass)) {
+            $("#EVAL").removeClass("greenButton");
+        } else {
+            $("#EVAL").removeClass("blueButton");
+        }
+        $("#EVAL").addClass("redButton");
     });
 
 
@@ -106,13 +133,14 @@ var __log, __result;
             // If there's an error we ant to show that and if there's not then we want to show the real result
             // if (execResult === undefined) { execResult = result; }
             // result = result || execResult;
+            var error = result;
             result = (result && execResult) ? result + '\n' + execResult : result || execResult;
-
+            var includeResults = $('#resultModeRB').is(':checked');
             var contents, modes;
             modes = ['JS', 'JSX', 'SHELL'];
-            contents = $("#evalResult").val();
-            result = $("#evalResult").val() +
-                evalLines.replace(/^\s+/, '') +
+            // contents = $("#evalResult").val();
+            result =
+                (includeResults ? evalLines.replace(/^\s+/, '') : '') +
                 '\n---------------------------\n' +
                 ('' + new Date()).substr(16, 8) +
                 ' @ ==> '.replace('@', modes[evalMode]) +
@@ -120,7 +148,8 @@ var __log, __result;
                 result +
                 '\n---------------------------\n';
             // we should be able to use ("#evalResult").append() but it wasn't working properly
-            $("#evalResult").val(result);
+            if (error) {__error(error);}
+            __log(result);
             $("#evalResult").animate({
                 scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
             }, 100);
@@ -178,42 +207,43 @@ var __log, __result;
 
 
 
+
+
+    var jsEvalSnippet, jsxEvalSnippet, shellEvalSnippet, evalSnippet;
+
     /////////////
     // JS Eval //
     /////////////
 
-    $("#eval").click(function() {
-        var result;
-        $('#jsModeRB').click();
+    jsEvalSnippet = function() {
+        var result, includeResults;
+        includeResults = $('#resultModeRB').is(':checked');
+
         try {
             result = eval($("#evalCode").val());
         } catch (err) {
             result = err;
         }
-        result = $("#evalResult").val() +
-            $("#evalCode").val() +
+        result =
+            (includeResults ? $("#evalCode").val() : '') +
             '\n---------------------------\n' +
             ('' + new Date()).substr(16, 8) +
             ' JS ==> ' +
             (/.[\n\r]/.test('' + result) ? '\n' : '') +
             result +
             '\n---------------------------\n';
-        // we should be able to use ("#evalResult").append() but it wasn't working properly
-        $("#evalResult").val(result);
-        $("#evalResult").animate({
-            scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
-        }, 200);
-    });
+        __error(result);
+    };
 
     //////////////
     // JSX Eval //
     //////////////
 
-    $("#evaljsx").click(function() {
-        $('#jsxModeRB').click();
+    jsxEvalSnippet = function() {
         var evalCallBack = function(result) {
-            result = $("#evalResult").val() +
-                $("#evalCode").val() +
+            var includeResults = $('#resultModeRB').is(':checked');
+            result =
+                (includeResults ? $("#evalCode").val() : '') +
                 '\n---------------------------\n' +
                 ('' + new Date()).substr(16, 8) +
                 ' JSX ==> ' +
@@ -221,41 +251,37 @@ var __log, __result;
                 result +
                 '\n---------------------------\n';
             // we should be able to use ("#evalResult").append() but it wasn't working properly
-            $("#evalResult").val(result);
-            $("#evalResult").animate({
-                scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
-            }, 200);
+           __log(result);
         };
         try {
             jsx.eval($("#evalCode").val(), evalCallBack, true);
         } catch (err) {
             evalCallBack(err);
         }
-    });
+    };
+
 
 
     ///////////////
     // EXEC Eval //
     ///////////////
 
-
-    $("#evalExec").click(function() {
+    shellEvalSnippet = function() {
         var result, pwd, cmd;
-        $('#execModeRB').click();
-        if (!($('#cwd').is(":visible"))) {$('#cwd').show();}
         var evalCallBack = function(error, stdout) {
-            __result(error,stdout)
-            var result, dir;
+            __result(error, stdout);
+            var result, dir, includeResults;
+            includeResults = $('#resultModeRB').is(':checked');
             // result = (result && execResult) ? result + '\n' + execResult : result || execResult;
-            stdout = stdout && stdout.replace(/[\n\r]+$/,'');
+            stdout = stdout && stdout.replace(/[\n\r]+$/, '');
             dir = stdout && '' + stdout.match(/[^\n\r]+$/);
-            stdout = stdout && stdout.replace(/[^\n\r]+$/,'');
-            if (!dir) {dir = cwd; } else {cwd = dir;} // !!!!!!!!!!!!!!
+            stdout = stdout && stdout.replace(/[^\n\r]+$/, '');
+            if (!dir) { dir = cwd; } else { cwd = dir; } // !!!!!!!!!!!!!!
             $('#pwd').text(cwd);
             result = error;
             result = (result && stdout) ? result + '\n' + stdout : result || stdout;
-            result = $("#evalResult").val() +
-                $("#evalCode").val() +
+            result =
+                (includeResults ? $("#evalCode").val() : '') +
                 '\n---------------------------\n' +
                 ('' + new Date()).substr(16, 8) +
                 ` ${dir}> ` +
@@ -263,10 +289,7 @@ var __log, __result;
                 result +
                 '\n---------------------------\n';
             // we should be able to use ("#evalResult").append() but it wasn't working properly
-            $("#evalResult").val(result);
-            $("#evalResult").animate({
-                scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
-            }, 200);
+            __log(result);
         };
         cmd = $("#evalCode").val();
         cmd = cmd.replace(/[ \n\r]+$/, '').replace(/^[ \n\r]+/, '');
@@ -281,7 +304,16 @@ var __log, __result;
                 evalCallBack(err);
             }
         }
-    });
+    };
+
+    evalSnippet = function() {
+        [jsEvalSnippet, jsxEvalSnippet, shellEvalSnippet][evalMode]();
+    };
+
+
+
+    $("#EVAL").click(evalSnippet);
+
 
     ////////////////////////////////////////////////////////
     // Setup some helper functions for use in the console //
@@ -289,15 +321,26 @@ var __log, __result;
     Jfy = JSON.stringify;
 
 
-    __log = function(message) {
+    __log = function(message, __class, style) {
+        var n,l;
         if (message === undefined) { return; }
-        $("#evalResult").val($("#evalResult").val() + message + '\n');
+        __class = __class ? ` class="${__class}"` : '';
+        style = style || '';
+        message = ('' + message).split(/[\n\r]/);
+        l = message.length;
+        for (n = 0; n < l; n++){
+        $(`<p${__class} style="margin:0;${style}"></p>`).text(message[n]).appendTo('#evalResult');
+        }
         $("#evalResult").animate({
             scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
         }, 10);
     };
+    __error = function(message, style){
+        __log(message, 'error', style);
+    };
     __result = function(error, result) {
-        $("#evalResult").val($("#evalResult").val() + 'Error: ' + error + '\nResult: ' + result + '\n');
+        if (error) {__error('Error: ' + error);}
+        if (result) {__log('Result: ' + result);}
         $("#evalResult").animate({
             scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
         }, 10);
@@ -432,7 +475,7 @@ var __log, __result;
             //     height: '0px'
             // });
             $('#folders').hide();
-            $("#openFolders").text('Show Extensions Tools');
+            $("#openFolders").html('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" title="Show Extension Tools" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M128 116V76c0-8.837 7.163-16 16-16h352c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H144c-8.837 0-16-7.163-16-16zm16 176h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM16 144h64c8.837 0 16-7.163 16-16V64c0-8.837-7.163-16-16-16H16C7.163 48 0 55.163 0 64v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16z"/></svg>');
             // $("#openFolders").removeClass("blueButton");
             $('#console').show();
         } else {
@@ -444,7 +487,7 @@ var __log, __result;
             // run(isMac ? 'debug_tools_mac.js' : 'debug_tools_windows.js');
             getCeps();
             searchForandAddDebugApps();
-            $("#openFolders").text('Show Console');
+            $("#openFolders").html('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" title="Show Console" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M257.981 272.971L63.638 467.314c-9.373 9.373-24.569 9.373-33.941 0L7.029 444.647c-9.357-9.357-9.375-24.522-.04-33.901L161.011 256 6.99 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L257.981 239.03c9.373 9.372 9.373 24.568 0 33.941zM640 456v-32c0-13.255-10.745-24-24-24H312c-13.255 0-24 10.745-24 24v32c0 13.255 10.745 24 24 24h304c13.255 0 24-10.745 24-24z"/></svg>');
             $('#folders').show();
         }
     });
@@ -824,7 +867,7 @@ var __log, __result;
             }
             fs.outputFile(debugAppFile, result, dummy);
         });
-        appSelection = $('#debugApps').val();
+        var appSelection = $('#debugApps').val();
         fs.outputFile(cookieFile, appSelection);
     }; // end of removeDropdownOption
 

@@ -57,18 +57,28 @@
 }
 
 .result {
-    height: 80px;
+    height: 75px;
+    min-height: 20px;
     width: 96%;
     overflow: auto !important;
     padding: 5px;
-    border-color: chocolate;
+    border: 2px solid chocolate;
     border-radius: 5px;
-    margin-top: 5px;
+    background: white;
+    color: black;
+    margin: auto;
+    display: block;
+    /* margin-top: 5px; */
     resize: vertical;
+    line-height: 1.2em;
     font-size: 14px;
-    font-family:"Free Monospaced";
-    /*font-family: DejaVu Sans Mono, Monaco, Consolas, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;*/
-    /*font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;*/
+    border-width: 3px;
+    font-family: "Free Monospaced";
+    text-align: left;
+}
+
+.error {
+    color: red;
 }
 
 .csButton {
