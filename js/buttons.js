@@ -297,28 +297,40 @@ var __log, __result, __error;
         var terminal, n, l, _cwd;
         if (!command) { return; }
         command = command.split(/[\n\r]/);
-        // if (typeof command !== 'object') { command = [command]; }
         terminal = spawn('cmd', ['/K'], {
-            timeout: 1000 * 60 * 60 * 24,
+            timeout: 0,
             cwd: cwd.replace(/>$/, ''),
+            maxBuffer: 10000 * 1024,
+            encoding: 'utf-8'
         });
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Don't think we need to set these if we set the encoding ;-?                                                          //
+        // Widows is real dumb with unicode one can set the page encoding using chcp 65001                                      //
+        // One can also do some registry hacks                                                                                  //
+        // see https://stackoverflow.com/questions/14109024/how-to-make-unicode-charset-in-cmd-exe-by-default/18439832#18439832 //
+        // I'm not going to do them for you!                                                                                    //
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         terminal.stdin.setEncoding = 'utf-8';
+        terminal.stdout.setEncoding = 'utf-8';
+        terminal.stderr.setEncoding = 'utf-8';
+
         l = command.length;
         for (n = 0; n < l; n++) {
             terminal.stdin.write(new Buffer(command[n] + '\n'));
         }
-        terminal.stdin.write(new Buffer('echo \u0800\u1560\u2503C\n'));
-        // terminal.stdin.write(new Buffer('echo \u0800\u1560\u2503C\n')); // ;-}
+        terminal.stdin.write(new Buffer('echo SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf\n')); // ;-}
 
         terminal.stdout.on('data', function(data) {
-            _cwd = /[^\r\n]*?(?=echo \u0800\u1560\u2503C)/.exec(data);
+            _cwd = /[^\r\n]*?(?=echo SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf)/.exec(data);
             if (_cwd) {
                 cwd = '' + _cwd;
                 $('#pwd').text(cwd);
                 data = ('' + data).substr(0, _cwd.index);
-                data = data.replace(/\u0800\u1560\u2503C[\n\r]*/, '');
+                data = data.replace(/SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf/, '');
                 __log(data);
                 terminal.kill();
+                __log(cwd, 'background:lightgrey');
             } else {
                 __log('' + data);
             }
