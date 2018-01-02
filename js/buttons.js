@@ -37,6 +37,13 @@ var __log, __result, __error;
 
     var searchForandAddDebugApps;
 
+    $("#configBT").click(function() {
+        $('#configDiv').css('display', 'block');
+    });
+    $("#closeConfigBT").click(function() {
+        $('#configDiv').css('display', 'none');
+    });
+
     $("#zoomOut").click(function() {
         var newFontSize;
         newFontSize = $('.result').css('font-size').replace(/[\.\d]+/, function(n) {
@@ -71,8 +78,8 @@ var __log, __result, __error;
     evalMode = 1; // default value
     var cwd = csInterface.getSystemPath('myDocuments');
     if (!isMac) { cwd = cwd.replace(/\//g, '\\'); }
-    $('#pwd').text(cwd);
-    $('#jsModeRB').click(function() {
+    $('#pwd').text(cwd + '>');
+    $('#jsModeBT').click(function() { // JS
         var colorClass;
         $('#evalCode').css({ borderColor: 'blue' });
         evalMode = 0;
@@ -81,13 +88,17 @@ var __log, __result, __error;
         if (/blue/.test(colorClass)) { return; }
         if (/red/.test(colorClass)) {
             $("#EVAL").removeClass("redButton");
+            $("#execModeBT").removeClass("redButton").addClass('greyButton');
         } else {
             $("#EVAL").removeClass("greenButton");
+            $("#jsxModeBT").removeClass("greenButton").addClass('greyButton');
         }
         $("#EVAL").addClass("blueButton");
+        $("#jsModeBT").removeClass("greyButton").addClass('blueButton');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script. (Shift+Ctrl+A)');
     });
 
-    $('#jsxModeRB').click(function() {
+    $('#jsxModeBT').click(function() { // JSX
         var colorClass;
         $('#evalCode').css({ borderColor: 'green' });
         if ($('#cwd').is(":visible")) { $('#cwd').hide(); }
@@ -96,14 +107,18 @@ var __log, __result, __error;
         if (/green/.test(colorClass)) { return; }
         if (/red/.test(colorClass)) {
             $("#EVAL").removeClass("redButton");
+            $("#execModeBT").removeClass("redButton").addClass('greyButton');
         } else {
             $("#EVAL").removeClass("blueButton");
+            $("#jsModeBT").removeClass("blueButton").addClass('greyButton');
         }
         $("#EVAL").addClass("greenButton");
+        $("#jsxModeBT").removeClass("greyButton").addClass('greenButton');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script. (Shift+Ctrl+A)');
     });
 
 
-    $('#execModeRB').click(function() {
+    $('#execModeBT').click(function() {
         var colorClass;
         $('#evalCode').css({ borderColor: 'red' });
         evalMode = 2;
@@ -112,15 +127,19 @@ var __log, __result, __error;
         if (/red/.test(colorClass)) { return; }
         if (/green/.test(colorClass)) {
             $("#EVAL").removeClass("greenButton");
+            $("#jsxModeBT").removeClass("greenButton").addClass('greyButton');
         } else {
             $("#EVAL").removeClass("blueButton");
+            $("#jsModeBT").removeClass("blueButton").addClass('greyButton');
         }
         $("#EVAL").addClass("redButton");
+        $("#execModeBT").removeClass("greyButton").addClass('redButton');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script. (Shift+Ctrl+A) For complex shell usage use a real console :->');
     });
 
 
     var evalOnEnter = function(key) {
-        var codeContents, result, evalCallBack, pos, beforeString, afterString, startOfLines, endOfLines, evalLines, startIndex, endIndex,
+        var codeContents, result, pos, beforeString, afterString, startOfLines, endOfLines, evalLines, startIndex, endIndex,
             beforeReg, afterReg;
 
         beforeReg = /[^\n\r]*$/;
@@ -128,48 +147,23 @@ var __log, __result, __error;
         beforeReg.lastIndex = 0;
         afterReg.lastIndex = 0;
 
-        evalCallBack = function(result, execResult) {
-            // In exec mode the "result" parameter is the error value and the "execResult" is the real result
-            // If there's an error we ant to show that and if there's not then we want to show the real result
-            // if (execResult === undefined) { execResult = result; }
-            // result = result || execResult;
-            var error = result;
-            result = (result && execResult) ? result + '\n' + execResult : result || execResult;
-            var includeResults = $('#resultModeRB').is(':checked');
-            var contents, modes;
-            modes = ['JS', 'JSX', 'SHELL'];
-            // contents = $("#evalResult").val();
-            result =
-                (includeResults ? evalLines.replace(/^\s+/, '') : '') +
-                '\n---------------------------\n' +
-                ('' + new Date()).substr(16, 8) +
-                ' @ ==> '.replace('@', modes[evalMode]) +
-                (/.[\n\r]/.test(result) ? '\n' : '') + // for multiline results we'll start on a new line
-                result +
-                '\n---------------------------\n';
-            // we should be able to use ("#evalResult").append() but it wasn't working properly
-            if (error) {__error(error);}
-            __log(result);
-            $("#evalResult").animate({
-                scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
-            }, 100);
-            $('#evalCode').val(codeContents);
-            $('#evalCode').selection('setPos', pos);
-        };
-
-        if (key.shiftKey && key.keyCode == 13) {
+        if (key.shiftKey && (key.keyCode === 13 || key.keyCode === 1 && key.ctrlKey)) {
             codeContents = $('#evalCode').val();
-            pos = ($('#evalCode').selection('getPos'));
-            beforeString = codeContents.substring(0, pos.start + 1);
-            afterString = codeContents.substring(pos.end);
-            while (/[\r\n]$/.test(beforeString)) {
-                beforeString = beforeString.replace(/[\r\n]$/, ' ');
+            if (key.keyCode === 13) {
+                pos = ($('#evalCode').selection('getPos'));
+                beforeString = codeContents.substring(0, pos.start + 1);
+                afterString = codeContents.substring(pos.end);
+                while (/[\r\n]$/.test(beforeString)) {
+                    beforeString = beforeString.replace(/[\r\n]$/, ' ');
+                }
+                startOfLines = beforeReg.exec(beforeString);
+                startIndex = startOfLines && startOfLines.index || 0;
+                endOfLines = afterReg.exec(afterString);
+                endIndex = pos.end + afterReg.lastIndex;
+                evalLines = codeContents.substring(startIndex, endIndex);
+            } else {
+                evalLines = codeContents;
             }
-            startOfLines = beforeReg.exec(beforeString);
-            startIndex = startOfLines && startOfLines.index || 0;
-            endOfLines = afterReg.exec(afterString);
-            endIndex = pos.end + afterReg.lastIndex;
-            evalLines = codeContents.substring(startIndex, endIndex);
             try {
                 if (evalMode === 0) {
                     ///////////////////////////////////////////////////////////////////////////////////
@@ -187,80 +181,69 @@ var __log, __result, __error;
                     // Took be a bit of luck and time to figure this one out!                        //
                     ///////////////////////////////////////////////////////////////////////////////////
                     result = eval(evalLines);
-                    setTimeout(function() { evalCallBack(result); }, 0);
-
+                    setTimeout(function() { jsAndJSXCallBack(undefined, result, evalLines, codeContents, pos); }, 0);
                 } else if (evalMode === 1) {
-                    result = jsx.eval(evalLines, evalCallBack, true);
+                    result = jsx.eval(evalLines, function(e, r) { jsAndJSXCallBack(r, e, evalLines, codeContents, pos); }, true);
                 } else if (evalMode === 2) {
-                    result = exec(evalLines, { cwd: __dirname }, evalCallBack);
+                    setTimeout(function() { shell(evalLines, codeContents, pos); }, 0);
+                    // result = exec(evalLines, { cwd: __dirname }, function(e, r) { jsAndJSXCallBack(e, r, evalLines, codeContents, pos); });
                 }
             } catch (err) {
-                setTimeout(function() { evalCallBack(err); }, evalMode);
+                setTimeout(function() { jsAndJSXCallBack(err.stack.replace(/.+?(\d+):(\d+)\)[\n\r][^\u0800]+/, (err instanceof SyntaxError) ? '' : ' (Line $1 Column $2)'), undefined, evalLines, codeContents, pos); }, 0);
+            }
+        }
+    }; // end of evalOnEnter
+
+    var jsAndJSXCallBack, resultModeRB, timeStampCB;
+    resultModeRB = $('#resultModeRB');
+    timeStampCB = $('#timeStampCB');
+    jsAndJSXCallBack = function(error, execResult, evalLines, codeContents, pos) {
+        var includeTimeStamp, modes, includeResults;
+        includeTimeStamp = true;
+        includeTimeStamp = timeStampCB.is(':checked');
+        includeResults = resultModeRB.is(':checked');
+        if (pos !== undefined) {
+            $('#evalCode').val(codeContents);
+            $('#evalCode').selection('setPos', pos);
+        }
+        modes = ['JS', 'JSX', 'SHELL'];
+        if (evalMode === 1 && /^[^\n\r]*?Error/i.test(execResult)) {
+            // The jsx eval mode will not provide and official error
+            // This should work for the Brits :-)
+            // At worst the error will not be red
+            error = execResult;
+            execResult = undefined;
+        }
+        if (includeResults) {
+            __log(evalLines.replace(/^\s+/, ''));
+        }
+        if (includeTimeStamp) {
+            if (error) {
+                error =
+                    ('' + new Date()).substr(16, 8) +
+                    ' @ => '.replace('@', '' + modes[evalMode]) + error;
+            } else if (execResult) {
+
+                execResult = ('' + new Date()).substr(16, 8) +
+                    ' @ => '.replace('@', '' + modes[evalMode]) +
+                    (/.[\n\r]/.test(execResult) ? '\n' : '') + execResult;
 
             }
-        } else {}
-    };
+        }
+        if (error) { __error(error); }
+        if (execResult) { __log(execResult); }
+        __log('---------------------------');
+        $("#evalResult").animate({
+            scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
+        }, 100);
+    }; // end of jsAndJSXCallBack
+
 
     $('#evalCode').keypress(function(key) {
-        evalOnEnter(key, 1);
+        evalOnEnter(key);
     });
 
-
-
-
-
-    var jsEvalSnippet, jsxEvalSnippet, shellEvalSnippet, evalSnippet;
-
-    /////////////
-    // JS Eval //
-    /////////////
-
-    jsEvalSnippet = function() {
-        var result, includeResults;
-        includeResults = $('#resultModeRB').is(':checked');
-
-        try {
-            result = eval($("#evalCode").val());
-        } catch (err) {
-            result = err;
-        }
-        result =
-            (includeResults ? $("#evalCode").val() : '') +
-            '\n---------------------------\n' +
-            ('' + new Date()).substr(16, 8) +
-            ' JS ==> ' +
-            (/.[\n\r]/.test('' + result) ? '\n' : '') +
-            result +
-            '\n---------------------------\n';
-        __error(result);
-    };
-
-    //////////////
-    // JSX Eval //
-    //////////////
-
-    jsxEvalSnippet = function() {
-        var evalCallBack = function(result) {
-            var includeResults = $('#resultModeRB').is(':checked');
-            result =
-                (includeResults ? $("#evalCode").val() : '') +
-                '\n---------------------------\n' +
-                ('' + new Date()).substr(16, 8) +
-                ' JSX ==> ' +
-                (/.[\n\r]/.test(result) ? '\n' : '') +
-                result +
-                '\n---------------------------\n';
-            // we should be able to use ("#evalResult").append() but it wasn't working properly
-           __log(result);
-        };
-        try {
-            jsx.eval($("#evalCode").val(), evalCallBack, true);
-        } catch (err) {
-            evalCallBack(err);
-        }
-    };
-
-
+    var shellEvalSnippet, evalSnippet;
 
     ///////////////
     // EXEC Eval //
@@ -288,7 +271,6 @@ var __log, __result, __error;
                 (/.[\n\r]/.test(result) ? '\n' : '') +
                 result +
                 '\n---------------------------\n';
-            // we should be able to use ("#evalResult").append() but it wasn't working properly
             __log(result);
         };
         cmd = $("#evalCode").val();
@@ -306,8 +288,78 @@ var __log, __result, __error;
         }
     };
 
+    var spawn = require('child_process').spawn;
+    var shell = function(command, codeContents, pos) {
+        if (pos !== undefined) {
+            $('#evalCode').val(codeContents);
+            $('#evalCode').selection('setPos', pos);
+        }
+        var terminal, n, l, _cwd;
+        if (!command) { return; }
+        command = command.split(/[\n\r]/);
+        // if (typeof command !== 'object') { command = [command]; }
+        terminal = spawn('cmd', ['/K'], {
+            timeout: 1000 * 60 * 60 * 24,
+            cwd: cwd.replace(/>$/, ''),
+        });
+        terminal.stdin.setEncoding = 'utf-8';
+        l = command.length;
+        for (n = 0; n < l; n++) {
+            terminal.stdin.write(new Buffer(command[n] + '\n'));
+        }
+        terminal.stdin.write(new Buffer('echo \u0800\u1560\u2503C\n'));
+        // terminal.stdin.write(new Buffer('echo \u0800\u1560\u2503C\n')); // ;-}
+
+        terminal.stdout.on('data', function(data) {
+            _cwd = /[^\r\n]*?(?=echo \u0800\u1560\u2503C)/.exec(data);
+            if (_cwd) {
+                cwd = '' + _cwd;
+                $('#pwd').text(cwd);
+                data = ('' + data).substr(0, _cwd.index);
+                data = data.replace(/\u0800\u1560\u2503C[\n\r]*/, '');
+                __log(data);
+                terminal.kill();
+            } else {
+                __log('' + data);
+            }
+        });
+        terminal.stderr.on('data', function(data) {
+            __error(data);
+        });
+
+        // terminal.on('exit', function(code) {
+        // __log('child process exited with code ' + code);
+        // });
+    }; // end of shell
+
+
+    ///////////////////////////////
+    // JS and JSX Snippet runner //
+    ///////////////////////////////
+
+    var jsAndJsxSnippet = function() {
+
+        var codeContents, result;
+
+        codeContents = $('#evalCode').val();
+        try {
+            if (evalMode === 0) {
+                result = eval(codeContents);
+                setTimeout(function() { jsAndJSXCallBack(undefined, result, codeContents); }, 0);
+            } else if (evalMode === 1) {
+                result = jsx.eval(codeContents, function(e, r) { jsAndJSXCallBack(r, e, codeContents); }, true);
+            } else if (evalMode === 2) {
+                // result = exec(codeContents, { cwd: __dirname }, function(e, r) { jsAndJSXCallBack(e, r, codeContents); });
+                shell(codeContents);
+            }
+        } catch (err) {
+            setTimeout(function() { jsAndJSXCallBack(err.stack.replace(/.+?(\d+):(\d+)\)[\n\r][^\u0800]+/, (err instanceof SyntaxError) ? '' : ' (Line $1 Column $2)'), undefined, codeContents); }, 0);
+        }
+    }; // end of jsAndJsxSnippet
+
     evalSnippet = function() {
-        [jsEvalSnippet, jsxEvalSnippet, shellEvalSnippet][evalMode]();
+        // [jsAndJsxSnippet, jsAndJsxSnippet, shellEvalSnippet][evalMode]();
+        jsAndJsxSnippet();
     };
 
 
@@ -321,30 +373,72 @@ var __log, __result, __error;
     Jfy = JSON.stringify;
 
 
-    __log = function(message, __class, style) {
-        var n,l;
+    __log = function(message, style, __class) {
+        var n, l;
         if (message === undefined) { return; }
         __class = __class ? ` class="${__class}"` : '';
         style = style || '';
         message = ('' + message).split(/[\n\r]/);
         l = message.length;
-        for (n = 0; n < l; n++){
-        $(`<p${__class} style="margin:0;${style}"></p>`).text(message[n]).appendTo('#evalResult');
+        for (n = 0; n < l; n++) {
+            $(`<p${__class} style="margin:0;${style}"></p>`).text(message[n]).appendTo('#evalResult');
         }
         $("#evalResult").animate({
             scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
         }, 10);
     };
-    __error = function(message, style){
-        __log(message, 'error', style);
+    __error = function(message, style) {
+        __log(message, style, 'error');
     };
     __result = function(error, result) {
-        if (error) {__error('Error: ' + error);}
-        if (result) {__log('Result: ' + result);}
+        if (error) { __error('Error: ' + error); }
+        if (result) { __log('Result: ' + result); }
         $("#evalResult").animate({
             scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
         }, 10);
     };
+
+    var write = function(message, writeln) {
+        if (message === undefined) { return; }
+        message = ('' + message.data).split(/[\n\r]/);
+        var n, l;
+        l = message.length;
+        for (n = 0; n < l; n++) {
+            if (n > 0) {
+                $('<span><br></span>').appendTo('#evalResult');
+            }
+            $('<span></span>').text(message[n]).appendTo('#evalResult');
+        }
+        if (writeln) {
+            $('<span><br></span>').appendTo('#evalResult');
+        }
+        $("#evalResult").animate({
+            scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
+        }, 0);
+    };
+
+    var writeln = function(message) {
+        write(message, true);
+    };
+
+    //////////////////////////////////////////////////////////////
+    // setup jsx __log interface and $.writeln $.write redirect //
+    //////////////////////////////////////////////////////////////
+
+    // jsx.file('__log.jsx', __log);
+    // found a nasty bus in JSX.js and need to pass replacements:{} to get it to work :./ will try fix later
+    jsx.file({ file: '__log.jsx', replacements: {}, eval: true });
+    var jsxLog = function(data) {
+        data = ('' + data.data).split(';;@;;:@#;');
+        __log(data[0], data[1], data[2]);
+    };
+
+
+    // csInterface.removeEventListener('com.creative-scripts.cstk.__log');
+    csInterface.addEventListener('com.creative-scripts.cstk.__log', jsxLog);
+    csInterface.addEventListener('com.creative-scripts.cstk.write', write);
+    csInterface.addEventListener('com.creative-scripts.cstk.writeln', writeln);
+
 
     //////////////////////////////////////////////////////////////////////////
     // for executing scripts from the console and loading scripts on demand //
@@ -652,6 +746,11 @@ var __log, __result, __error;
             if (appSelection && appSelection !== 'Please Wait') {
                 $("#debugApps").val(appSelection);
                 $("#debugApps").selectmenu('refresh');
+                $('#debugAppsSP').tooltip({
+                    content: 'Debug app: ' + appSelection,
+                    show: { effect: "drop", duration: 250 },
+                    hide: { effect: "drop", duration: 250 }
+                }).tooltip('close').tooltip('open');
             } else {
                 debugAppSelectionFromCookie();
             }
@@ -1755,6 +1854,11 @@ var __log, __result, __error;
                 appSelection = $('#debugApps').val();
                 fs.outputFile(cookieFile, appSelection, function() {});
                 if (appSelection) {
+                    $('#debugAppsSP').tooltip({
+                        content: 'Debug app: ' + appSelection,
+                        show: { effect: "drop", duration: 250 },
+                        hide: { effect: "drop", duration: 250 }
+                    }).tooltip('close').tooltip('open');
                     // the tooltip had problems :-/
                     // $('#debugApps-button')
                     //     .attr('title',

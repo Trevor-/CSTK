@@ -11,17 +11,17 @@ var shell = function(command) {
     terminal.stdin.write(new Buffer('echo \u0800\u1560\u2503C\n')); // ;-}
 
     terminal.stdout.on('data', function(data) {
-    	_cwd = /[^\r\n]*(?=echo \u0800\u1560\u2503C)/.exec(data);
+    	_cwd = /[^\r\n]*?(?=echo \u0800\u1560\u2503C)/.exec(data);
         if (_cwd) {
         	__cwd = '' + _cwd;
-        	__log('__cwd: ' + __cwd);
-        	data = data.substr(0,_cwd.index);
+        	__log(__cwd,'background:black;color:white;font-weight:800;');
+            data = ('' + data).substr(0,_cwd.index);
             terminal.kill();
         }
-        __log(data);
+        __log('' + data);
     });
     terminal.stderr.on('data', function(data) {
-        __log('stderr: ' + data);
+        __error('' + data);
     });
 
     terminal.on('exit', function(code) {
@@ -30,3 +30,5 @@ var shell = function(command) {
 };
 
 shell(['dir', 'cd..', 'dir']);
+shell( 'echo fred');
+//shell(['dir', 'cd..', 'dir', 'echo fred']);

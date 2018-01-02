@@ -96,37 +96,59 @@
 <body class="hostElt body">
     <div id="main" class="hostElt whiteBox">
         <div id="console" style="text-align: center;">
-            <h2 style="font-size: 18px" title="Ver 2.0 Last Modified 22 Dec 17">
-                CSTK
+            <h2 style="font-size: 18px">
+                <span title="Ver 2.0 Last Modified 22 Dec 17">CSTK</span>
                 <span style="font-size: .6em;">
                     &copy; by Trevor&nbsp;
-                    <span class="link" id="CreativeScripts" style="color:blue;background: white;border-radius: 2px;padding:2px;">www.creative-scripts.com
+                    <span class="csButton blueButton" id="CreativeScripts"  title="www.creative-scripts.com">Creative Scripts
+                    </span>
+                    <span id="donateBT" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;top: 2px;" title="Say thanks $5"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M111.4 295.9c-3.5 19.2-17.4 108.7-21.5 134-.3 1.8-1 2.5-3 2.5H12.3c-7.6 0-13.1-6.6-12.1-13.9L58.8 46.6c1.5-9.6 10.1-16.9 20-16.9 152.3 0 165.1-3.7 204 11.4 60.1 23.3 65.6 79.5 44 140.3-21.5 62.6-72.5 89.5-140.1 90.3-43.4.7-69.5-7-75.3 24.2zM357.1 152c-1.8-1.3-2.5-1.8-3 1.3-2 11.4-5.1 22.5-8.8 33.6-39.9 113.8-150.5 103.9-204.5 103.9-6.1 0-10.1 3.3-10.9 9.4-22.6 140.4-27.1 169.7-27.1 169.7-1 7.1 3.5 12.9 10.6 12.9h63.5c8.6 0 15.7-6.3 17.4-14.9.7-5.4-1.1 6.1 14.4-91.3 4.6-22 14.3-19.7 29.3-19.7 71 0 126.4-28.8 142.9-112.3 6.5-34.8 4.6-71.4-23.8-92.6z"/></svg>
                     </span>
             </span>
             </h2>
             <form style="font-size: .75em;">Eval Mode
-                <input class="chbx" type="radio" id="jsModeRB" name="evalMode" value="false">
-                <label id="jsModeLB" class="label csButton blueButton smallButton" for="jsModeRB" style="color: blue;position: relative;bottom: 2px;margin-left:-2px;">JS</label>
-                <input class="chbx" type="radio" id="jsxModeRB" name="evalMode" value="true" checked="1">
-                <label id="jsxMode" class="label csButton greenButton smallButton" for="jsxModeRB" style="color: green;position: relative;bottom: 2px;margin-left:-2px;">JSX</label>
-                <input class="chbx" type="radio" id="execModeRB" name="evalMode" value="false">
-                <label id="execMode" class="label csButton redButton smallButton" for="execModeRB" style="color: #faa;position: relative;bottom: 2px;margin-left:-2px;">Shell</label>&nbsp;
-                <label id="resultModeLB">Include snippet in results</label>
-                <input class="chbx" type="checkbox" id="resultModeRB" name="evalMode" value="true" checked="true" style="position: relative;top:2px;">
+                <span title="Set eval mode to JS" id="jsModeBT" class="label csButton greyButton" style="color: black;text-shadow: none; position: relative;bottom: 2px;margin: 0 4px 4px 0;">JS
+                </span>
+                <span title="Set eval mode to JSX" id="jsxModeBT" class="label csButton greenButton" style="color: black;text-shadow: none; position: relative;bottom: 2px;margin: 0 4px 4px 0;">JSX
+                </span>
+                <span title="Set eval mode to Shell" id="execModeBT" class="label csButton greyButton" style="color: black;text-shadow: none; position: relative;bottom: 2px;margin: 0 4px 4px 0;">Shell
+                </span> &nbsp;
+                <span id="configBT" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Show config options"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M481.156 200c9.3 0 15.12 10.155 10.325 18.124C466.295 259.992 420.419 288 368 288c-79.222 0-143.501-63.974-143.997-143.079C223.505 65.469 288.548-.001 368.002 0c52.362.001 98.196 27.949 123.4 69.743C496.24 77.766 490.523 88 481.154 88H376l-40 56 40 56h105.156zm-171.649 93.003L109.255 493.255c-24.994 24.993-65.515 24.994-90.51 0-24.993-24.994-24.993-65.516 0-90.51L218.991 202.5c16.16 41.197 49.303 74.335 90.516 90.503zM104 432c0-13.255-10.745-24-24-24s-24 10.745-24 24 10.745 24 24 24 24-10.745 24-24z"/></svg>
+                </span>
+                <span id="zoomOut" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Decrease Console Font Size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12H124c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
+                </span>
+                <span id="zoomIn" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Increase Console Font Size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12h-56v56c0 6.6-5.4 12-12 12h-32c-6.6 0-12-5.4-12-12v-56h-56c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h56v-56c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v56h56c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
+                </span>
             </form>
-            <div style="font-size: .75em;">
-                <span id="EVAL" class="csButton greenButton" style="margin: 0 4px 4px 4px;">EVAL SNIPPET</span> Press Shift + Enter to execute only selected lines
+            <div id="configDiv" style="display: none;max-width: 300px;text-align: left; border: 3px solid blue;margin: 8px auto;border-radius: 5px;padding: 5px;">
+                <div>
+                    <span id="closeConfigBT" class="csButton blueButton" style="padding: 0px 4px 0px; margin: 0 4px 0 0; float: right; position: relative;" title="Hide config options">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 394c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V86c0-3.3 2.7-6 6-6h404c3.3 0 6 2.7 6 6v340zM356.5 194.6L295.1 256l61.4 61.4c4.6 4.6 4.6 12.1 0 16.8l-22.3 22.3c-4.6 4.6-12.1 4.6-16.8 0L256 295.1l-61.4 61.4c-4.6 4.6-12.1 4.6-16.8 0l-22.3-22.3c-4.6-4.6-4.6-12.1 0-16.8l61.4-61.4-61.4-61.4c-4.6-4.6-4.6-12.1 0-16.8l22.3-22.3c4.6-4.6 12.1-4.6 16.8 0l61.4 61.4 61.4-61.4c4.6-4.6 12.1-4.6 16.8 0l22.3 22.3c4.7 4.6 4.7 12.1 0 16.8z"/>
+                    </svg>
+                    </span>
+                    <input class="chbx" type="checkbox" id="resultModeRB" name="evalMode" value="true" checked="true" style="position: relative;top:2px;">
+                    <label id="resultModeLB" for="resultModeRB">Include snippet in results</label>
+                </div>
+                <div>
+                    <input class="chbx" type="checkbox" id="timeStampCB" name="evalMode" value="true" checked="true" style="position: relative;top:2px;">
+                    <label id="timeStampLB" for="timeStampCB">Include intro in results</label>
+                </div>
+            </div>
+            <div style="font-size: .75em;display: inline-block;">
+                <div style="float: left">
+                    <span id="EVAL" class="csButton greenButton" style="margin: 0 4px 4px 4px;" title='Execute the selected snippet in as a JSX script. (Shift+Ctrl+A)'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" title="Show Console" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M257.981 272.971L63.638 467.314c-9.373 9.373-24.569 9.373-33.941 0L7.029 444.647c-9.357-9.357-9.375-24.522-.04-33.901L161.011 256 6.99 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L257.981 239.03c9.373 9.372 9.373 24.568 0 33.941zM640 456v-32c0-13.255-10.745-24-24-24H312c-13.255 0-24 10.745-24 24v32c0 13.255 10.745 24 24 24h304c13.255 0 24-10.745 24-24z"/></svg> EXECUTE SNIPPET</span>
+                </div>
+                <div style="float: right;display:block;text-align:left;font-size:.8em;line-height:1.2em;position: relative;top:3px;">
+                    <div>Press Shift+Enter to execute only selected lines</div>
+                    <div>Press Shift+Ctrl+A to execute the whole snippet</div>
+                </div>
                 <!-- Zoom icons from Font Awesome -->
-                <span id="zoomOut" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 4px;" title="Decrease Console Font Size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12H124c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
-                </span>
-                <span id="zoomIn" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0" title="Increase Console Font Size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12h-56v56c0 6.6-5.4 12-12 12h-32c-6.6 0-12-5.4-12-12v-56h-56c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h56v-56c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v56h56c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
-                </span>
             </div>
             <div style="margin-top: 4px;">
-                <div id="cwd" class="" style="background: white; color: red;text-align: left;width: 95%;margin: auto;display: none;padding: 5px;font-size: .75em;font-family:'Free Monospaced';line-height:1.2em;"><span id="pwd"></span>&gt;
+                <div id="cwd" class="" style="background: white; color: red;text-align: left;width: 95%;margin: auto;display: none;padding: 5px;font-size: .75em;font-family:'Free Monospaced';line-height:1.2em;font-weight: 800;font-family: 'Free Monospaced';"><span id="pwd"></span>
                 </div>
                 <textarea id="evalCode" name="evalCode" class="codeBox" style="border-color: green;background: white;color: black;" contenteditable="true"></textarea>
-                <div id="evalResult" name="evalResult" class="result" contenteditable="true" style="font-size: 18px;"></div>
+                <div id="evalResult" name="evalResult" class="result" contenteditable="true"></div>
             </div>
         </div>
         <div>
@@ -136,9 +158,13 @@
                 <div>
                     <span id="openFolders" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;" title="Show Extension Tools"><path fill="#FFF" d="M128 116V76c0-8.837 7.163-16 16-16h352c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H144c-8.837 0-16-7.163-16-16zm16 176h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM16 144h64c8.837 0 16-7.163 16-16V64c0-8.837-7.163-16-16-16H16C7.163 48 0 55.163 0 64v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16z"/></svg>
                     </span>
-                     <a href="./index.html">                <span id="restartExt3" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0" title="Restart CSTK"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"/></svg>
+                    <a href="./index.html"><span id="restartExt3" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0" title="Restart CSTK"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"/></svg>
                 </span></a>
-                    <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help" title="Open CSTK Github page">
+                    <span id="help" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" title="Open CSTK Github page" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                    </svg>
+            </span>
+                    <!-- <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help" title="Open CSTK Github page"> -->
                     <span id="hostAppInfo"></span>
                 </div>
                 <div id="versions" style="font-size: .7em;font-stretch: condensed;text-decoration-style: all;text-decoration-style: dashed;color-rendering: all;">
@@ -188,9 +214,11 @@
                     </div>
                     <div>
                         <div>
-                            <select id="debugApps">
-                                <option>Please Wait</option>
-                            </select>
+                            <span id="debugAppsSP" title="Please for the debug apps to be processed">
+                                <select id="debugApps">
+                                   <option>Please Wait</option>
+                                 </select>
+                            </span>
                             <span style="font-size: .8em;">Port:</span>
                             <input type="text" id="portIN" name="portText" value="" style="height: 18px; width: 80px; font-size: .8em;">
                             <span id="debugBT" class="csButton greyButton" title="Debug given port with the selected app">Debug</span>
