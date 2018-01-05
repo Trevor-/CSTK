@@ -21,12 +21,21 @@
     }
     </script>
     <script src="../js/libs/jquery-3.1.1.min.js"></script>
-    <script src="../js/libs/pretty-dropdowns/dist/js/jquery.prettydropdowns.js"></script>
     <script src="../js/libs/jquery.selection.js"></script>
     <script src="../js/libs/jquery-ui-1.12.1.custom/jquery-ui.js"></script>
     <script>
     $(function() {
-        $(document).tooltip({});
+        $(function() {
+            // https://stackoverflow.com/questions/15734105/jquery-ui-tooltip-does-not-support-html-content
+            $.widget("ui.tooltip", $.ui.tooltip, {
+                options: {
+                    content: function() {
+                        return $(this).prop('title');
+                    }
+                }
+            });
+            $(document).tooltip();
+        });
         $("#cepVersion, #debugLevel, #logLevel, #debugApps").selectmenu({
             position: { collision: "flip" },
         });
@@ -34,7 +43,7 @@
     </script>
     <style>
     .ui-tooltip {
-        padding: 10px 10;
+        padding: 6px;
         color: black;
         border-radius: 4px;
         font: bold 12px "Helvetica Neue", Sans-Serif;
@@ -96,51 +105,63 @@
 <body class="hostElt body">
     <div id="main" class="hostElt whiteBox">
         <div id="console" style="text-align: center;">
-            <h2 style="font-size: 18px">
-                <span title="Ver 2.0 Last Modified 22 Dec 17">CSTK</span>
+            <div>
+                <span title="Version 2.0<br>Last Modified: 7 Jan 18" style="font-size: 18px; font-weight: 900;">CSTK</span>
                 <span style="font-size: .6em;">
-                    &copy; by Trevor&nbsp;
-                    <span class="csButton blueButton" id="CreativeScripts"  title="www.creative-scripts.com">Creative Scripts
+                    <span>&copy; </span>
+                <span class="csButton blueButton" id="CreativeScripts" title="<span style='text-align:center'><div><img src='../img/CreativeScriptsLogo.png' style='width:200px;'></img><div><h1>www.creative-scripts.com</h1>Custom Scripts &amp; Extensions</span>">Creative Scripts
+                </span>
+                <span id="donateBT" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;top: 2px;" title="Lisence CSTK for $10<br>CSTK is not free it's trialware<br>It does not have a time trial limit<br><b>BUT</b> please purchase when you are satisfied<br>that it's worth the $10"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M111.4 295.9c-3.5 19.2-17.4 108.7-21.5 134-.3 1.8-1 2.5-3 2.5H12.3c-7.6 0-13.1-6.6-12.1-13.9L58.8 46.6c1.5-9.6 10.1-16.9 20-16.9 152.3 0 165.1-3.7 204 11.4 60.1 23.3 65.6 79.5 44 140.3-21.5 62.6-72.5 89.5-140.1 90.3-43.4.7-69.5-7-75.3 24.2zM357.1 152c-1.8-1.3-2.5-1.8-3 1.3-2 11.4-5.1 22.5-8.8 33.6-39.9 113.8-150.5 103.9-204.5 103.9-6.1 0-10.1 3.3-10.9 9.4-22.6 140.4-27.1 169.7-27.1 169.7-1 7.1 3.5 12.9 10.6 12.9h63.5c8.6 0 15.7-6.3 17.4-14.9.7-5.4-1.1 6.1 14.4-91.3 4.6-22 14.3-19.7 29.3-19.7 71 0 126.4-28.8 142.9-112.3 6.5-34.8 4.6-71.4-23.8-92.6z"/></svg>
+                        </span>
+                </span>
+            </div>
+            <div style="font-size: .75em;">Console Mode
+                <span title="Set console mode to JS" id="jsModeBT" class="label csButton greyButton" style="color: black;text-shadow: none; position: relative;bottom: 2px;margin: 0 4px 4px 0;">JS
+                </span>
+                <span title="Set console mode to JSX" id="jsxModeBT" class="label csButton greenButton" style="color: black;text-shadow: none; position: relative;bottom: 2px;margin: 0 4px 4px 0;">JSX
+                </span>
+                <span title="Set console mode to Shell" id="execModeBT" class="label csButton greyButton" style="color: black;text-shadow: none; position: relative;bottom: 2px;margin: 0 4px 4px 0;">Shell
+                </span>
+                <div style="display: inline-block;">
+                    <span id="configBT" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Show config options"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M481.156 200c9.3 0 15.12 10.155 10.325 18.124C466.295 259.992 420.419 288 368 288c-79.222 0-143.501-63.974-143.997-143.079C223.505 65.469 288.548-.001 368.002 0c52.362.001 98.196 27.949 123.4 69.743C496.24 77.766 490.523 88 481.154 88H376l-40 56 40 56h105.156zm-171.649 93.003L109.255 493.255c-24.994 24.993-65.515 24.994-90.51 0-24.993-24.994-24.993-65.516 0-90.51L218.991 202.5c16.16 41.197 49.303 74.335 90.516 90.503zM104 432c0-13.255-10.745-24-24-24s-24 10.745-24 24 10.745 24 24 24 24-10.745 24-24z"/></svg>
                     </span>
-                    <span id="donateBT" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;top: 2px;" title="Say thanks $5"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M111.4 295.9c-3.5 19.2-17.4 108.7-21.5 134-.3 1.8-1 2.5-3 2.5H12.3c-7.6 0-13.1-6.6-12.1-13.9L58.8 46.6c1.5-9.6 10.1-16.9 20-16.9 152.3 0 165.1-3.7 204 11.4 60.1 23.3 65.6 79.5 44 140.3-21.5 62.6-72.5 89.5-140.1 90.3-43.4.7-69.5-7-75.3 24.2zM357.1 152c-1.8-1.3-2.5-1.8-3 1.3-2 11.4-5.1 22.5-8.8 33.6-39.9 113.8-150.5 103.9-204.5 103.9-6.1 0-10.1 3.3-10.9 9.4-22.6 140.4-27.1 169.7-27.1 169.7-1 7.1 3.5 12.9 10.6 12.9h63.5c8.6 0 15.7-6.3 17.4-14.9.7-5.4-1.1 6.1 14.4-91.3 4.6-22 14.3-19.7 29.3-19.7 71 0 126.4-28.8 142.9-112.3 6.5-34.8 4.6-71.4-23.8-92.6z"/></svg>
+                    <span id="zoomOut" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Decrease console font size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12H124c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
                     </span>
-            </span>
-            </h2>
-            <form style="font-size: .75em;">Eval Mode
-                <span title="Set eval mode to JS" id="jsModeBT" class="label csButton greyButton" style="color: black;text-shadow: none; position: relative;bottom: 2px;margin: 0 4px 4px 0;">JS
-                </span>
-                <span title="Set eval mode to JSX" id="jsxModeBT" class="label csButton greenButton" style="color: black;text-shadow: none; position: relative;bottom: 2px;margin: 0 4px 4px 0;">JSX
-                </span>
-                <span title="Set eval mode to Shell" id="execModeBT" class="label csButton greyButton" style="color: black;text-shadow: none; position: relative;bottom: 2px;margin: 0 4px 4px 0;">Shell
-                </span> &nbsp;
-                <span id="configBT" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Show config options"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M481.156 200c9.3 0 15.12 10.155 10.325 18.124C466.295 259.992 420.419 288 368 288c-79.222 0-143.501-63.974-143.997-143.079C223.505 65.469 288.548-.001 368.002 0c52.362.001 98.196 27.949 123.4 69.743C496.24 77.766 490.523 88 481.154 88H376l-40 56 40 56h105.156zm-171.649 93.003L109.255 493.255c-24.994 24.993-65.515 24.994-90.51 0-24.993-24.994-24.993-65.516 0-90.51L218.991 202.5c16.16 41.197 49.303 74.335 90.516 90.503zM104 432c0-13.255-10.745-24-24-24s-24 10.745-24 24 10.745 24 24 24 24-10.745 24-24z"/></svg>
-                </span>
-                <span id="zoomOut" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Decrease Console Font Size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12H124c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
-                </span>
-                <span id="zoomIn" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Increase Console Font Size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12h-56v56c0 6.6-5.4 12-12 12h-32c-6.6 0-12-5.4-12-12v-56h-56c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h56v-56c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v56h56c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
-                </span>
-            </form>
+                    <span id="zoomIn" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Increase console font size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12h-56v56c0 6.6-5.4 12-12 12h-32c-6.6 0-12-5.4-12-12v-56h-56c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h56v-56c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v56h56c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
+                    </span>
+                    <span id="openSnippetBT" class="csButton blueButton" style="padding: 0px 4px 0px; margin: 0 4px 0 0px; position: relative;bottom: 2px;" title="Open Snippet">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style="/*width: 16px;*/height: 16px; position: relative; top: 5px;"><path fill="#FFF" d="M527.943 224H480v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h400a48.001 48.001 0 0 0 40.704-22.56l79.942-128c19.948-31.917-3.038-73.44-40.703-73.44zM54 112h134.118l64 64H426a6 6 0 0 1 6 6v42H152a48 48 0 0 0-41.098 23.202L48 351.449V117.993A5.993 5.993 0 0 1 54 112zm394 288H72l77.234-128H528l-80 128z"/>
+                    </svg>
+                    </span>
+                    <span id="saveSnippetBT" class="csButton blueButton" style="padding: 0px 4px 0px; margin: 0 4px 0 0px; position: relative;bottom: 2px;" title="Save Snippet">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="/*width: 16px;*/height: 16px; position: relative; top: 5px;"><path fill="#FFF" d="M433.941 129.941l-83.882-83.882A48 48 0 0 0 316.118 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V163.882a48 48 0 0 0-14.059-33.941zM272 80v80H144V80h128zm122 352H54a6 6 0 0 1-6-6V86a6 6 0 0 1 6-6h42v104c0 13.255 10.745 24 24 24h176c13.255 0 24-10.745 24-24V83.882l78.243 78.243a6 6 0 0 1 1.757 4.243V426a6 6 0 0 1-6 6zM224 232c-48.523 0-88 39.477-88 88s39.477 88 88 88 88-39.477 88-88-39.477-88-88-88zm0 128c-22.056 0-40-17.944-40-40s17.944-40 40-40 40 17.944 40 40-17.944 40-40 40z"/>
+                    </svg>
+                    </span>
+                </div>
+            </div>
             <div id="configDiv" style="display: none;max-width: 300px;text-align: left; border: 3px solid blue;margin: 8px auto;border-radius: 5px;padding: 5px;">
                 <div>
                     <span id="closeConfigBT" class="csButton blueButton" style="padding: 0px 4px 0px; margin: 0 4px 0 0; float: right; position: relative;" title="Hide config options">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 394c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V86c0-3.3 2.7-6 6-6h404c3.3 0 6 2.7 6 6v340zM356.5 194.6L295.1 256l61.4 61.4c4.6 4.6 4.6 12.1 0 16.8l-22.3 22.3c-4.6 4.6-12.1 4.6-16.8 0L256 295.1l-61.4 61.4c-4.6 4.6-12.1 4.6-16.8 0l-22.3-22.3c-4.6-4.6-4.6-12.1 0-16.8l61.4-61.4-61.4-61.4c-4.6-4.6-4.6-12.1 0-16.8l22.3-22.3c4.6-4.6 12.1-4.6 16.8 0l61.4 61.4 61.4-61.4c4.6-4.6 12.1-4.6 16.8 0l22.3 22.3c4.7 4.6 4.7 12.1 0 16.8z"/>
                     </svg>
                     </span>
-                    <input class="chbx" type="checkbox" id="resultModeRB" name="evalMode" value="true" checked="true" style="position: relative;top:2px;">
+                    <span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width=18px style="position: relative;top: 3px"><path fill=#FFF d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-6 400H54c-3.3 0-6-2.7-6-6V86c0-3.3 2.7-6 6-6h340c3.3 0 6 2.7 6 6v340c0 3.3-2.7 6-6 6z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width=18px style="position: relative;top: 3px"><path fill=#FFF d="M400 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zm0 400H48V80h352v352zm-35.864-241.724L191.547 361.48c-4.705 4.667-12.303 4.637-16.97-.068l-90.781-91.516c-4.667-4.705-4.637-12.303.069-16.971l22.719-22.536c4.705-4.667 12.303-4.637 16.97.069l59.792 60.277 141.352-140.216c4.705-4.667 12.303-4.637 16.97.068l22.536 22.718c4.667 4.706 4.637 12.304-.068 16.971z"/></svg>
+                    </span>
+                    <input class="chbx" type="checkbox" id="resultModeRB" name="evalMode" checked style="display: none;">
                     <label id="resultModeLB" for="resultModeRB">Include snippet in results</label>
-                </div>
-                <div>
-                    <input class="chbx" type="checkbox" id="timeStampCB" name="evalMode" value="true" checked="true" style="position: relative;top:2px;">
-                    <label id="timeStampLB" for="timeStampCB">Include intro in results</label>
                 </div>
             </div>
             <div style="font-size: .75em;display: inline-block;">
-                <div style="float: left">
-                    <span id="EVAL" class="csButton greenButton" style="margin: 0 4px 4px 4px;" title='Execute the selected snippet in as a JSX script. (Shift+Ctrl+A)'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" title="Show Console" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M257.981 272.971L63.638 467.314c-9.373 9.373-24.569 9.373-33.941 0L7.029 444.647c-9.357-9.357-9.375-24.522-.04-33.901L161.011 256 6.99 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L257.981 239.03c9.373 9.372 9.373 24.568 0 33.941zM640 456v-32c0-13.255-10.745-24-24-24H312c-13.255 0-24 10.745-24 24v32c0 13.255 10.745 24 24 24h304c13.255 0 24-10.745 24-24z"/></svg> EXECUTE SNIPPET</span>
-                </div>
-                <div style="float: right;display:block;text-align:left;font-size:.8em;line-height:1.2em;position: relative;top:3px;">
-                    <div>Press Shift+Enter to execute only selected lines</div>
-                    <div>Press Shift+Ctrl+A to execute the whole snippet</div>
+                <div style="display: block;">
+                    <div style="display:inline-block;">
+                        <span id="EVAL" class="csButton greenButton" style="margin: 2px 4px 4px 4px;" title='Execute the selected snippet in as a JSX script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M257.981 272.971L63.638 467.314c-9.373 9.373-24.569 9.373-33.941 0L7.029 444.647c-9.357-9.357-9.375-24.522-.04-33.901L161.011 256 6.99 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L257.981 239.03c9.373 9.372 9.373 24.568 0 33.941zM640 456v-32c0-13.255-10.745-24-24-24H312c-13.255 0-24 10.745-24 24v32c0 13.255 10.745 24 24 24h304c13.255 0 24-10.745 24-24z"/></svg> EXECUTE SNIPPET</span>
+                    </div>
+                    <div style="display:inline-block;text-align:left;font-size:.8em;line-height:1.2em;position: relative;top:3px;">
+                        <div>Press Shift+Enter to execute only selected lines</div>
+                        <div>Press Shift+Ctrl+A to execute the whole snippet</div>
+                    </div>
                 </div>
                 <!-- Zoom icons from Font Awesome -->
             </div>
@@ -148,7 +169,7 @@
                 <div id="cwd" class="" style="background: white; color: red;text-align: left;width: 95%;margin: auto;display: none;padding: 5px;font-size: .75em;font-family:'Free Monospaced';line-height:1.2em;font-weight: 800;font-family: 'Free Monospaced';"><span id="pwd"></span>
                 </div>
                 <textarea id="evalCode" name="evalCode" class="codeBox" style="border-color: green;background: white;color: black;" contenteditable="true"></textarea>
-                <div id="evalResult" name="evalResult" class="result" contenteditable="true"></div>
+                <div id="evalResult" class="result" contenteditable="true" spellcheck="false"></div>
             </div>
         </div>
         <div>
@@ -156,16 +177,15 @@
                 <div id="SetWarning" style="color: red; background: white; border-radius: 5px;font-style: bold; padding: 5px; margin-bottom: 15px; display: none;">
                 </div>
                 <div>
-                    <span id="openFolders" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;" title="Show Extension Tools"><path fill="#FFF" d="M128 116V76c0-8.837 7.163-16 16-16h352c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H144c-8.837 0-16-7.163-16-16zm16 176h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM16 144h64c8.837 0 16-7.163 16-16V64c0-8.837-7.163-16-16-16H16C7.163 48 0 55.163 0 64v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16z"/></svg>
+                    <span id="openFolders" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0" title=""><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;" ><path fill="#FFF" d="M128 116V76c0-8.837 7.163-16 16-16h352c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H144c-8.837 0-16-7.163-16-16zm16 176h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM16 144h64c8.837 0 16-7.163 16-16V64c0-8.837-7.163-16-16-16H16C7.163 48 0 55.163 0 64v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16z"/></svg>
                     </span>
                     <a href="./index.html"><span id="restartExt3" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0" title="Restart CSTK"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M370.72 133.28C339.458 104.008 298.888 87.962 255.848 88c-77.458.068-144.328 53.178-162.791 126.85-1.344 5.363-6.122 9.15-11.651 9.15H24.103c-7.498 0-13.194-6.807-11.807-14.176C33.933 94.924 134.813 8 256 8c66.448 0 126.791 26.136 171.315 68.685L463.03 40.97C478.149 25.851 504 36.559 504 57.941V192c0 13.255-10.745 24-24 24H345.941c-21.382 0-32.09-25.851-16.971-40.971l41.75-41.749zM32 296h134.059c21.382 0 32.09 25.851 16.971 40.971l-41.75 41.75c31.262 29.273 71.835 45.319 114.876 45.28 77.418-.07 144.315-53.144 162.787-126.849 1.344-5.363 6.122-9.15 11.651-9.15h57.304c7.498 0 13.194 6.807 11.807 14.176C478.067 417.076 377.187 504 256 504c-66.448 0-126.791-26.136-171.315-68.685L48.97 471.03C33.851 486.149 8 475.441 8 454.059V320c0-13.255 10.745-24 24-24z"/></svg>
                 </span></a>
-                    <span id="help" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" title="Open CSTK Github page" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                    <span id="help" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 0px 0 0" title="Open CSTK Github page">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
                     </svg>
             </span>
-                    <!-- <img src="../img/github.png" style="cursor: pointer; height: 25px; top: 8px; position: relative;" id="help" title="Open CSTK Github page"> -->
-                    <span id="hostAppInfo"></span>
+                    <span id="hostAppInfo" style="white-space:nowrap;font-size: .8em;"></span>
                 </div>
                 <div id="versions" style="font-size: .7em;font-stretch: condensed;text-decoration-style: all;text-decoration-style: dashed;color-rendering: all;">
                 </div>
@@ -230,7 +250,7 @@
                             <span id="refeshAppList" class="csButton greyButton">Refresh</span>
                         </div>
                         <div>
-                            <span><span style="color: chocolate">Shift</span> Click the <span class="csButton blueButton" style="cursor: default;">Open Folder</span> buttons to open the folders with </span>
+                            <span><span style="color: chocolate"><b>Shift</b> Click </span>the <span class="csButton blueButton" style="cursor: default;">Open Folder</span> buttons to open the folders with </span>
                             <span id="openFolderApp" style="color: chocolate"></span>
                             <span id="openFolderAppBT" class="csButton greyButton">Change</span>
                         </div>
@@ -241,7 +261,7 @@
         </div>
     </div>
     <script src="../js/LogFactory.js"></script>
-    <script src="../js/buttons.js"></script>
+    <script src="../js/cstk.js"></script>
 </body>
 
 </html>

@@ -1,6 +1,21 @@
 /* global jsx, window, process, LogFactory,CSInterface, require, $, setTimeout, SystemPath, alert, document */
 /* jshint undef:true, unused:true, evil: true, esversion:6 */
 
+/*
+     ____    _____   ________    __   ___
+    / ___)  / ____\ (___  ___)  () ) / __)
+   / /     ( (___       ) )     ( (_/ /
+  ( (       \___ \     ( (      ()   (
+  ( (           ) )     ) )     () /\ \
+   \ \___   ___/ /     ( (      ( (  \ \
+    \____) /____/      /__\     ()_)  \_\
+
+         __ __  __  __        __                 _____       __  __   __  __ __      __                 __   __      __
+    \  /|_ |__)(_ |/  \|\ |    _)   __   |   /\ (_  |   |\/|/  \|  \||_ ||_ |  \.   /__     | /\ |\ |    _) /  \ /| (__)
+     \/ |__| \ __)|\__/| \|   /__        |__/--\__) |   |  |\__/|__/||  ||__|__/.   \__)  __)/--\| \|   /__ \__/  | (__)
+
+*/
+
 
 //////////////////////////////////
 // setup script loader function //
@@ -37,8 +52,21 @@ var __log, __result, __error;
 
     var searchForandAddDebugApps;
 
+    /*
+     _______  _______  _        _______  _______  _        _______
+    (  ____ \(  ___  )( (    /|(  ____ \(  ___  )( \      (  ____ \
+    | (    \/| (   ) ||  \  ( || (    \/| (   ) || (      | (    \/
+    | |      | |   | ||   \ | || (_____ | |   | || |      | (__
+    | |      | |   | || (\ \) |(_____  )| |   | || |      |  __)
+    | |      | |   | || | \   |      ) || |   | || |      | (
+    | (____/\| (___) || )  \  |/\____) || (___) || (____/\| (____/\
+    (_______/(_______)|/    )_)\_______)(_______)(_______/(_______/
+
+     */
+
     $("#configBT").click(function() {
-        $('#configDiv').css('display', 'block');
+        $('#configDiv').css('display', $('#configDiv').is(":visible") ? 'none' : 'block');
+        $('#configBT').attr('title', $('#configDiv').is(":visible") ? 'Hide config options' : 'Show config options');
     });
     $("#closeConfigBT").click(function() {
         $('#configDiv').css('display', 'none');
@@ -60,6 +88,35 @@ var __log, __result, __error;
         });
         $('.result').css('font-size', newFontSize);
         $('.codeBox').css('font-size', newFontSize);
+    });
+
+    $('#openSnippetBT').click(function() {
+        var snippet;
+        snippet = window.cep.fs.showOpenDialog(false, false, 'Please select a Snippet');
+        snippet = '' + snippet.data[0];
+        // alert('snippet:@' + snippet+'@')
+        if (snippet === '' || snippet === 'undefined' || snippet === 'null') {
+            return;
+        }
+        fs.readFile(snippet, function(error, result) {
+            if (error) return __error('Open Snippet Error: ' + error, 'background:#FFFCAA');
+            __log('Opened: ' + snippet, 'background:#FFFCAA');
+            $('#evalCode').val('' + result);
+        });
+    });
+
+
+    $('#saveSnippetBT').click(function() {
+        var snippet;
+        snippet = window.cep.fs.showSaveDialogEx('Save Snippet');
+        snippet = '' + snippet.data;
+        if (snippet === '' || snippet === 'undefined' || snippet === 'null') {
+            return;
+        }
+        fs.writeFile(snippet, $('#evalCode').val(), function(error) {
+            if (error) return __error('Save Snippet Error: ' + error, 'background:#FFFCAA');
+            __log(' Saved: ' + snippet, 'background:#FFFCAA');
+        });
     });
 
     dummy = function(err) {
@@ -95,7 +152,7 @@ var __log, __result, __error;
         }
         $("#EVAL").addClass("blueButton");
         $("#jsModeBT").removeClass("greyButton").addClass('blueButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script. (Shift+Ctrl+A)');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     });
 
     $('#jsxModeBT').click(function() { // JSX
@@ -114,7 +171,7 @@ var __log, __result, __error;
         }
         $("#EVAL").addClass("greenButton");
         $("#jsxModeBT").removeClass("greyButton").addClass('greenButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script. (Shift+Ctrl+A)');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     });
 
 
@@ -134,7 +191,7 @@ var __log, __result, __error;
         }
         $("#EVAL").addClass("redButton");
         $("#execModeBT").removeClass("greyButton").addClass('redButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script. (Shift+Ctrl+A) For complex shell usage use a real console :->');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
     });
 
 
@@ -198,14 +255,17 @@ var __log, __result, __error;
     resultModeRB = $('#resultModeRB');
     timeStampCB = $('#timeStampCB');
     jsAndJSXCallBack = function(error, execResult, evalLines, codeContents, pos) {
-        var includeTimeStamp, modes, includeResults;
+        var includeTimeStamp, modes,
+            CmdCSS, ErrCSS, resultCSS;
         includeTimeStamp = true;
         includeTimeStamp = timeStampCB.is(':checked');
-        includeResults = resultModeRB.is(':checked');
         if (pos !== undefined) {
             $('#evalCode').val(codeContents);
             $('#evalCode').selection('setPos', pos);
         }
+        CmdCSS = (evalMode) ? 'background:#DDFFDD;' : 'background:#DDDDFF;';
+        resultCSS = (evalMode) ? 'background:#F5FFF5;border-bottom:green solid 1px;' : 'background:#F5F5FF;border-bottom:blue solid 1px;';
+        ErrCSS = (evalMode) ? 'background:#DFD;font-weight:800;border:red dotted 1px;' : 'background:#DDF;font-weight:800;border:red dotted 1px;';
         modes = ['JS', 'JSX', 'SHELL'];
         if (evalMode === 1 && /^[^\n\r]*?Error/i.test(execResult)) {
             // The jsx eval mode will not provide and official error
@@ -214,25 +274,12 @@ var __log, __result, __error;
             error = execResult;
             execResult = undefined;
         }
-        if (includeResults) {
-            __log(evalLines.replace(/^\s+/, ''));
+        if (resultModeRB.is(':checked')) {
+            __log(evalLines.replace(/^\s+/, ''), CmdCSS);
         }
-        if (includeTimeStamp) {
-            if (error) {
-                error =
-                    ('' + new Date()).substr(16, 8) +
-                    ' @ => '.replace('@', '' + modes[evalMode]) + error;
-            } else if (execResult) {
 
-                execResult = ('' + new Date()).substr(16, 8) +
-                    ' @ => '.replace('@', '' + modes[evalMode]) +
-                    (/.[\n\r]/.test(execResult) ? '\n' : '') + execResult;
-
-            }
-        }
-        if (error) { __error(error); }
-        if (execResult) { __log(execResult); }
-        __log('---------------------------');
+        if (error) { __error(error, ErrCSS); }
+        if (execResult) { __log(execResult, resultCSS); }
         $("#evalResult").animate({
             scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
         }, 100);
@@ -243,141 +290,139 @@ var __log, __result, __error;
         evalOnEnter(key);
     });
 
-    var shellEvalSnippet, evalSnippet;
 
-    ///////////////
-    // EXEC Eval //
-    ///////////////
-
-    shellEvalSnippet = function() {
-        var result, pwd, cmd;
-        var evalCallBack = function(error, stdout) {
-            __result(error, stdout);
-            var result, dir, includeResults;
-            includeResults = $('#resultModeRB').is(':checked');
-            // result = (result && execResult) ? result + '\n' + execResult : result || execResult;
-            stdout = stdout && stdout.replace(/[\n\r]+$/, '');
-            dir = stdout && '' + stdout.match(/[^\n\r]+$/);
-            stdout = stdout && stdout.replace(/[^\n\r]+$/, '');
-            if (!dir) { dir = cwd; } else { cwd = dir; } // !!!!!!!!!!!!!!
-            $('#pwd').text(cwd);
-            result = error;
-            result = (result && stdout) ? result + '\n' + stdout : result || stdout;
-            result =
-                (includeResults ? $("#evalCode").val() : '') +
-                '\n---------------------------\n' +
-                ('' + new Date()).substr(16, 8) +
-                ` ${dir}> ` +
-                (/.[\n\r]/.test(result) ? '\n' : '') +
-                result +
-                '\n---------------------------\n';
-            __log(result);
-        };
-        cmd = $("#evalCode").val();
-        cmd = cmd.replace(/[ \n\r]+$/, '').replace(/^[ \n\r]+/, '');
-        cmd = cmd.split(/[\n\r]+/).join(isMac ? ';' : ' & ');
-        pwd = isMac ? '; echo $PWD' : ' & cd';
-        if (cmd !== '') {
-            cmd += pwd;
-            try {
-                result = exec(cmd, { cwd: cwd }, evalCallBack);
-            } catch (err) {
-                __log('Some bad error here: ' + err);
-                evalCallBack(err);
-            }
-        }
-    };
+    ///////////////////
+    // Shell Console //
+    ///////////////////
 
     var spawn = require('child_process').spawn;
-    var shell = function(command, codeContents, pos) {
-        if (pos !== undefined) {
-            $('#evalCode').val(codeContents);
-            $('#evalCode').selection('setPos', pos);
-        }
-        var terminal, n, l, _cwd;
-        if (!command) { return; }
-        command = command.split(/[\n\r]/);
-        terminal = spawn('cmd', ['/K'], {
-            timeout: 0,
-            cwd: cwd.replace(/>$/, ''),
-            maxBuffer: 10000 * 1024,
-            encoding: 'utf-8'
-        });
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // Don't think we need to set these if we set the encoding ;-?                                                          //
-        // Widows is real dumb with unicode one can set the page encoding using chcp 65001                                      //
-        // One can also do some registry hacks                                                                                  //
-        // see https://stackoverflow.com/questions/14109024/how-to-make-unicode-charset-in-cmd-exe-by-default/18439832#18439832 //
-        // I'm not going to do them for you!                                                                                    //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        terminal.stdin.setEncoding = 'utf-8';
-        terminal.stdout.setEncoding = 'utf-8';
-        terminal.stderr.setEncoding = 'utf-8';
-
-        l = command.length;
-        for (n = 0; n < l; n++) {
-            terminal.stdin.write(new Buffer(command[n] + '\n'));
-        }
-        terminal.stdin.write(new Buffer('echo SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf\n')); // ;-}
-
-        terminal.stdout.on('data', function(data) {
-            _cwd = /[^\r\n]*?(?=echo SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf)/.exec(data);
-            if (_cwd) {
-                cwd = '' + _cwd;
-                $('#pwd').text(cwd);
-                data = ('' + data).substr(0, _cwd.index);
-                data = data.replace(/SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf/, '');
-                __log(data);
-                terminal.kill();
-                __log(cwd, 'background:lightgrey');
-            } else {
-                __log('' + data);
+    var shell = isMac ? function(command, codeContents, pos) { // Mac
+            if (pos !== undefined) {
+                $('#evalCode').val(codeContents);
+                $('#evalCode').selection('setPos', pos);
             }
-        });
-        terminal.stderr.on('data', function(data) {
-            __error(data);
-        });
+            if (!command) { return; }
+            var terminal, _cwd, CmdCSS, ErrCSS, resultCSS;
 
-        // terminal.on('exit', function(code) {
-        // __log('child process exited with code ' + code);
-        // });
-    }; // end of shell
+            CmdCSS = 'background:#FFDDDD;';
+            resultCSS = 'background:#FFF5F5;';
+            ErrCSS = 'background:#FDD;font-weight:800;border:red dotted 1px;';
+            __log(cwd + '$ ' + command, CmdCSS);
+            try {
+                terminal = spawn('/bin/bash', ['-c', command + '\necho "$PWD SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf"'], {
+                    cwd: cwd,
+                    maxBuffer: 10000 * 1024,
+                    encoding: 'utf-8'
+                });
+            } catch (err) {
+                __error(err, ErrCSS);
+            }
+
+            terminal.stdout.on('data', function(data) {
+                _cwd = /[^\r\n]*?(?= *SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf)/.exec(data);
+                if (_cwd) {
+                    cwd = '' + _cwd;
+                    $('#pwd').text(cwd);
+                    data = ('' + data).substr(0, _cwd.index);
+                    data = data.replace(/SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf/, '');
+                    __log(data, resultCSS);
+                    __log(cwd + '$', CmdCSS + 'border-bottom:red solid 1px;');
+                } else {
+                    __log('' + data, resultCSS);
+                }
+            });
+            terminal.stderr.on('data', function(data) {
+                __error(data, ErrCSS);
+            });
+        } :
+        function(command, codeContents, pos) { // Windows
+            if (pos !== undefined) {
+                $('#evalCode').val(codeContents);
+                $('#evalCode').selection('setPos', pos);
+            }
+            var terminal, n, l, _cwd, CmdCSS, ErrCSS, resultCSS;
+
+            CmdCSS = 'background:#FFDDDD;';
+            resultCSS = 'background:#FFF5F5;';
+            ErrCSS = 'background:#FDD;font-weight:800;border:red dotted 1px;';
+
+            if (!command) { return; }
+            command = command.split(/[\n\r]/);
+            terminal = spawn('cmd', ['/K'], {
+                timeout: 0,
+                cwd: cwd.replace(/>$/, ''),
+                maxBuffer: 10000 * 1024,
+                encoding: 'utf-8'
+            });
+
+            // For powershell we would go along the lines of
+            // terminal = spawn('powershell', [command + '; Write-Host $PWD'], { maxBuffer: 52428800, cwd: cwd });
 
 
-    ///////////////////////////////
-    // JS and JSX Snippet runner //
-    ///////////////////////////////
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // Don't think we need to set these if we set the encoding ;-?                                                          //
+            // Windows is real dumb with unicode one can set the page encoding using chcp 65001                                      //
+            // One can also do some registry hacks                                                                                  //
+            // see https://stackoverflow.com/questions/14109024/how-to-make-unicode-charset-in-cmd-exe-by-default/18439832#18439832 //
+            // I'm not going to do them for you!                                                                                    //
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            terminal.stdin.setEncoding = 'utf-8';
+            terminal.stdout.setEncoding = 'utf-8';
+            terminal.stderr.setEncoding = 'utf-8';
 
-    var jsAndJsxSnippet = function() {
+            l = command.length;
+            for (n = 0; n < l; n++) {
+                terminal.stdin.write(new Buffer(command[n] + '\n'));
+            }
+            terminal.stdin.write(new Buffer('echo SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf\n')); // ;-}
 
-        var codeContents, result;
+            terminal.stdout.on('data', function(data) {
+                _cwd = /[^\r\n]*?(?=echo SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf)/.exec(data);
+                if (_cwd) {
+                    cwd = '' + _cwd;
+                    $('#pwd').text(cwd);
+                    data = ('' + data).substr(0, _cwd.index);
+                    data = data.replace(/SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf/, '');
+                    __log(data, resultCSS);
+                    terminal.kill();
+                    __log(cwd, CmdCSS + 'border-bottom:red solid 1px;');
+                } else {
+                    __log('' + data, resultCSS);
+                }
+            });
+            terminal.stderr.on('data', function(data) {
+                __error(data, ErrCSS);
+            });
+
+            // terminal.on('exit', function(code) {
+            // __log('child process exited with code ' + code);
+            // });
+        }; // end of shell
+
+
+    //////////////////////////////////////////////////////////
+    // Sends the code to be run by JS, JSX or Shell engines //
+    //////////////////////////////////////////////////////////
+
+    var evalCode = function() {
+
+        var codeContents;
 
         codeContents = $('#evalCode').val();
         try {
             if (evalMode === 0) {
-                result = eval(codeContents);
-                setTimeout(function() { jsAndJSXCallBack(undefined, result, codeContents); }, 0);
+                setTimeout(function() { jsAndJSXCallBack(undefined, eval(codeContents), codeContents); }, 0);
             } else if (evalMode === 1) {
-                result = jsx.eval(codeContents, function(e, r) { jsAndJSXCallBack(r, e, codeContents); }, true);
+                jsx.eval(codeContents, function(e, r) { jsAndJSXCallBack(r, e, codeContents); }, true);
             } else if (evalMode === 2) {
-                // result = exec(codeContents, { cwd: __dirname }, function(e, r) { jsAndJSXCallBack(e, r, codeContents); });
                 shell(codeContents);
             }
         } catch (err) {
             setTimeout(function() { jsAndJSXCallBack(err.stack.replace(/.+?(\d+):(\d+)\)[\n\r][^\u0800]+/, (err instanceof SyntaxError) ? '' : ' (Line $1 Column $2)'), undefined, codeContents); }, 0);
         }
-    }; // end of jsAndJsxSnippet
+    }; // end of evalCode
 
-    evalSnippet = function() {
-        // [jsAndJsxSnippet, jsAndJsxSnippet, shellEvalSnippet][evalMode]();
-        jsAndJsxSnippet();
-    };
-
-
-
-    $("#EVAL").click(evalSnippet);
-
+    $("#EVAL").click(evalCode);
 
     ////////////////////////////////////////////////////////
     // Setup some helper functions for use in the console //
@@ -533,7 +578,17 @@ var __log, __result, __error;
 
 
 
+    /*
+        _________ _______  _______  _       _______
+        \__   __/(  ___  )(  ___  )( \     (  ____ \
+           ) (   | (   ) || (   ) || (     | (    \/
+           | |   | |   | || |   | || |     | (_____
+           | |   | |   | || |   | || |     (_____  )
+           | |   | |   | || |   | || |           ) |
+           | |   | (___) || (___) || (____/Y\____) |
+           )_(   (_______)(_______)(_______|_______)
 
+    */
 
 
     //////////////////
@@ -575,25 +630,24 @@ var __log, __result, __error;
     $("#folders").hide();
     $("#SetWarning").hide();
 
+    $("#openFolders").tooltip({ content: "Show Extension Tools" }).mouseleave(function() { $('#openFolders').tooltip('close'); }).focusout(function() { $('#openFolders').tooltip('close'); });
+
     $("#openFolders").mousedown(function() {
         if ($('#folders').is(":visible")) {
-            // $('#folders').attr({
-            //     height: '0px'
-            // });
+            $('#refeshAppList').focus();
             $('#folders').hide();
-            $("#openFolders").html('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" title="Show Extension Tools" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M128 116V76c0-8.837 7.163-16 16-16h352c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H144c-8.837 0-16-7.163-16-16zm16 176h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM16 144h64c8.837 0 16-7.163 16-16V64c0-8.837-7.163-16-16-16H16C7.163 48 0 55.163 0 64v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16z"/></svg>');
-            // $("#openFolders").removeClass("blueButton");
+            $("#openFolders").html('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M128 116V76c0-8.837 7.163-16 16-16h352c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H144c-8.837 0-16-7.163-16-16zm16 176h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM16 144h64c8.837 0 16-7.163 16-16V64c0-8.837-7.163-16-16-16H16C7.163 48 0 55.163 0 64v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16z"/></svg>');
+            $("#openFolders").tooltip({ content: "Show Extension Tools" }).mouseleave(function() { $('#openFolders').tooltip('close'); }).focusout(function() { $('#openFolders').tooltip('close'); });
+            $( "#openFolders" ).tooltip( "close" );
             $('#console').show();
         } else {
+            $('#evalCode').focus();
             $('#console').hide();
-            // $('#folders').attr({
-            //     height: 'auto'
-            // });
-            // $('#folderBody').text('Please wait a few (upto 10) seconds for the apps to be processed');
-            // run(isMac ? 'debug_tools_mac.js' : 'debug_tools_windows.js');
             getCeps();
             searchForandAddDebugApps();
-            $("#openFolders").html('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" title="Show Console" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M257.981 272.971L63.638 467.314c-9.373 9.373-24.569 9.373-33.941 0L7.029 444.647c-9.357-9.357-9.375-24.522-.04-33.901L161.011 256 6.99 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L257.981 239.03c9.373 9.372 9.373 24.568 0 33.941zM640 456v-32c0-13.255-10.745-24-24-24H312c-13.255 0-24 10.745-24 24v32c0 13.255 10.745 24 24 24h304c13.255 0 24-10.745 24-24z"/></svg>');
+            $("#openFolders").html('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M257.981 272.971L63.638 467.314c-9.373 9.373-24.569 9.373-33.941 0L7.029 444.647c-9.357-9.357-9.375-24.522-.04-33.901L161.011 256 6.99 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L257.981 239.03c9.373 9.372 9.373 24.568 0 33.941zM640 456v-32c0-13.255-10.745-24-24-24H312c-13.255 0-24 10.745-24 24v32c0 13.255 10.745 24 24 24h304c13.255 0 24-10.745 24-24z"/></svg>');
+            $("#openFolders").tooltip({ content: "Show Extension Tools" }).mouseleave(function() { $('#openFolders').tooltip('close'); }).focusout(function() { $('#openFolders').tooltip('close'); });
+            $("#openFolders").tooltip("close");
             $('#folders').show();
         }
     });
@@ -1735,14 +1789,14 @@ var __log, __result, __error;
                     </b>
                 `);
             }
-            html.push(` <div>
+            html.push(` <div style="font-size:.7em;">
                                 <img src="../img/Forum_Icons/${appMap[extension.appCode] ? extension.appCode : 'CLOD'}.png" style="height:22px;top:4px;position: relative;padding-right:4px;" />
-                                <span style="font-size:.7em;">${extension.appVersion}</span>
+                                <span>${extension.appVersion}</span>
                                 <span> ${extension.id} ${((extension.name && (extension.name !== extension.id)) ? ` - [${extension.name}]` : '')}
                                 </span>
                                 <img src="../img/${extension.active ? 'green' : 'red'}LED.png" style="top:0px;position: relative;padding:0 4px 0 4px;"/>
-                                <span class="csButton blueButton" id="OpenFolder_${n}" title="Click to open with ${(isMac ? 'Finder' : 'Explorer')}. SHIFT click to open with selected application."> Open Folder</span>
-                                <span class="csButton blueButton" id="OpenLog_${n}" title="Open the extension's main log (IF IT EXISTS)"> Open Log<span style="font-size:.7em;">${extension.logLevel ? ' ' + extension.logLevel : ''}</span></span>
+                                <span class="csButton blueButton" id="OpenFolder_${n}" title="Click to open with ${(isMac ? 'Finder' : 'Explorer')}.<br>SHIFT click to open with selected application."> Open Folder</span>
+                                <span class="csButton blueButton" id="OpenLog_${n}" title="Open the extension's main log<br>(IF IT EXISTS)"> Open Log<span style="font-size:.7em;">${extension.logLevel ? ' ' + extension.logLevel : ''}</span></span>
                                 ${extension.debugPort ? '<span class="csButton greyButton"  id="OpenDebug_' + n + '" title="Port: ' + extension.debugPort + '">Debug</span>' : ''}
                             </div>
                 `);

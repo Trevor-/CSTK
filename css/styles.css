@@ -43,7 +43,7 @@
 
 .codeBox {
     height: 150px;
-    width: 97%;
+    width: 96%;
     resize: vertical;
     border-color: blue;
     border-width: 4px;
@@ -53,20 +53,20 @@
     margin-bottom: 0px;
     font-size: 14px;
     font-family:"Free Monospaced";
-    /*font-family: DejaVu Sans Mono, Monaco, Consolas, Lucida Console, Liberation Mono, Bitstream Vera Sans Mono, Courier New, monospace;*/
 }
 
 .result {
     height: 75px;
     min-height: 20px;
-    width: 96%;
+    width: 97%;
     overflow: auto !important;
-    padding: 5px;
+    padding: 1px;
     border: 2px solid chocolate;
     border-radius: 5px;
     background: white;
     color: black;
     margin: auto;
+
     display: block;
     /* margin-top: 5px; */
     resize: vertical;
