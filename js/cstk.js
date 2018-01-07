@@ -65,10 +65,10 @@ var __log, __result, __error;
      */
 
     var options = {};
-    options.showResults = true;
+    options.showSnippet = true;
     $("#configBT").click(function() {
         $('#configDiv').css('display', $('#configDiv').is(":visible") ? 'none' : 'block');
-        $('#configBT').attr('title', $('#configDiv').is(":visible") ? 'Hide config options' : 'Show config options');
+        // $('#configBT').attr('title', $('#configDiv').is(":visible") ? 'Hide config options' : 'Show config options');
     });
     $("#closeConfigBT").click(function() {
         $('#configDiv').css('display', 'none');
@@ -122,8 +122,8 @@ var __log, __result, __error;
     });
 
     $("#resultModeDV").click(function() {
-        options.showResults = !options.showResults;
-        if (options.showResults) {
+        options.showSnippet = !options.showSnippet;
+        if (options.showSnippet) {
             $("#resultModeDV").html('<i class="fas fa-check-square fa-lg"></i> Include snippet in results');
         } else {
             $("#resultModeDV").html('<i class="fas fa-square fa-lg"></i> Include snippet in results');
@@ -162,6 +162,7 @@ var __log, __result, __error;
             $("#EVAL").removeClass("greenButton");
             $("#jsxModeBT").removeClass("greenButton").addClass('greyButton');
         }
+        $("#EvalMode").text("JS");
         $("#EVAL").addClass("blueButton");
         $("#jsModeBT").removeClass("greyButton").addClass('blueButton');
         $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines');
@@ -181,6 +182,7 @@ var __log, __result, __error;
             $("#EVAL").removeClass("blueButton");
             $("#jsModeBT").removeClass("blueButton").addClass('greyButton');
         }
+        $("#EvalMode").text("JSX");
         $("#EVAL").addClass("greenButton");
         $("#jsxModeBT").removeClass("greyButton").addClass('greenButton');
         $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines');
@@ -201,6 +203,7 @@ var __log, __result, __error;
             $("#EVAL").removeClass("blueButton");
             $("#jsModeBT").removeClass("blueButton").addClass('greyButton');
         }
+        $("#EvalMode").text(isMac ? "BASH" : "CMD");
         $("#EVAL").addClass("redButton");
         $("#execModeBT").removeClass("greyButton").addClass('redButton');
         $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
@@ -286,7 +289,7 @@ var __log, __result, __error;
             error = execResult;
             execResult = undefined;
         }
-        if (resultModeRB.is(':checked')) {
+        if (options.showSnippet || pos) {
             __log(evalLines.replace(/^\s+/, ''), CmdCSS);
         }
 
@@ -642,26 +645,25 @@ var __log, __result, __error;
     $("#folders").hide();
     $("#SetWarning").hide();
 
-    $("#openFolders").tooltip({ content: "Show Extension Tools" }).mouseleave(function() { $('#openFolders').tooltip('close'); }).focusout(function() { $('#openFolders').tooltip('close'); });
+    // $("#openFolders").tooltip({ content: "Show Extension Tools" }).mouseleave(function() { $('#openFolders').tooltip('close'); }).focusout(function() { $('#openFolders').tooltip('close'); });
 
-    $("#openFolders").mousedown(function() {
-        if ($('#folders').is(":visible")) {
+    $("#openConsole").mousedown(function() {
             $('#refeshAppList').focus();
             $('#folders').hide();
-            $("#openFolders").html('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M128 116V76c0-8.837 7.163-16 16-16h352c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H144c-8.837 0-16-7.163-16-16zm16 176h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM16 144h64c8.837 0 16-7.163 16-16V64c0-8.837-7.163-16-16-16H16C7.163 48 0 55.163 0 64v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16z"/></svg>');
-            $("#openFolders").tooltip({ content: "Show Extension Tools" }).mouseleave(function() { $('#openFolders').tooltip('close'); }).focusout(function() { $('#openFolders').tooltip('close'); });
-            $("#openFolders").tooltip("close");
             $('#console').show();
-        } else {
+            $('#openConsole').hide();
+            $('#openFolders').show();
+            // $("#openFolders").tooltip("close");
+    });
+    $("#openFolders").mousedown(function() {
             $('#evalCode').focus();
             $('#console').hide();
+            $('#folders').show();
+            // $("#openFolders").tooltip("close");
             getCeps();
             searchForandAddDebugApps();
-            $("#openFolders").html('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M257.981 272.971L63.638 467.314c-9.373 9.373-24.569 9.373-33.941 0L7.029 444.647c-9.357-9.357-9.375-24.522-.04-33.901L161.011 256 6.99 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L257.981 239.03c9.373 9.372 9.373 24.568 0 33.941zM640 456v-32c0-13.255-10.745-24-24-24H312c-13.255 0-24 10.745-24 24v32c0 13.255 10.745 24 24 24h304c13.255 0 24-10.745 24-24z"/></svg>');
-            $("#openFolders").tooltip({ content: "Show Extension Tools" }).mouseleave(function() { $('#openFolders').tooltip('close'); }).focusout(function() { $('#openFolders').tooltip('close'); });
-            $("#openFolders").tooltip("close");
-            $('#folders').show();
-        }
+            $('#openFolders').hide();
+            $('#openConsole').show();
     });
 
     var appMap = {

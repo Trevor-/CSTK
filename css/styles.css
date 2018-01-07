@@ -66,7 +66,7 @@
     background: white;
     color: black;
     margin: auto;
-
+    margin-bottom: 4px;
     display: block;
     /* margin-top: 5px; */
     resize: vertical;
@@ -137,7 +137,10 @@
     user-select: none;
 }
 
-
+.fabt{
+    top: 2px;
+    position: relative;
+}
 .blueButton:hover {
     background: linear-gradient(to bottom, #1e62d0 5%, #3d94f6 100%);
 }
