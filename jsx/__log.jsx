@@ -1,4 +1,6 @@
+(function(){
 var __log, __error;
+const ARRAY_SPLIT = ';;@;;:@#;';
 if (new ExternalObject('lib:PlugPlugExternalObject')) {
     $.__CepEvent__ = function(in_eventType, in_message) {
         var eventObj = new CSXSEvent();
@@ -6,14 +8,20 @@ if (new ExternalObject('lib:PlugPlugExternalObject')) {
         eventObj.data = '' + in_message;
         eventObj.dispatch();
     };
-    $.write = function(message) {
-        $.__CepEvent__('com.creative-scripts.cstk.write', message);
+    $.write = function(message, style, __class) {
+        style = style || ' ';
+        message += ARRAY_SPLIT + style;
+        message += ARRAY_SPLIT + (__class ? __class : ' ');
+        $.__CepEvent__('com.creative-scripts.cstk.writeln', message);
     };
-    $.writeln = function(message) {
+    $.writeln = function(message, style, __class) {
+        style = style || ' ';
+        message += ARRAY_SPLIT + style;
+        message += ARRAY_SPLIT + (__class ? __class : ' ');
+        message += ARRAY_SPLIT + 1;
         $.__CepEvent__('com.creative-scripts.cstk.writeln', message);
     };
     __log = function(message, style, __class) {
-        const ARRAY_SPLIT = ';;@;;:@#;';
         style = style || ' ';
         message += ARRAY_SPLIT + style;
         if (__class) {
@@ -27,3 +35,4 @@ if (new ExternalObject('lib:PlugPlugExternalObject')) {
 } else {
     __log = __error = $.writeln;
 }
+})();

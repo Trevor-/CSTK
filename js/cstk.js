@@ -10,9 +10,9 @@
    \ \___   ___/ /     ( (      ( (  \ \
     \____) /____/      /__\     ()_)  \_\
 
-         __ __  __  __        __                 _____       __  __   __  __ __      __                 __   __      __
-    \  /|_ |__)(_ |/  \|\ |    _)   __   |   /\ (_  |   |\/|/  \|  \||_ ||_ |  \.   /__     | /\ |\ |    _) /  \ /| (__)
-     \/ |__| \ __)|\__/| \|   /__        |__/--\__) |   |  |\__/|__/||  ||__|__/.   \__)  __)/--\| \|   /__ \__/  | (__)
+         __ __  __  __        __
+    \  /|_ |__)(_ |/  \|\ |    _)
+     \/ |__| \ __)|\__/| \|   /__
 
 */
 
@@ -44,11 +44,12 @@ var __log, __result, __error;
     // setup config files //
     ////////////////////////
 
-    var cstkFolder, debugAppFile, cookieFile, openFolderAppFile;
+    var cstkFolder, debugAppFile, debugAppSelection, openFolderAppFile, optionsFile;
     cstkFolder = path.join(csInterface.getSystemPath('userData'), 'Creative Scripts', 'CSTK');
     debugAppFile = path.join(cstkFolder, 'debugAppsList.txt');
-    cookieFile = path.join(cstkFolder, 'debugAppSelection.txt');
+    debugAppSelection = path.join(cstkFolder, 'debugAppSelection.txt');
     openFolderAppFile = path.join(cstkFolder, 'OpenFolderApp.txt');
+    optionsFile = path.join(cstkFolder, 'options.json');
 
     var searchForandAddDebugApps;
 
@@ -64,39 +65,65 @@ var __log, __result, __error;
 
      */
 
+
+    ////////////////////////////////
+    // Config options             //
+    // Not too much here for now! //
+    ////////////////////////////////
     var options = {};
-    options.showSnippet = true;
+    (function() {
+        fs.readJson(optionsFile, function(err, packageObj) {
+            if (err) {
+                options.showSnippet = false;
+            } else {
+                options = packageObj;
+            }
+            $("#resultModeDV").html('<i class="far fa-' + (options.showSnippet ? 'check-square' : 'square') + ' fa-lg"></i> Include snippet in results');
+
+        });
+    })();
+
     $("#configBT").click(function() {
         $('#configDiv').css('display', $('#configDiv').is(":visible") ? 'none' : 'block');
-        // $('#configBT').attr('title', $('#configDiv').is(":visible") ? 'Hide config options' : 'Show config options');
     });
     $("#closeConfigBT").click(function() {
         $('#configDiv').css('display', 'none');
     });
 
+    $("#resultModeDV").click(function() {
+        options.showSnippet = !options.showSnippet;
+        $("#resultModeDV").html('<i class="far fa-' + (options.showSnippet ? 'check-square' : 'square') + ' fa-lg"></i> Include snippet in results');
+        fs.outputJSON(optionsFile, options);
+    });
+
+    ///////////////////////
+    // Console font size //
+    ///////////////////////
+
     $("#zoomOut").click(function() {
         var newFontSize;
-        newFontSize = $('.result').css('font-size').replace(/[\.\d]+/, function(n) {
+        newFontSize = $('.console').css('font-size').replace(/[\.\d]+/, function(n) {
             return +n - 1;
         });
-        $('.result').css('font-size', newFontSize);
-        $('.codeBox').css('font-size', newFontSize);
+        $('.console').css('font-size', newFontSize);
     });
 
     $("#zoomIn").click(function() {
         var newFontSize;
-        newFontSize = $('.result').css('font-size').replace(/[\.\d]+/, function(n) {
+        newFontSize = $('.console').css('font-size').replace(/[\.\d]+/, function(n) {
             return +n + 1;
         });
-        $('.result').css('font-size', newFontSize);
-        $('.codeBox').css('font-size', newFontSize);
+        $('.console').css('font-size', newFontSize);
     });
+
+    ////////////////////////////
+    // Open and Save Snippets //
+    ////////////////////////////
 
     $('#openSnippetBT').click(function() {
         var snippet;
         snippet = window.cep.fs.showOpenDialog(false, false, 'Please select a Snippet');
         snippet = '' + snippet.data[0];
-        // alert('snippet:@' + snippet+'@')
         if (snippet === '' || snippet === 'undefined' || snippet === 'null') {
             return;
         }
@@ -121,28 +148,20 @@ var __log, __result, __error;
         });
     });
 
-    $("#resultModeDV").click(function() {
-        options.showSnippet = !options.showSnippet;
-        if (options.showSnippet) {
-            $("#resultModeDV").html('<i class="fas fa-check-square fa-lg"></i> Include snippet in results');
-        } else {
-            $("#resultModeDV").html('<i class="fas fa-square fa-lg"></i> Include snippet in results');
-        }
-    });
-
 
     dummy = function(err) {
         //  function might be needed at some point to stop asynchronous node functions throwing errors
         // because no callback has been provided
         // this would be more according to the letter than the spirit of the law ;-{
         if (err) {
-            log(err.stack, 'e');
+            // log(err.stack, 'e');
         }
     };
 
-    ///////////////////
-    // On Enter Mode //
-    ///////////////////
+    ////////////////////////////////////////////////////////
+    // The console should work in JS, JSX and Shell modes //
+    // This deals with the mode buttons                   //
+    ////////////////////////////////////////////////////////
 
     evalMode = 1; // default value
     var cwd = csInterface.getSystemPath('myDocuments');
@@ -209,7 +228,10 @@ var __log, __result, __error;
         $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
     });
 
-
+    /////////////////////////////////////////////////////////////////////////////////
+    // Function captures the Shift+Enter and Shift+Ctrt+A console key combinations //
+    // Select the relevant lines of code and passes them on to be processed        //
+    /////////////////////////////////////////////////////////////////////////////////
     var evalOnEnter = function(key) {
         var codeContents, result, pos, beforeString, afterString, startOfLines, endOfLines, evalLines, startIndex, endIndex,
             beforeReg, afterReg;
@@ -397,7 +419,7 @@ var __log, __result, __error;
                     cwd = '' + _cwd;
                     $('#pwd').text(cwd);
                     data = ('' + data).substr(0, _cwd.index);
-                    data = data.replace(/SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf/, '');
+                    data = data.replace(/SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf/g, '');
                     __log(data, resultCSS);
                     terminal.kill();
                     __log(cwd, CmdCSS + 'border-bottom:red solid 1px;');
@@ -447,70 +469,76 @@ var __log, __result, __error;
 
     __log = function(message, style, __class) {
         var n, l;
+        var evalResult = $("#evalResult");
         if (message === undefined) { return; }
         __class = __class ? ` class="${__class}"` : '';
         style = style || '';
         message = ('' + message).split(/[\n\r]/);
         l = message.length;
         for (n = 0; n < l; n++) {
-            $(`<p${__class} style="margin:0;${style}"></p>`).text(message[n]).appendTo('#evalResult');
+            $(`<p${__class} style="margin:0;${style}"></p>`).text(message[n]).appendTo(evalResult);
         }
-        $("#evalResult").animate({
-            scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
-        }, 10);
+        $(evalResult).animate({
+            scrollTop: $(evalResult)[0].scrollHeight - $(evalResult).height()
+        }, 0);
     };
     __error = function(message, style) {
         __log(message, style, 'error');
     };
     __result = function(error, result) {
+        var evalResult = $("#evalResult");
         if (error) { __error('Error: ' + error); }
         if (result) { __log('Result: ' + result); }
-        $("#evalResult").animate({
-            scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
-        }, 10);
-    };
-
-    var write = function(message, writeln) {
-        if (message === undefined) { return; }
-        message = ('' + message.data).split(/[\n\r]/);
-        var n, l;
-        l = message.length;
-        for (n = 0; n < l; n++) {
-            if (n > 0) {
-                $('<span><br></span>').appendTo('#evalResult');
-            }
-            $('<span></span>').text(message[n]).appendTo('#evalResult');
-        }
-        if (writeln) {
-            $('<span><br></span>').appendTo('#evalResult');
-        }
-        $("#evalResult").animate({
-            scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
+        $(evalResult).animate({
+            scrollTop: $(evalResult)[0].scrollHeight - $(evalResult).height()
         }, 0);
     };
 
-    var writeln = function(message) {
-        write(message, true);
-    };
+    (function() {
+        var evalResult = $("#evalResult");
+        var write = function(message, style, __class, writeln) {
+            if (message === undefined) { return; }
+            message = ('' + message).split(/[\n\r]/);
+            var n, l, template;
+            l = message.length;
+            template = `<span style="${style}" class="${__class}"></span>`;
+            for (n = 0; n < l; n++) {
+                if (n > 0) {
+                    $('<span><br></span>').appendTo(evalResult);
+                }
+                $(template).text(message[n]).appendTo(evalResult);
+            }
+            if (writeln) {
+                $('<span><br></span>').appendTo(evalResult);
+            }
+            $(evalResult).animate({
+                scrollTop: $(evalResult)[0].scrollHeight - $(evalResult).height()
+            }, 0);
 
-    //////////////////////////////////////////////////////////////
-    // setup jsx __log interface and $.writeln $.write redirect //
-    //////////////////////////////////////////////////////////////
 
-    // jsx.file('__log.jsx', __log);
-    // found a nasty bus in JSX.js and need to pass replacements:{} to get it to work :./ will try fix later
-    jsx.file({ file: '__log.jsx', replacements: {}, eval: true });
-    var jsxLog = function(data) {
-        data = ('' + data.data).split(';;@;;:@#;');
-        __log(data[0], data[1], data[2]);
-    };
+        };
 
 
-    // csInterface.removeEventListener('com.creative-scripts.cstk.__log');
-    csInterface.addEventListener('com.creative-scripts.cstk.__log', jsxLog);
-    csInterface.addEventListener('com.creative-scripts.cstk.write', write);
-    csInterface.addEventListener('com.creative-scripts.cstk.writeln', writeln);
+        //////////////////////////////////////////////////////////////
+        // Setup JSX __log interface and $.writeln $.write redirect //
+        //////////////////////////////////////////////////////////////
 
+        // jsx.file('__log.jsx', __log);
+        // found a nasty bus in JSX.js and need to pass replacements:{} to get it to work :./ will try fix later
+        jsx.file({ file: '__log.jsx', replacements: {}, eval: true });
+        var jsxLog = function(data) {
+            data = ('' + data.data).split(';;@;;:@#;');
+            __log(data[0], data[1], data[2]);
+        };
+
+        var wl = function(data) {
+            data = ('' + data.data).split(';;@;;:@#;');
+            write(data[0], data[1], data[2], data[3]);
+        };
+
+        csInterface.addEventListener('com.creative-scripts.cstk.__log', jsxLog);
+        csInterface.addEventListener('com.creative-scripts.cstk.writeln', wl);
+    })();
 
     //////////////////////////////////////////////////////////////////////////
     // for executing scripts from the console and loading scripts on demand //
@@ -527,9 +555,9 @@ var __log, __result, __error;
             url = url.url;
         }
         var s, e;
-        // need to check for mac and windows
         if (!(/^file:/.test(url))) {
-            url = 'file:///' + path.join(__dirname, 'js', url);
+            // url = 'file:///' + path.join(__dirname, 'js', url);
+            url = 'file:///' + path.join(url);
         }
 
         $.ajax({
@@ -576,20 +604,6 @@ var __log, __result, __error;
         ' - v8: ' + versions.v8 +
         (versions.unicode ? ' - unicode: ' + versions.unicode : '')
     );
-    /*= {
-           "http_parser": "2.7.0",
-           "node": "7.7.4",
-           "v8": "5.7.492.65",
-           "uv": "1.11.0",
-           "zlib": "1.2.11",
-           "ares": "1.10.1-DEV",
-           "modules": "51",
-           "openssl": "1.0.2k",
-           "icu": "58.1",
-           "unicode": "9.0",
-           "cep": "8.0",
-           "chromium": "57.0.2987.74"
-       }*/
 
 
 
@@ -610,37 +624,24 @@ var __log, __result, __error;
     // Open Folders //
     //////////////////
 
-    (function() {
-        var extensions, n, l, template, html, setUpButtons;
-        extensions = eval(window.__adobe_cep__.getExtensions());
-        l = extensions.length;
-        template = [
-            '<div id="div__n__">',
-            '<span id="base__n__" class="csButton blueButton">__name__ - Open Folder</span>',
-            '</div>',
-        ].join('\n');
-        html = [];
-        for (n = 0; n < l; n++) {
-            html.push(template
-                .replace(/__name__/g, extensions[n].name)
-                .replace(/__n__/g, '' + n)
-            );
-        }
+    // (function() {
+    //     var extensions, n, l, template, html, setUpButtons;
+    //     extensions = eval(window.__adobe_cep__.getExtensions());
+    //     l = extensions.length;
+    //     html = [];
+    //     for (n = 0; n < l; n++) {
+    //         html.push(`<div id="div${n}"><span id="base${n}" class="csButton blueButton">${extensions[n].name} - Open Folder</span></div>`);
+    //     }
 
-
-        setUpButtons = function(n) {
-            var id = function(key) {
-                return '#' + key + n;
-            };
-            $(id('base')).click(function() {
-                exec((isMac ? 'open "' : 'start "" "') + extensions[n].basePath + '"');
-            });
-
-        };
-        for (n = 0; n < l; n++) {
-            setUpButtons(n);
-        }
-    })();
+    //     setUpButtons = function(n) {
+    //         $(`#base${n}`).click(function() {
+    //             exec((isMac ? 'open "' : 'explorer "') + extensions[n].basePath + '"');
+    //         });
+    //     };
+    //     for (n = 0; n < l; n++) {
+    //         setUpButtons(n);
+    //     }
+    // })();
 
     $("#folders").hide();
     $("#SetWarning").hide();
@@ -648,24 +649,25 @@ var __log, __result, __error;
     // $("#openFolders").tooltip({ content: "Show Extension Tools" }).mouseleave(function() { $('#openFolders').tooltip('close'); }).focusout(function() { $('#openFolders').tooltip('close'); });
 
     $("#openConsole").mousedown(function() {
-            $('#refeshAppList').focus();
-            $('#folders').hide();
-            $('#console').show();
-            $('#openConsole').hide();
-            $('#openFolders').show();
-            // $("#openFolders").tooltip("close");
+        $('#refeshAppList').focus();
+        $('#folders').hide();
+        $('#console').show();
+        $('#openConsole').hide();
+        $('#openFolders').show();
+        // $("#openFolders").tooltip("close");
     });
     $("#openFolders").mousedown(function() {
-            $('#evalCode').focus();
-            $('#console').hide();
-            $('#folders').show();
-            // $("#openFolders").tooltip("close");
-            getCeps();
-            searchForandAddDebugApps();
-            $('#openFolders').hide();
-            $('#openConsole').show();
+        $('#evalCode').focus();
+        $('#console').hide();
+        $('#folders').show();
+        // $("#openFolders").tooltip("close");
+        getCeps();
+        searchForandAddDebugApps();
+        $('#openFolders').hide();
+        $('#openConsole').show();
     });
 
+    // Using these for Icons
     var appMap = {
         "PHSP": "Adobe Photoshop", // OLD non extended version
         "PHXS": "Adobe Photoshop",
@@ -736,6 +738,13 @@ var __log, __result, __error;
     /////////////
     // Windows //
     /////////////
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // These functions use powershell to search the Windows index for Chrome and CefClient instances //
+    // Found instances are filtered, the can be removed, non-found ones can be added manually        //
+    // Basic app data is found, Version and Last Mod date                                            //
+    ///////////////////////////////////////////////////////////////////////////////////////////////////
+
     windowsSearchCallBack = function(err, result) {
         try {
             var apps, psGetItems, getItems, n, l, manDebugApps;
@@ -771,11 +780,7 @@ var __log, __result, __error;
                         addThisIfNotInArray(app, apps);
                     }
                 }
-            } catch (err) {
-                // __log(err.stack);
-                //  alert(err.stack);
-                // no debugAppFile
-            }
+            } catch (err) {}
             apps.sort();
             l = apps.length;
             getItems = function(paths, field) {
@@ -818,7 +823,7 @@ var __log, __result, __error;
                 version = '' + (info[n].match(/^\S+/) || 'Unknown Version');
                 date = new Date(info[l + n], info[l * 2 + n], info[l * 3 + n])
                     .toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
-                html.push(`<option value="${app}" title="${app + '&nbsp; Last&nbsp;modified:&nbsp;' + date}">${name + ' (' + version})</option>`);
+                html.push(`<option value="${app}" title="${app + '<br>Last&nbsp;modified:&nbsp;' + date}">${name + ' (' + version})</option>`);
 
             }
             appSelection = $("#debugApps").val();
@@ -830,7 +835,8 @@ var __log, __result, __error;
                     content: 'Debug app: ' + appSelection,
                     show: { effect: "drop", duration: 250 },
                     hide: { effect: "drop", duration: 250 }
-                }).tooltip('close').tooltip('open');
+                }).mouseleave(function() { $('#debugAppsSP').tooltip('close'); }).focusout(function() { $('#debugAppsSP').tooltip('close'); });
+                $('#debugAppsSP').tooltip('close');
             } else {
                 debugAppSelectionFromCookie();
             }
@@ -918,7 +924,7 @@ var __log, __result, __error;
                 version = (version && version[1]) || '';
                 name = app.match(/Chrome|CefClient/i);
                 // html.push({path: path, modDate: date, version: version});
-                html.push(`<option value="${app}" title="${app + '&nbsp; Last&nbsp;modified:&nbsp;' + date}">${name + ' (' + version})</option>`);
+                html.push(`<option value="${app}" title="${app + '<br>Last&nbsp;modified:&nbsp;' + date}">${name + ' (' + version})</option>`);
             }
             html = html.join('\n');
             appSelection = $("#debugApps").val();
@@ -938,7 +944,7 @@ var __log, __result, __error;
     /////////////////////
 
     debugAppSelectionFromCookie = function() {
-        fs.readFile(cookieFile, function(err, result) {
+        fs.readFile(debugAppSelection, function(err, result) {
             var r;
             if (result) {
                 r = result = '' + result;
@@ -979,12 +985,12 @@ var __log, __result, __error;
                         .toLocaleString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 
                 }
-                appsArray.push(`<option value="${value.replace(/\\/g,'\\\\')}" title="${value + '&nbsp; Last&nbsp;modified:&nbsp;' + contentUpdate}">${name + ' (' + version})</option>`);
+                appsArray.push(`<option value="${value.replace(/\\/g,'\\\\')}" title="${value + '<br>Last&nbsp;modified:&nbsp;' + contentUpdate}">${name + ' (' + version})</option>`);
                 appsArray.sort();
                 $('#debugApps').html(appsArray.join('\n'));
                 $('#debugApps').val(value);
                 $('#debugApps').selectmenu('refresh');
-                fs.outputFile(cookieFile, value);
+                fs.outputFile(debugAppSelection, value);
                 // add the file to the debug File list
                 // we need to check the debug file before we write to it to see if the new entry is not there as non include file
                 // if it's there as a non include file then we want to remove the :- sign otherwise we want to append the file to the list
@@ -1047,7 +1053,7 @@ var __log, __result, __error;
             fs.outputFile(debugAppFile, result, dummy);
         });
         var appSelection = $('#debugApps').val();
-        fs.outputFile(cookieFile, appSelection);
+        fs.outputFile(debugAppSelection, appSelection);
     }; // end of removeDropdownOption
 
 
@@ -1087,8 +1093,8 @@ var __log, __result, __error;
 
 
     var launchDebug, openFolderApp;
-    //var cstkFolder, defaultChromePath, cookieFile, debugAppFile, appSelection, openFolderApp, openFolderAppFile;
-    // var cstkFolder, defaultChromePath, cookieFile, debugAppFile, appSelection, openFolderApp, openFolderAppFile;
+    //var cstkFolder, defaultChromePath, debugAppSelection, debugAppFile, appSelection, openFolderApp, openFolderAppFile;
+    // var cstkFolder, defaultChromePath, debugAppSelection, debugAppFile, appSelection, openFolderApp, openFolderAppFile;
 
     fs.readFile(openFolderAppFile, function(err, result) {
         var baseName, defaultApp;
@@ -1152,104 +1158,6 @@ var __log, __result, __error;
         exec('X http://www.creative-scripts.com '.replace(/X/, isMac ? 'open' : 'start'));
     });
 
-    ///////////////////////
-    // Open Chrome Debug //
-    ///////////////////////
-
-    // exec('mdfind kMDItemCFBundleIdentifier == "com.google.Chrome"', function(e,r){alert(r)})
-
-    (function() {
-        // check if chrome present will add cefClient later
-        //exec('mdfind \'kMDItemCFBundleIdentifier == "com.google.Chrome" || kMDItemCFBundleIdentifier == "org.cef.cefclient"\'', function(e, r) { alert(r); });
-        /***********************************************************************************
-         * Volumes/Macintosh HD/Applications/Google Chrome.app                              *
-         * Applications/Google Chrome.app                                                   *
-         * Users/Trevor/Documents/SDKs/CEP 7/CEP-Resources/CEP_7.x/cefclient.app            *
-         * Users/Trevor/Documents/Magic Briefcase/Books/CEP-Resources/CEP_7.x/cefclient.app *
-         ***********************************************************************************/
-
-        // Then process each file as follows to give the version
-        // plutil -p /Applications/Google\ Chrome.app/Contents/Info.plist | grep CFBundleShortVersionString
-        // "CFBundleShortVersionString" => "62.0.3202.62"
-        // Can also do
-        // mdls /Applications/Google\ Chrome.app | grep kMDItemVersion
-        // kMDItemVersion                 = "62.0.3202.62"
-
-
-        // after the 1st exec one can know how many apps there are
-        // one can use loop the mdls exec and on callback check the filled array count
-        //
-        // on Windows
-        // wmic datafile where name='C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe' get Version /value
-        // Version=61.0.3163.100
-        // "C:\Users\Trevor\Documents\Adobe Scripts\SDKs\sigcheck64.exe" -n -q "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
-        // 61.0.3163.100
-        // would need to package sigcheck64
-        // powershell (Get-Item "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe").VersionInfo
-        // 61.0.3163.100    61.0.3163.100    C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
-        // looks like the best way to go
-        // powershell "(Get-Item 'C:\Program Files (x86)\Google\Chrome\Application\chrome.exe').VersionInfo"
-        //
-        //
-        // To check out open ports
-        // Mac -
-        // lsof -PiTCP -sTCP:LISTEN | grep CEPHtmlEn
-        // Windows -
-        // netstat -aon | findstr 127.0 | findstr 0.0.0.0:0
-        //   TCP    127.0.0.1:843          0.0.0.0:0              LISTENING       9952
-        //   TCP    127.0.0.1:1556         0.0.0.0:0              LISTENING       3352
-        //   TCP    127.0.0.1:1557         0.0.0.0:0              LISTENING       3352
-        //   TCP    127.0.0.1:1978         0.0.0.0:0              LISTENING       11952
-        //   TCP    127.0.0.1:5354         0.0.0.0:0              LISTENING       3344
-        //   TCP    127.0.0.1:5939         0.0.0.0:0              LISTENING       3880
-        //   TCP    127.0.0.1:9072         0.0.0.0:0              LISTENING       27864
-        //   TCP    127.0.0.1:9990         0.0.0.0:0              LISTENING       3712
-        //   TCP    127.0.0.1:15292        0.0.0.0:0              LISTENING       11940
-        //   TCP    127.0.0.1:17600        0.0.0.0:0              LISTENING       9952
-        //   TCP    127.0.0.1:65000        0.0.0.0:0              LISTENING       3704
-        //   TCP    127.0.0.1:65001        0.0.0.0:0              LISTENING       4952
-        //   Then need to compare the PIDs to the CEF pids
-        //   nope do the other way around
-        //   netstat -aon | findstr 27864
-        //   TCP    127.0.0.1:9072         0.0.0.0:0              LISTENING       27864
-        //   need to then check that the finds are the PIDs and not the ports, that can be done on the js side
-        //   To find CEPHtmlEngine.exe
-        //   tasklist | findstr CEPHtmlEngine.exe
-        /*  CEPHtmlEngine.exe            25756 Console                    1     42,104 K
-            CEPHtmlEngine.exe            20284 Console                    1     39,748 K
-            CEPHtmlEngine.exe            27864 Console                    1     43,084 K
-            CEPHtmlEngine.exe             8536 Console                    1     52,280 K
-            CEPHtmlEngine.exe            26932 Console                    1     48,568 K
-            CEPHtmlEngine.exe            17044 Console                    1     65,008 K
-            CEPHtmlEngine.exe            22888 Console                    1     41,496 K
-            CEPHtmlEngine.exe            28028 Console                    1     41,424 K
-            CEPHtmlEngine.exe            24320 Console                    1     31,440 K
-            CEPHtmlEngine.exe            28100 Console                    1     31,488 K
-            CEPHtmlEngine.exe            24940 Console                    1     56,448 K
-            CEPHtmlEngine.exe            24672 Console                    1     61,516 K
-        */
-
-        /*
-        // need to test wmic on Windows Home - tested seems to work :-\
-        wmic.exe path Win32_Process where handle='27864'  get CommandLine /format:list
-        CommandLine="C:\Program Files\Adobe\Adobe Illustrator CC 2017\Support Files\Contents\Windows\CEPHtmlEngine\CEPHtmlEngine.exe" "C:\Program Files\Common Files\Adobe\CEP\extensions\CSTK\html\index.html" ebc0f56f-0838-4e23-acc0-1418483c4bdb 24796 ILST 21.0.0 com.creative-scripts.cstk.1 3 "C:\Program Files\Common Files\Adobe\CEP\extensions\CSTK" "illustrator" 1 WyItLWVuYWJsZS1ub2RlanMiLCItLW1peGVkLWNvbnRleHQiXQ== en_IL 4293980400 100
-        can use
-        wmic.exe path Win32_Process where Name='CEPHtmlEngine.exe' get handle, commandline  /format:list
-        this will list all processes in the form
-        wmic.exe path Win32_Process where handle='27864'  get CommandLine /format:list
-        CommandLine="C:\Program Files\Adobe\Adobe Illustrator CC 2017\Support Files\Contents\Windows\CEPHtmlEngine\CEPHtmlEngine.exe" "C:\Program Files\Common Files\Adobe\CEP\extensions\CSTK\html\index.html" ebc0f56f-0838-4e23-acc0-1418483c4bdb 24796 ILST 21.0.0 com.creative-scripts.cstk.1 3 "C:\Program Files\Common Files\Adobe\CEP\extensions\CSTK" "illustrator" 1 WyItLWVuYWJsZS1ub2RlanMiLCItLW1peGVkLWNvbnRleHQiXQ== en_IL 4293980400 100
-        Handle=27864
-        We then have access to the app running the extension and the extensions id and pid and then can see if it's got a debug port
-        Mac -
-        ps ax | grep "CEPHtmlEngine.app"
-        1042   ??  S      0:44.47 /Applications/Adobe InDesign CC 2018/Adobe InDesign CC 2018.app/Contents/MacOS/CEP/CEPHtmlEngine/CEPHtmlEngine.app/Contents/MacOS/CEPHtmlEngine 74f9081c-9da3-4a7b-a6ab-cbeb77c9201b 2f40fe61-5f68-452b-b710-2ae80398cab5 IDSN 13.0 com.adobe.ccx.start 1 /Applications/Adobe InDesign CC 2018/Adobe InDesign CC 2018.app/Contents/Resources/CEP/extensions/com.adobe.ccx.start 64 WyItLW5vZGVqcy1kaXNhYmxlZCIsIi0taGlnaC1kcGktc3VwcG9ydD0xIiwiLS1kaXNhYmxl^M\012LXBpbmNoIl0= en_IL 100 -4671304
-        1047   ??  S      0:34.99 /Applications/Adobe InDesign CC 2018/Adobe InDesign CC 2018.app/Contents/MacOS/CEP/CEPHtmlEngine/CEPHtmlEngine.app/Contents/Frameworks/CEPHtmlEngine Helper.app/Contents/MacOS/CEPHtmlEngine Helper --type=gpu-process --no-sandbox --lang=en --log-file=/Users/Trevor/Library/Logs/CSXS/CEPHtmlEngine8-IDSN-13.0-com.adobe.ccx.start.log --log-severity=error --params_ppid=IDSN --params_ppversion=13.0 --params_extensionid=com.adobe.ccx.start --params_loglevel=1 --params_extensionuuid=74f9081c-9da3-4a7b-a6ab-cbeb77c9201b --params_clientid=2f40fe61-5f68-452b-b710-2ae80398cab5 --node-module-dir=/Applications/Adobe InDesign CC 2018/Adobe InDesign CC 2018.app/Contents/Resources/CEP/extensions/com.adobe.ccx.start --params_commandline=WyItLW5vZGVqcy1kaXNhYmxlZCIsIi0taGlnaC1kcGktc3VwcG9ydD0xIiwiLS1kaXNhYmxl^M\012LXBpbmNoIl0= --supports-dual-gpus=false --gpu-driver-bug-workarounds=0,1,10,23,25,36,39,47,53,61,63,64,65,66,68,73,74,76,84,85,86,89,92 --disable-gl-extensions=GL_KHR_blend_equation_advanced GL_KHR_blend_equation_advanced_coherent --gpu-vendor-id=0x8086 --gpu-device-id=0x0166 --gpu-driver-vendor --gpu-driver-version --gpu-driver-date --gpu-active-vendor-id=0x8086 --gpu-active-device-id=0x0166 --lang=en --log-file=/Users/Trevor/Library/Logs/CSXS/CEPHtmlEngine8-IDSN-13.0-com.adobe.ccx.start.log --log-severity=error --params_ppid=IDSN --params_ppversion=13.0 --params_extensionid=com.adobe.ccx.start --params_loglevel=1 --params_extensionuuid=74f9081c-9da3-4a7b-a6ab-cbeb77c9201b --params_clientid=2f40fe61-5f68-452b-b710-2ae80398cab5 --node-module-dir=/Applications/Adobe InDesign CC 2018/Adobe InDesign CC 2018.app/Contents/Resources/CEP/extensions/com.adobe.ccx.start --params_commandline=WyItLW5vZGVqcy1kaXNhYmxlZCIsIi0taGlnaC1kcGktc3VwcG9ydD0xIiwiLS1kaXNhYmxl^M\012LXBpbmNoIl0= --service-request-channel-token=4E49BF968C83CB109A581C3F6134E422
-        Then can grep with js compare pid with tcp list and can make a list of all the extensions and there debug ports
-
-        */
-
-    })();
-
     ////////////////////
     // Set Log Levels //
     ////////////////////
@@ -1307,6 +1215,11 @@ var __log, __result, __error;
 
 
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // This function gets all the active CEPHTMLEngine processes with info on PIDs and command line calls    //
+    // The results are sent to the getDebugPorts function which checks if debug ports are being listened to  //
+    // This can be done by comparing the PIDs with the active ports, Info is extracted from the command line //
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////
     getCeps = isMac ? function() {
             exec('ps ax | grep "CEPHtmlEngine.app"', getDebugPorts);
         } :
@@ -1314,19 +1227,19 @@ var __log, __result, __error;
             var powershell = 'powershell "Get-WmiObject win32_process -Filter \\"name=\'CEPHTMLEngine.exe\'\\" handle, commandLine"';
             exec(powershell, function(e, r) {
                 if (e) {
-                    log('getCeps error: ' + e, 'e', 'ping');
+                    __error('getCeps powershell error: ' + e + "\u2757");
                 }
-                //log(e||r)
                 r = r.replace(/[\r\n]\s{15,}/g, '').replace(/[\n\r]+Handle +:/g, '').match(/CommandLine[^\r\n]+/g);
                 // log(r, 'v', 'ping')
                 getDebugPorts(e, r);
             });
         }; // end of getCeps
 
-
+    ///////////////////////////////////////////////////////////
+    // Get active debug ports so they can easily be accessed //
+    ///////////////////////////////////////////////////////////
     getDebugPorts = isMac ? function(err, cepProcesses) {
             exec('lsof -PiTCP -sTCP:LISTEN | grep CEPHtmlEn', function(err, result) {
-
                 processCeps(err, result, cepProcesses);
             });
         } :
@@ -1358,7 +1271,6 @@ var __log, __result, __error;
                     // result[n] =  r.match(/\d+\s*$/);
 
                 }
-                //jsx.eval('alert("""__cep__""")', { cep: (JSON.stringify(result)) });
                 processCeps(err, result, cepProcesses);
             });
         }; // end of getDebugPorts
@@ -1536,7 +1448,7 @@ var __log, __result, __error;
                 } // end of extension loop
                 displayExtensions(extensions);
             } catch (e) {
-                log(e.stack, '  e');
+                log(e.stack, 'e');
                 alert(e.stack);
             }
         } : // Windows
@@ -1699,13 +1611,14 @@ var __log, __result, __error;
                 displayExtensions(extensions);
             } catch (e) {
                 log(e.stack);
-                alert(e.stack);
             }
         }; // end of processCeps
 
 
 
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    // Shows Info on the extensions with buttons to open extension folders, logs and debug ports //
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     displayExtensions = function(extensions) {
         /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // each extension should have at least some of the following keys                                              //
@@ -1829,26 +1742,21 @@ var __log, __result, __error;
                     if (event.shiftKey) {
                         openFolder(extension.dirName);
                     } else {
+                        setUI(false, false, 'Opening extension directory');
                         exec((isMac ? 'open "' : 'explorer.exe "') + extension.dirName + '"');
                     }
                 });
             }
             if (extension.log) {
                 $('#OpenLog_' + n).click(function() {
-                    // The log could have permissions issues regarding opening it
-                    // using execute() will circumvent besides we can provide some prettier feedback
-                    var script = `
-                            if (!(new File("__file__").execute())){
-                                alert(
-                                    !(new File("__file__").exists) ?
-                                    "The log probably hasn't been created and couldn't be opened.\\n" +
-                                    "Start the extension to created the log." :
-                                    "Make sure you've there's an assigned program for opening \\".log\\" files"
-                                    );
-                            }
-                            `;
-                    jsx.eval(script.join('\n'), { file: extension.log.replace(/\\/g, '\\\\\\\\') });
-                    // exec('open "__FILE__"'.replace(/__FILE__/, '' + extension.log));
+                    fs.stat(extension.log, function(err) {
+                        if (err) {
+                            setUI(false, false, "The log file couldn't be opened, It probably doesn't exist");
+                            return;
+                        }
+                        setUI(false, false, 'Opening Log');
+                        exec((isMac ? 'open "' : 'explorer "') + extension.log + '"');
+                    });
                 });
             }
             if (extension.debugPort) {
@@ -1932,13 +1840,16 @@ var __log, __result, __error;
         $debugA.selectmenu({
             change: function() {
                 appSelection = $('#debugApps').val();
-                fs.outputFile(cookieFile, appSelection, function() {});
+                fs.outputFile(debugAppSelection, appSelection, function() {});
                 if (appSelection) {
                     $('#debugAppsSP').tooltip({
                         content: 'Debug app: ' + appSelection,
                         show: { effect: "drop", duration: 250 },
                         hide: { effect: "drop", duration: 250 }
-                    }).tooltip('close').tooltip('open');
+                    }).mouseleave(function() { $('#debugAppsSP').tooltip('close'); }).focusout(function() { $('#debugAppsSP').tooltip('close'); });
+                    $('#debugAppsSP').tooltip('close');
+                    // $("#openFolders").tooltip({ content: "Show Extension Tools" }).mouseleave(function() { $('#openFolders').tooltip('close'); }).focusout(function() { $('#openFolders').tooltip('close'); });
+
                     // the tooltip had problems :-/
                     // $('#debugApps-button')
                     //     .attr('title',
@@ -2029,22 +1940,25 @@ var __log, __result, __error;
             }
         });
 
-        $('#sudoEnter').click(function() {
-            var command, password;
-            password = $('#sudoText').val();
-            if (!password) {
-                return;
-            }
-            command = 'echo _PASSWORD_ | sudo -S killall cfprefsd'.replace(/_PASSWORD_/, password);
-            $('#sudoText').val('');
+        // Not implemented
 
-            exec(command);
-            $('#sudo').hide();
-        });
-        $('#sudoClose').click(function() {
-            $('#sudo').hide();
-        });
-        $('#sudo').hide();
+        // $('#sudoEnter').click(function() {
+        //     var command, password;
+        //     password = $('#sudoText').val();
+        //     if (!password) {
+        //         return;
+        //     }
+        //     command = 'echo _PASSWORD_ | sudo -S killall cfprefsd'.replace(/_PASSWORD_/, password);
+        //     $('#sudoText').val('');
+
+        //     exec(command);
+        //     $('#sudo').hide();
+        // });
+        // $('#sudoClose').click(function() {
+        //     $('#sudo').hide();
+        // });
+        // $('#sudo').hide();
+
         searchForandAddDebugApps();
         getCeps();
     });
