@@ -64,6 +64,8 @@ var __log, __result, __error;
 
      */
 
+    var options = {};
+    options.showResults = true;
     $("#configBT").click(function() {
         $('#configDiv').css('display', $('#configDiv').is(":visible") ? 'none' : 'block');
         $('#configBT').attr('title', $('#configDiv').is(":visible") ? 'Hide config options' : 'Show config options');
@@ -118,6 +120,16 @@ var __log, __result, __error;
             __log(' Saved: ' + snippet, 'background:#FFFCAA');
         });
     });
+
+    $("#resultModeDV").click(function() {
+        options.showResults = !options.showResults;
+        if (options.showResults) {
+            $("#resultModeDV").html('<i class="fas fa-check-square fa-lg"></i> Include snippet in results');
+        } else {
+            $("#resultModeDV").html('<i class="fas fa-square fa-lg"></i> Include snippet in results');
+        }
+    });
+
 
     dummy = function(err) {
         //  function might be needed at some point to stop asynchronous node functions throwing errors
@@ -638,7 +650,7 @@ var __log, __result, __error;
             $('#folders').hide();
             $("#openFolders").html('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M128 116V76c0-8.837 7.163-16 16-16h352c8.837 0 16 7.163 16 16v40c0 8.837-7.163 16-16 16H144c-8.837 0-16-7.163-16-16zm16 176h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h352c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H144c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zM16 144h64c8.837 0 16-7.163 16-16V64c0-8.837-7.163-16-16-16H16C7.163 48 0 55.163 0 64v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16zm0 160h64c8.837 0 16-7.163 16-16v-64c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v64c0 8.837 7.163 16 16 16z"/></svg>');
             $("#openFolders").tooltip({ content: "Show Extension Tools" }).mouseleave(function() { $('#openFolders').tooltip('close'); }).focusout(function() { $('#openFolders').tooltip('close'); });
-            $( "#openFolders" ).tooltip( "close" );
+            $("#openFolders").tooltip("close");
             $('#console').show();
         } else {
             $('#evalCode').focus();

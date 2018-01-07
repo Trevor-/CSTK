@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <link id="hostStyle" rel="stylesheet" href="../css/styles.css" />
+    <link id="hostStyle" rel="stylesheet" href="../css/fontawesome-all.css" />
     <link rel="stylesheet" href="../js/libs/pretty-dropdowns/dist/css/prettydropdowns.css">
     <link rel="stylesheet" href="../js/libs/jquery-ui-1.12.1.custom/jquery-ui.css">
     <script>
@@ -123,34 +124,33 @@
                 <span title="Set console mode to Shell" id="execModeBT" class="label csButton greyButton" style="color: black;text-shadow: none; position: relative;bottom: 2px;margin: 0 4px 4px 0;">Shell
                 </span>
                 <div style="display: inline-block;">
-                    <span id="configBT" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Show config options"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M481.156 200c9.3 0 15.12 10.155 10.325 18.124C466.295 259.992 420.419 288 368 288c-79.222 0-143.501-63.974-143.997-143.079C223.505 65.469 288.548-.001 368.002 0c52.362.001 98.196 27.949 123.4 69.743C496.24 77.766 490.523 88 481.154 88H376l-40 56 40 56h105.156zm-171.649 93.003L109.255 493.255c-24.994 24.993-65.515 24.994-90.51 0-24.993-24.994-24.993-65.516 0-90.51L218.991 202.5c16.16 41.197 49.303 74.335 90.516 90.503zM104 432c0-13.255-10.745-24-24-24s-24 10.745-24 24 10.745 24 24 24 24-10.745 24-24z"/></svg>
+                    <span id="configBT" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;" title="Show config options">
+                        <i class="fas fa-wrench fa-lg"></i>
                     </span>
-                    <span id="zoomOut" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Decrease console font size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12H124c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
+                    <span id="zoomOut" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;" title="Decrease console font size">
+                        <i class="fas fa-search-minus fa-lg"></i>
                     </span>
-                    <span id="zoomIn" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;position: relative;bottom: 2px;" title="Increase console font size"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M304 192v32c0 6.6-5.4 12-12 12h-56v56c0 6.6-5.4 12-12 12h-32c-6.6 0-12-5.4-12-12v-56h-56c-6.6 0-12-5.4-12-12v-32c0-6.6 5.4-12 12-12h56v-56c0-6.6 5.4-12 12-12h32c6.6 0 12 5.4 12 12v56h56c6.6 0 12 5.4 12 12zm201 284.7L476.7 505c-9.4 9.4-24.6 9.4-33.9 0L343 405.3c-4.5-4.5-7-10.6-7-17V372c-35.3 27.6-79.7 44-128 44C93.1 416 0 322.9 0 208S93.1 0 208 0s208 93.1 208 208c0 48.3-16.4 92.7-44 128h16.3c6.4 0 12.5 2.5 17 7l99.7 99.7c9.3 9.4 9.3 24.6 0 34zM344 208c0-75.2-60.8-136-136-136S72 132.8 72 208s60.8 136 136 136 136-60.8 136-136z"/></svg>
+                    <span id="zoomIn" class="csButton blueButton" style="padding: 0px 4px 0px;margin: 0 4px 0 0;" title="Increase console font size">
+                        <i class="fas fa-search-plus fa-lg"></i>
                     </span>
-                    <span id="openSnippetBT" class="csButton blueButton" style="padding: 0px 4px 0px; margin: 0 4px 0 0px; position: relative;bottom: 2px;" title="Open Snippet">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" style="/*width: 16px;*/height: 16px; position: relative; top: 5px;"><path fill="#FFF" d="M527.943 224H480v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v288c0 26.51 21.49 48 48 48h400a48.001 48.001 0 0 0 40.704-22.56l79.942-128c19.948-31.917-3.038-73.44-40.703-73.44zM54 112h134.118l64 64H426a6 6 0 0 1 6 6v42H152a48 48 0 0 0-41.098 23.202L48 351.449V117.993A5.993 5.993 0 0 1 54 112zm394 288H72l77.234-128H528l-80 128z"/>
-                    </svg>
+                    <span id="openSnippetBT" class="csButton blueButton" style="padding: 0px 4px 0px; margin: 0 4px 0 0px; " title="Open Snippet">
+                        <i class="fas fa-folder-open fa-lg"></i>
                     </span>
-                    <span id="saveSnippetBT" class="csButton blueButton" style="padding: 0px 4px 0px; margin: 0 4px 0 0px; position: relative;bottom: 2px;" title="Save Snippet">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="/*width: 16px;*/height: 16px; position: relative; top: 5px;"><path fill="#FFF" d="M433.941 129.941l-83.882-83.882A48 48 0 0 0 316.118 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V163.882a48 48 0 0 0-14.059-33.941zM272 80v80H144V80h128zm122 352H54a6 6 0 0 1-6-6V86a6 6 0 0 1 6-6h42v104c0 13.255 10.745 24 24 24h176c13.255 0 24-10.745 24-24V83.882l78.243 78.243a6 6 0 0 1 1.757 4.243V426a6 6 0 0 1-6 6zM224 232c-48.523 0-88 39.477-88 88s39.477 88 88 88 88-39.477 88-88-39.477-88-88-88zm0 128c-22.056 0-40-17.944-40-40s17.944-40 40-40 40 17.944 40 40-17.944 40-40 40z"/>
-                    </svg>
+                    <span id="saveSnippetBT" class="csButton blueButton" style="padding: 0px 4px 0px; margin: 0 4px 0 0px; " title="Save Snippet">
+                        <i class="fas fa-save fa-lg"></i>
                     </span>
                 </div>
             </div>
             <div id="configDiv" style="display: none;max-width: 300px;text-align: left; border: 3px solid blue;margin: 8px auto;border-radius: 5px;padding: 5px;">
-                <div>
-                    <span id="closeConfigBT" class="csButton blueButton" style="padding: 0px 4px 0px; margin: 0 4px 0 0; float: right; position: relative;" title="Hide config options">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width: 16px;position: relative; top: 5px;"><path fill="#FFF" d="M464 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm0 394c0 3.3-2.7 6-6 6H54c-3.3 0-6-2.7-6-6V86c0-3.3 2.7-6 6-6h404c3.3 0 6 2.7 6 6v340zM356.5 194.6L295.1 256l61.4 61.4c4.6 4.6 4.6 12.1 0 16.8l-22.3 22.3c-4.6 4.6-12.1 4.6-16.8 0L256 295.1l-61.4 61.4c-4.6 4.6-12.1 4.6-16.8 0l-22.3-22.3c-4.6-4.6-4.6-12.1 0-16.8l61.4-61.4-61.4-61.4c-4.6-4.6-4.6-12.1 0-16.8l22.3-22.3c4.6-4.6 12.1-4.6 16.8 0l61.4 61.4 61.4-61.4c4.6-4.6 12.1-4.6 16.8 0l22.3 22.3c4.7 4.6 4.7 12.1 0 16.8z"/>
-                    </svg>
+                <div style="font-size: .7em;position: relative;right: 0;display: block;">
+                    <span id="closeConfigBT" style="float: right; position: relative;right: 0;" title="Hide config options">
+                        <i class="fas fa-window-close fa-lg"></i>
                     </span>
-                    <span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width=18px style="position: relative;top: 3px"><path fill=#FFF d="M400 32H48C21.5 32 0 53.5 0 80v352c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-6 400H54c-3.3 0-6-2.7-6-6V86c0-3.3 2.7-6 6-6h340c3.3 0 6 2.7 6 6v340c0 3.3-2.7 6-6 6z"/></svg>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width=18px style="position: relative;top: 3px"><path fill=#FFF d="M400 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zm0 400H48V80h352v352zm-35.864-241.724L191.547 361.48c-4.705 4.667-12.303 4.637-16.97-.068l-90.781-91.516c-4.667-4.705-4.637-12.303.069-16.971l22.719-22.536c4.705-4.667 12.303-4.637 16.97.069l59.792 60.277 141.352-140.216c4.705-4.667 12.303-4.637 16.97.068l22.536 22.718c4.667 4.706 4.637 12.304-.068 16.971z"/></svg>
-                    </span>
-                    <input class="chbx" type="checkbox" id="resultModeRB" name="evalMode" checked style="display: none;">
-                    <label id="resultModeLB" for="resultModeRB">Include snippet in results</label>
+                    <div id="resultModeDV">
+                        <i class="fas fa-check-square fa-lg"></i> Include snippet in results
+                    </div>
+                    <!-- <input class="chbx" type="checkbox" id="resultModeRB" name="evalMode" checked style="display: none;"> -->
+                    <!-- <label id="resultModeLB" for="resultModeRB">Include snippet in results</label> -->
                 </div>
             </div>
             <div style="font-size: .75em;display: inline-block;">
@@ -163,7 +163,7 @@
                         <div>Press Shift+Ctrl+A to execute the whole snippet</div>
                     </div>
                 </div>
-                <!-- Zoom icons from Font Awesome -->
+                <!-- Icons from Font Awesome -->
             </div>
             <div style="margin-top: 4px;">
                 <div id="cwd" class="" style="background: white; color: red;text-align: left;width: 95%;margin: auto;display: none;padding: 5px;font-size: .75em;font-family:'Free Monospaced';line-height:1.2em;font-weight: 800;font-family: 'Free Monospaced';"><span id="pwd"></span>
