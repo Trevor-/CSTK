@@ -14,6 +14,29 @@
     \  /|_ |__)(_ |/  \|\ |    _)
      \/ |__| \ __)|\__/| \|   /__
 
+
+    |   _  _|_  |\/| _  _|.(_. _ _|.
+    |__(_|_)|_  |  |(_)(_||| |(-(_|.
+
+      __               __   __      __
+     (__\    | _  _     _) /  \ /| (__)
+      __/  __)(_|| )   /__ \__/  | (__)
+
+     __                       __                 __
+    /   _  _    _. _ |_ |_.  /   _ _ _ |_.   _  (_  _ _. _ |_ _
+    \__(_)|_)\/| |(_)| )|_.  \__| (-(_||_|\/(-  __)(_| ||_)|__)
+          |  /    _/                                    |
+
+         ___ ___  __     /   /  __   __   ___      ___         ___     __   __   __     __  ___  __    __   __
+    |__|  |   |  |__) . /   /  /  ` |__) |__   /\   |  | \  / |__  __ /__` /  ` |__) | |__)  |  /__`  /  ` /  \  |\/|
+    |  |  |   |  |    ./   /   \__, |  \ |___ /~~\  |  |  \/  |___    .__/ \__, |  \ | |     |  .__/ .\__, \__/  |  |
+
+         __  __ __        ___ __            __            __  __         ___
+     /\ |__)(_ /  \|  /  \ | |_ | \_/  |\ |/  \  |  | /\ |__)|__) /\ |\ | | \_/
+    /--\|__)__)\__/|__\__/ | |__|__|   | \|\__/  |/\|/--\| \ | \ /--\| \| |  |
+
+
+    http://creative-scripts.com
 */
 
 
@@ -73,13 +96,14 @@ var __log, __result, __error;
     var options = {};
     (function() {
         fs.readJson(optionsFile, function(err, packageObj) {
-            if (err) {
-                options.showSnippet = false;
-            } else {
+            if (!err) {
                 options = packageObj;
             }
+             // Setup default values
+            if(options.showSnippet === undefined) { options.showSnippet  =  false;}
+            if(options.consoleFontSize === undefined) { options.consoleFontSize  =  12;}
             $("#resultModeDV").html('<i class="far fa-' + (options.showSnippet ? 'check-square' : 'square') + ' fa-lg"></i> Include snippet in results');
-
+            $('.console').css('font-size', options.consoleFontSize + 'px');
         });
     })();
 
@@ -96,24 +120,24 @@ var __log, __result, __error;
         fs.outputJSON(optionsFile, options);
     });
 
+    $('#lisenceBT').click(function() {
+        exec((isMac ? 'open' : 'explorer') + ' "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=4H6E938ACF4CU"');
+    });
+
     ///////////////////////
     // Console font size //
     ///////////////////////
 
     $("#zoomOut").click(function() {
-        var newFontSize;
-        newFontSize = $('.console').css('font-size').replace(/[\.\d]+/, function(n) {
-            return +n - 1;
-        });
-        $('.console').css('font-size', newFontSize);
+        options.consoleFontSize--;
+        $('.console').css('font-size', options.consoleFontSize + 'px');
+        fs.outputJSON(optionsFile, options);
     });
 
     $("#zoomIn").click(function() {
-        var newFontSize;
-        newFontSize = $('.console').css('font-size').replace(/[\.\d]+/, function(n) {
-            return +n + 1;
-        });
-        $('.console').css('font-size', newFontSize);
+        options.consoleFontSize++;
+        $('.console').css('font-size', options.consoleFontSize + 'px');
+        fs.outputJSON(optionsFile, options);
     });
 
     ////////////////////////////
@@ -144,7 +168,7 @@ var __log, __result, __error;
         }
         fs.writeFile(snippet, $('#evalCode').val(), function(error) {
             if (error) return __error('Save Snippet Error: ' + error, 'background:#FFFCAA');
-            __log(' Saved: ' + snippet, 'background:#FFFCAA');
+            __log('Saved: ' + snippet, 'background:#FFFCAA');
         });
     });
 
@@ -241,6 +265,7 @@ var __log, __result, __error;
         beforeReg.lastIndex = 0;
         afterReg.lastIndex = 0;
 
+        // __log('keyCode: ' + key.keyCode + ' key: ' + key.key+ ' code: ' +key.code+ ' altKey: ' +key.altKey + ' meta: ' +key.metaKey )
         if (key.shiftKey && (key.keyCode === 13 || key.keyCode === 1 && key.ctrlKey)) {
             codeContents = $('#evalCode').val();
             if (key.keyCode === 13) {
@@ -254,7 +279,7 @@ var __log, __result, __error;
                 startIndex = startOfLines && startOfLines.index || 0;
                 endOfLines = afterReg.exec(afterString);
                 endIndex = pos.end + afterReg.lastIndex;
-                evalLines = codeContents.substring(startIndex, endIndex);
+                evalLines = (key.altKey) ? codeContents : codeContents.substring(startIndex, endIndex);
             } else {
                 evalLines = codeContents;
             }
@@ -304,7 +329,7 @@ var __log, __result, __error;
         resultCSS = (evalMode) ? 'background:#F5FFF5;border-bottom:green solid 1px;' : 'background:#F5F5FF;border-bottom:blue solid 1px;';
         ErrCSS = (evalMode) ? 'background:#DFD;font-weight:800;border:red dotted 1px;' : 'background:#DDF;font-weight:800;border:red dotted 1px;';
         modes = ['JS', 'JSX', 'SHELL'];
-        if (evalMode === 1 && /^[^\n\r]*?Error/i.test(execResult)) {
+        if (evalMode === 1 && /^[^\n\r]*?Error/i.test(execResult.substring(0, 200))) {
             // The jsx eval mode will not provide and official error
             // This should work for the Brits :-)
             // At worst the error will not be red
@@ -468,16 +493,11 @@ var __log, __result, __error;
 
 
     __log = function(message, style, __class) {
-        var n, l;
         var evalResult = $("#evalResult");
         if (message === undefined) { return; }
-        __class = __class ? ` class="${__class}"` : '';
+        __class = __class ? ' ' + __class : '';
         style = style || '';
-        message = ('' + message).split(/[\n\r]/);
-        l = message.length;
-        for (n = 0; n < l; n++) {
-            $(`<p${__class} style="margin:0;${style}"></p>`).text(message[n]).appendTo(evalResult);
-        }
+        $(`<p class="__pre${__class}" style="${style}"></p>`).appendTo(evalResult).text(message);
         $(evalResult).animate({
             scrollTop: $(evalResult)[0].scrollHeight - $(evalResult).height()
         }, 0);
@@ -485,9 +505,10 @@ var __log, __result, __error;
     __error = function(message, style) {
         __log(message, style, 'error');
     };
-    __result = function(error, result) {
+    __result = function(error, result, stderr) {
         var evalResult = $("#evalResult");
         if (error) { __error('Error: ' + error); }
+        if (stderr) { __error('Stderr: ' + stderr); }
         if (result) { __log('Result: ' + result); }
         $(evalResult).animate({
             scrollTop: $(evalResult)[0].scrollHeight - $(evalResult).height()
@@ -498,23 +519,14 @@ var __log, __result, __error;
         var evalResult = $("#evalResult");
         var write = function(message, style, __class, writeln) {
             if (message === undefined) { return; }
-            message = ('' + message).split(/[\n\r]/);
-            var n, l, template;
-            l = message.length;
-            template = `<span style="${style}" class="${__class}"></span>`;
-            for (n = 0; n < l; n++) {
-                if (n > 0) {
-                    $('<span><br></span>').appendTo(evalResult);
-                }
-                $(template).text(message[n]).appendTo(evalResult);
-            }
+            __class = __class ? ' ' + __class : '';
+            $(`<span style="${style}" class="__pre${__class}"></span>`).text(message).appendTo(evalResult);
             if (writeln) {
-                $('<span><br></span>').appendTo(evalResult);
+                $('<br>').appendTo(evalResult);
             }
             $(evalResult).animate({
                 scrollTop: $(evalResult)[0].scrollHeight - $(evalResult).height()
             }, 0);
-
 
         };
 

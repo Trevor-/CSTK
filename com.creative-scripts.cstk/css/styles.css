@@ -77,6 +77,11 @@
     text-align: left;
 }
 
+.__pre {
+    white-space: pre-wrap;
+    margin:0;
+}
+
 .error {
     color: red;
 }

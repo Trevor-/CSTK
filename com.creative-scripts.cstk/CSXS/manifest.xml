@@ -82,11 +82,11 @@
                         </MaxSize>
                     </Geometry>
                     <Icons>
-                        <Icon Type="Normal">./icons/pad.png</Icon>
-                        <Icon Type="RollOver">./icons/pad.png</Icon>
-                        <Icon Type="Disabled">./icons/pad.png</Icon>
-                        <Icon Type="DarkNormal">./icons/padDark.png</Icon>
-                        <Icon Type="DarkRollOver">./icons/padDark.png</Icon>
+                        <Icon Type="Normal">./icons/terminal.png</Icon>
+                        <Icon Type="RollOver">./icons/terminal.png</Icon>
+                        <Icon Type="Disabled">./icons/terminal.png</Icon>
+                        <Icon Type="DarkNormal">./icons/terminalDark.png</Icon>
+                        <Icon Type="DarkRollOver">./icons/terminalDark.png</Icon>
                     </Icons>
                 </UI>
             </DispatchInfo>

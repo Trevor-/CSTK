@@ -1,3 +1,4 @@
+#targetengine main
 alert('Engine: ' + $.engineName);
 // $.evalFile('C:\\Program Files\\Common Files\\Adobe\\CEP\\extensions\\CSTK\\jsx\\engine.jsx');
 // "C:\Program Files\Common Files\Adobe\CEP\extensions\CSTK\jsx\engine.jsx"
