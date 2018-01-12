@@ -212,20 +212,24 @@ var jsx;
         // for Ai you never need to set the forceEval to true                                                                                   //
         // for ID you if you have not coded your script appropriately and your want to send a result to the callBack then set forceEval to true //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        var isBin;
         if (forceEval) {
+
             if (JSON.parse(window.__adobe_cep__.getHostEnvironment()).appId === 'ILST') {
-                jsxScript = "eval(''' " + jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') + "\n''') + '';";
+                isBin = (jsxScript.substring(0,10) === '@JSXBIN@ES') ? '' : ' ';
+                jsxScript = "eval('''" + jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') + "\n''') + '';";
             } else {
+                isBin = (jsxScript.substring(0,10) === '@JSXBIN@ES') ? '' : '\n';
                 jsxScript = (
                     // "\n''') + '';} catch(e){(function(e){var n, a=[]; for (n in e){a.push(n + ': ' + e[n])}; return a.join('\n')})(e)}");
                     // "\n''') + '';} catch(e){e + (e.line ? ('\\nLine ' + (+e.line - 1)) : '')}");
                     [
-                        "try{eval(''' \n", // need to add an extra line otherwise #targetengine doesn't work ;-]
+                        "try{eval('''" + isBin, // need to add an extra line otherwise #targetengine doesn't work ;-]
                         jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') + "\n''') + '';",
                         "} catch (e) {",
                         "    (function(e) {",
                         "        var line, sourceLine, name, description, ErrorMessage;",
-                        "        line = +e.line - 1;", // To take into account the extra line added
+                        "        line = +e.line" + (isBin === ''? ';' : ' - 1;'), // To take into account the extra line added
                         "        sourceLine = line && e.source.split(/[\\r\\n]/)[line];",
                         "        name = e.name;",
                         "        description = e.description;",
