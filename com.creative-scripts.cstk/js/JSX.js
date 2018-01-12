@@ -42,7 +42,7 @@
 
 var jsx;
 
-// Wrap everything in an anonymous function to prevent leeks 
+// Wrap everything in an anonymous function to prevent leeks
 (function() {
     /////////////////////////////////////////////////////////////////////
     // Substitute some CSInterface functions to avoid dependency on it //
@@ -90,27 +90,27 @@ var jsx;
 
     /**
      * [evalScript] For calling jsx scripts from the js engine
-     *         
+     *
      *         The jsx.evalScript method is used for calling jsx scripts directly from the js engine
      *         Allows for easy replacement i.e. variable insertions and for forcing eval.
      *         For convenience jsx.eval or jsx.script or jsx.evalscript can be used instead of calling jsx.evalScript
-     * 
-     * @param  {String} jsxScript 
+     *
+     * @param  {String} jsxScript
      *                            The string that makes up the jsx script
      *                            it can contain a simple template like syntax for replacements
      *                            'alert("__foo__");'
      *                            the __foo__ will be replaced as per the replacements parameter
-     * 
-     * @param  {Function} callback  
+     *
+     * @param  {Function} callback
      *                            The callback function you want the jsx script to trigger on completion
      *                            The result of the jsx script is passed as the argument to that function
      *                            The function can exist in some other file.
      *                            Note that InDesign does not automatically pass the callBack as a string.
-     *                            Either write your InDesign in a way that it returns a sting the form of 
+     *                            Either write your InDesign in a way that it returns a sting the form of
      *                            return 'this is my result surrounded by quotes'
      *                            or use the force eval option
      *                            [Optional DEFAULT no callBack]
-     *                            
+     *
      * @param  {Object} replacements
      *                            The replacements to make on the jsx script
      *                            given the following script (template)
@@ -120,9 +120,9 @@ var jsx;
      *                            we would pass the following object
      *                            {"message": 'I was born in the year', "val": 1234}
      *                            or if not using reserved words like do we can leave out the key quotes
-     *                            {message: 'I was born in the year', val: 1234}                           
+     *                            {message: 'I was born in the year', val: 1234}
      *                            [Optional DEFAULT no replacements]
-     *                            
+     *
      * @param  {Bolean} forceEval
      *                             If the script should be wrapped in an eval
      *                             This is only necessary if you need result to come back as a string
@@ -149,7 +149,7 @@ var jsx;
      *      The following keys are the same replacements || replace
      *      The following keys are the same eval || forceEval || forceeval
      *      The following keys are the same forceEvalScript || forceevalscript || evalScript || evalscript;
-     * 
+     *
      * @return {Boolean} if the jsxScript was executed or not
      */
 
@@ -213,7 +213,15 @@ var jsx;
         // for ID you if you have not coded your script appropriately and your want to send a result to the callBack then set forceEval to true //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (forceEval) {
-            jsxScript = "eval(''' " + jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "\n''') + '';";
+            if (JSON.parse(window.__adobe_cep__.getHostEnvironment()).appId === 'ILST') {
+                jsxScript = "eval(''' " + jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') + "\n''') + '';";
+            } else {
+                jsxScript = ("try{eval(''' \n" +
+                    jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') +
+                    "\n''') + '';} catch(e){e + (e.line ? ('\\nLine ' + (+e.line - 1)) : '')}");
+            }
+
+            //__log(jsxScript);
         }
 
         ////////////////////////////////
@@ -248,32 +256,32 @@ var jsx;
 
     /**
      * [evalFile] For calling jsx scripts from the js engine
-     *         
+     *
      *         The jsx.evalFiles method is used for executing saved jsx scripts
      *         where the jsxScript parameter is a string of the jsx scripts file location.
      *         For convenience jsx.file or jsx.evalfile can be used instead of jsx.evalFile
-     * 
-     * @param  {String} file 
+     *
+     * @param  {String} file
      *                            The path to jsx script
      *                            If only the base name is provided then the path will be presumed to be the
      *                            To execute files stored in the jsx folder located in the __dirname folder use
      *                            jsx.evalFile('myFabJsxScript.jsx');
      *                            To execute files stored in the a folder myFabScripts located in the __dirname folder use
-     *                            jsx.evalFile('./myFabScripts/myFabJsxScript.jsx'); 
+     *                            jsx.evalFile('./myFabScripts/myFabJsxScript.jsx');
      *                            To execute files stored in the a folder myFabScripts located at an absolute url use
      *                            jsx.evalFile('/Path/to/my/FabJsxScript.jsx'); (mac)
      *                            or jsx.evalFile('C:Path/to/my/FabJsxScript.jsx'); (windows)
-     * 
-     * @param  {Function} callback  
+     *
+     * @param  {Function} callback
      *                            The callback function you want the jsx script to trigger on completion
      *                            The result of the jsx script is passed as the argument to that function
      *                            The function can exist in some other file.
      *                            Note that InDesign does not automatically pass the callBack as a string.
-     *                            Either write your InDesign in a way that it returns a sting the form of 
+     *                            Either write your InDesign in a way that it returns a sting the form of
      *                            return 'this is my result surrounded by quotes'
      *                            or use the force eval option
      *                            [Optional DEFAULT no callBack]
-     *                            
+     *
      * @param  {Object} replacements
      *                            The replacements to make on the jsx script
      *                            give the following script (template)
@@ -283,24 +291,24 @@ var jsx;
      *                            we would pass the following object
      *                            {"message": 'I was born in the year', "val": 1234}
      *                            or if not using reserved words like do we can leave out the key quotes
-     *                            {message: 'I was born in the year', val: 1234}  
+     *                            {message: 'I was born in the year', val: 1234}
      *                            By default when possible the forceEvalScript will be set to true
      *                            The forceEvalScript option cannot be true when there are replacements
      *                            To force the forceEvalScript to be false you can send a blank set of replacements
-     *                            jsx.evalFile('myFabScript.jsx', {}); Will NOT be executed using the $.evalScript method                      
-     *                            jsx.evalFile('myFabScript.jsx'); Will YES be executed using the $.evalScript method 
-     *                            see the forceEvalScript parameter for details on this                     
+     *                            jsx.evalFile('myFabScript.jsx', {}); Will NOT be executed using the $.evalScript method
+     *                            jsx.evalFile('myFabScript.jsx'); Will YES be executed using the $.evalScript method
+     *                            see the forceEvalScript parameter for details on this
      *                            [Optional DEFAULT no replacements]
-     *                            
+     *
      * @param  {Bolean} forceEval
      *                             If the script should be wrapped in an eval
-     *                             This is only necessary if 
+     *                             This is only necessary if
      *                             1) You need the result for a callback
      *                             2) In an application that by default does not return a string
      *                             i.e. you need a callback from indesign
      *                             3) The result isn't explicitly passed as a String
      *                             4) replacements have been passed.
-     *                             
+     *
      *                             If no replacements are needed then the jsx script is be executed by using the $.evalFile method
      *                             This exposes the true value of the $.fileName property 8-)
      *                             In such a case it's best to avoid using the $.__fileName() with no base name as it won't work
@@ -314,7 +322,7 @@ var jsx;
      *                             i.e. if the fileName is important to you then don't do that.
      *                             It also will force the result of the jsx file as a string which is particularly useful for InDesign callBacks
      *                             [Optional DEFAULT false]
-     * 
+     *
      * Note 1) The order of the parameters is irrelevant
      * Note 2) One can pass the arguments as an object if desired
      *         jsx.evalScript(myCallBackFunction, 'alert("__myMessage__");', true);
@@ -327,12 +335,12 @@ var jsx;
      *         });
      *         note that either lower or camelCase key names or valid
      *         i.e. both callback or callBack will work
-     *         
+     *
      *      The following keys are the same file || jsx || script || jsxScript || jsxscript
      *      The following keys are the same callBack || callback
      *      The following keys are the same replacements || replace
      *      The following keys are the same eval || forceEval || forceeval
-     *      
+     *
      * @return {Boolean} if the jsxScript was executed or not
      */
 
@@ -450,7 +458,7 @@ var jsx;
             // Check that the path exist, should change this to asynchronous at some point
             try {
                 fs.statSync(jsxScript);
-                // TODO Needs more checking for windows 
+                // TODO Needs more checking for windows
                 jsxScript = fileNameScript.replace(/__fileName__/, jsxScript).replace(/__basename__/, path.win32.basename(jsxScript)) +
                     '$.evalFile(new File("' + jsxScript + '", 1e14)) + "";';
                 evalScript(jsxScript, callback);

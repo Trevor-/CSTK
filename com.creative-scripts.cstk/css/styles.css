@@ -294,7 +294,7 @@ h3 {
 .link {
     text-decoration: underline;
     /*color: blue;*/
-    font-weight: 800;
+    font-weight: 100;
     font-size: 1.1em;
     cursor: pointer;
 }

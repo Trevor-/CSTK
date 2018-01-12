@@ -11,32 +11,32 @@
             <!-- This is for CC2015 onwards -->
             <!-- Uncomment Host tags according to the apps you want your panel to support -->
             <!-- Photoshop Extended -->
-            <Host Name="PHXS" Version="10" />
+            <Host Name="PHXS" Version="10" /> <!-- Tested -->
             <!-- Photoshop -->
             <!-- <Host Name="PHSP" Version="10" /> -->
             <!-- Illustrator -->
-            <Host Name="ILST" Version="19" />
+            <Host Name="ILST" Version="19" /> <!-- Tested -->
             <!-- InDesign -->
-            <Host Name="IDSN" Version="11" />
+            <Host Name="IDSN" Version="11" /> <!-- Tested -->
             <!-- InCopy -->
-            <Host Name="AICY" Version="11" />
+            <Host Name="AICY" Version="11" /> <!-- Not Tested but sould be the same as InDesign-->
             <!-- Premiere -->
-            <Host Name="PPRO" Version="9" />
+            <Host Name="PPRO" Version="9" /> <!-- Tested -->
             <!-- AfterEffects -->
-            <Host Name="AEFT" Version="13" />
+            <Host Name="AEFT" Version="13" /> <!-- Tested -->
             <!-- PRELUDE -->
-            <Host Name="PRLD" Version="4" />
+            <Host Name="PRLD" Version="4" /> <!-- Not Tested -->
             <!-- FLASH Pro -->
-            <Host Name="FLPR" Version="15" />
+            <Host Name="FLPR" Version="15" /> <!-- Not Tested -->
             <!-- Audition -->
-            <Host Name="AUDT" Version="8" />
+            <Host Name="AUDT" Version="8" /> <!-- Not Tested -->
             <!-- Dreamweaver -->
-            <Host Name="DRWV" Version="16" />
+            <Host Name="DRWV" Version="16" /> <!-- JSX Console doesn't work JS, Shell and other features work look like they work -->
             <!-- Muse -->
-            <Host Name="MUSE" Version="2017" />
+            <Host Name="MUSE" Version="2017" /> <!-- Not showing up -->
             <!-- Bridge -->
-            <Host Name="KBRG" Version="[8.0,99.9]" />
-            <Host Name="BRDG" Version="[8.0,99.9]" />
+            <Host Name="KBRG" Version="[8.0,99.9]" /> <!-- Not showing up -->
+            <Host Name="BRDG" Version="[8.0,99.9]" /> <!-- Not showing up -->
         </HostList>
         <LocaleList>
             <Locale Code="All" />
