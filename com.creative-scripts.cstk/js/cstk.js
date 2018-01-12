@@ -183,9 +183,9 @@ var __log, __result, __error;
     };
 
     // Make sure the correct whole snippet OS dependent shortcut shows up
-    if(isMac){
+    if (isMac) {
         $("#wholeSnippetDV").text('Press Option+Enter to execute the whole snippet');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option+Enter': 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     }
 
     ////////////////////////////////////////////////////////
@@ -214,7 +214,7 @@ var __log, __result, __error;
         $("#EvalMode").text("JS");
         $("#EVAL").addClass("blueButton");
         $("#jsModeBT").removeClass("greyButton").addClass('blueButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script.<br>' + (isMac ? 'Option+Enter': 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script.<br>' + (isMac ? 'Option+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     });
 
     $('#jsxModeBT').click(function() { // JSX
@@ -234,7 +234,7 @@ var __log, __result, __error;
         $("#EvalMode").text("JSX");
         $("#EVAL").addClass("greenButton");
         $("#jsxModeBT").removeClass("greyButton").addClass('greenButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option+Enter': 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     });
 
 
@@ -255,7 +255,7 @@ var __log, __result, __error;
         $("#EvalMode").text(isMac ? "BASH" : "CMD");
         $("#EVAL").addClass("redButton");
         $("#execModeBT").removeClass("greyButton").addClass('redButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script.<br>' + (isMac ? 'Option+Enter': 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script.<br>' + (isMac ? 'Option+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
     });
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -271,13 +271,20 @@ var __log, __result, __error;
         beforeReg.lastIndex = 0;
         afterReg.lastIndex = 0;
 
+        ////////////////////////////////////////////////////////////////////////////////////////
+        // Windows and Mac and differing Chrome versions pickup differing key events          //
+        // This allows for executing selected lines using Shift+Enter                         //
+        // And the whole snippet by using Shift+Ctrl+A on Windows and Option+Enter on the Mac //
+        ////////////////////////////////////////////////////////////////////////////////////////
+
         // __log('keyCode: ' + key.keyCode + ' key: ' + key.key + ' code: ' + key.code + ' altKey: ' + key.altKey + ' meta: ' + key.metaKey, 'background:yellow;')
-        if (key.keyCode === 13 || (!isMac && key.shiftKey &&  key.ctrlKey && key.keyCode === 1)) {
+        if (key.keyCode === 13 || (!isMac && key.shiftKey && key.ctrlKey && key.keyCode === 1)) {
             codeContents = $('#evalCode').val();
             if (key.keyCode === 13) {
+                selectedLines = !key.altKey;
                 if (key.altKey && parseInt(process.versions.v8) > 4) {
                     evalLines = codeContents;
-                } else if(key.shiftKey || key.altKey){
+                } else if (key.shiftKey || key.altKey) {
                     pos = ($('#evalCode').selection('getPos'));
                     beforeString = codeContents.substring(0, pos.start + 1);
                     afterString = codeContents.substring(pos.end);
@@ -293,9 +300,9 @@ var __log, __result, __error;
                     return;
                 }
             } else {
+                selectedLines = false;
                 evalLines = codeContents;
             }
-            selectedLines = !key.altKey;
             try {
                 if (evalMode === 0) {
                     ///////////////////////////////////////////////////////////////////////////////////
