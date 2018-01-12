@@ -99,9 +99,9 @@ var __log, __result, __error;
             if (!err) {
                 options = packageObj;
             }
-             // Setup default values
-            if(options.showSnippet === undefined) { options.showSnippet  =  false;}
-            if(options.consoleFontSize === undefined) { options.consoleFontSize  =  12;}
+            // Setup default values
+            if (options.showSnippet === undefined) { options.showSnippet = false; }
+            if (options.consoleFontSize === undefined) { options.consoleFontSize = 12; }
             $("#resultModeDV").html('<i class="far fa-' + (options.showSnippet ? 'check-square' : 'square') + ' fa-lg"></i> Include snippet in results');
             $('.console').css('font-size', options.consoleFontSize + 'px');
         });
@@ -182,6 +182,12 @@ var __log, __result, __error;
         }
     };
 
+    // Make sure the correct whole snippet OS dependent shortcut shows up
+    if(isMac){
+        $("#wholeSnippetDV").text('Press Option+Enter to execute the whole snippet');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option+Enter': 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+    }
+
     ////////////////////////////////////////////////////////
     // The console should work in JS, JSX and Shell modes //
     // This deals with the mode buttons                   //
@@ -208,7 +214,7 @@ var __log, __result, __error;
         $("#EvalMode").text("JS");
         $("#EVAL").addClass("blueButton");
         $("#jsModeBT").removeClass("greyButton").addClass('blueButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script.<br>' + (isMac ? 'Option+Enter': 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     });
 
     $('#jsxModeBT').click(function() { // JSX
@@ -228,7 +234,7 @@ var __log, __result, __error;
         $("#EvalMode").text("JSX");
         $("#EVAL").addClass("greenButton");
         $("#jsxModeBT").removeClass("greyButton").addClass('greenButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option+Enter': 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     });
 
 
@@ -249,7 +255,7 @@ var __log, __result, __error;
         $("#EvalMode").text(isMac ? "BASH" : "CMD");
         $("#EVAL").addClass("redButton");
         $("#execModeBT").removeClass("greyButton").addClass('redButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script.<br>' + (isMac ? 'Option+Enter': 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
     });
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -257,7 +263,7 @@ var __log, __result, __error;
     // Select the relevant lines of code and passes them on to be processed        //
     /////////////////////////////////////////////////////////////////////////////////
     var evalOnEnter = function(key) {
-        var codeContents, result, pos, beforeString, afterString, startOfLines, endOfLines, evalLines, startIndex, endIndex,
+        var codeContents, result, pos, selectedLines, beforeString, afterString, startOfLines, endOfLines, evalLines, startIndex, endIndex,
             beforeReg, afterReg;
 
         beforeReg = /[^\n\r]*$/;
@@ -265,24 +271,31 @@ var __log, __result, __error;
         beforeReg.lastIndex = 0;
         afterReg.lastIndex = 0;
 
-        // __log('keyCode: ' + key.keyCode + ' key: ' + key.key+ ' code: ' +key.code+ ' altKey: ' +key.altKey + ' meta: ' +key.metaKey )
-        if (key.shiftKey && (key.keyCode === 13 || key.keyCode === 1 && key.ctrlKey)) {
+        // __log('keyCode: ' + key.keyCode + ' key: ' + key.key + ' code: ' + key.code + ' altKey: ' + key.altKey + ' meta: ' + key.metaKey, 'background:yellow;')
+        if (key.keyCode === 13 || (!isMac && key.shiftKey &&  key.ctrlKey && key.keyCode === 1)) {
             codeContents = $('#evalCode').val();
             if (key.keyCode === 13) {
-                pos = ($('#evalCode').selection('getPos'));
-                beforeString = codeContents.substring(0, pos.start + 1);
-                afterString = codeContents.substring(pos.end);
-                while (/[\r\n]$/.test(beforeString)) {
-                    beforeString = beforeString.replace(/[\r\n]$/, ' ');
+                if (key.altKey && parseInt(process.versions.v8) > 4) {
+                    evalLines = codeContents;
+                } else if(key.shiftKey || key.altKey){
+                    pos = ($('#evalCode').selection('getPos'));
+                    beforeString = codeContents.substring(0, pos.start + 1);
+                    afterString = codeContents.substring(pos.end);
+                    while (/[\r\n]$/.test(beforeString)) {
+                        beforeString = beforeString.replace(/[\r\n]$/, ' ');
+                    }
+                    startOfLines = beforeReg.exec(beforeString);
+                    startIndex = startOfLines && startOfLines.index || 0;
+                    endOfLines = afterReg.exec(afterString);
+                    endIndex = pos.end + afterReg.lastIndex;
+                    evalLines = (key.altKey) ? codeContents : codeContents.substring(startIndex, endIndex);
+                } else {
+                    return;
                 }
-                startOfLines = beforeReg.exec(beforeString);
-                startIndex = startOfLines && startOfLines.index || 0;
-                endOfLines = afterReg.exec(afterString);
-                endIndex = pos.end + afterReg.lastIndex;
-                evalLines = (key.altKey) ? codeContents : codeContents.substring(startIndex, endIndex);
             } else {
                 evalLines = codeContents;
             }
+            selectedLines = !key.altKey;
             try {
                 if (evalMode === 0) {
                     ///////////////////////////////////////////////////////////////////////////////////
@@ -300,15 +313,15 @@ var __log, __result, __error;
                     // Took be a bit of luck and time to figure this one out!                        //
                     ///////////////////////////////////////////////////////////////////////////////////
                     result = eval(evalLines);
-                    setTimeout(function() { jsAndJSXCallBack(undefined, result, evalLines, codeContents, pos); }, 0);
+                    setTimeout(function() { jsAndJSXCallBack(undefined, result, evalLines, codeContents, pos, selectedLines); }, 0);
                 } else if (evalMode === 1) {
-                    result = jsx.eval(evalLines, function(e, r) { jsAndJSXCallBack(r, e, evalLines, codeContents, pos); }, true);
+                    result = jsx.eval(evalLines, function(e, r) { jsAndJSXCallBack(r, e, evalLines, codeContents, pos, selectedLines); }, true);
                 } else if (evalMode === 2) {
                     setTimeout(function() { shell(evalLines, codeContents, pos); }, 0);
                     // result = exec(evalLines, { cwd: __dirname }, function(e, r) { jsAndJSXCallBack(e, r, evalLines, codeContents, pos); });
                 }
             } catch (err) {
-                setTimeout(function() { jsAndJSXCallBack(err.stack.replace(/.+?(\d+):(\d+)\)[\n\r][^\u0800]+/, (err instanceof SyntaxError) ? '' : ' (Line $1 Column $2)'), undefined, evalLines, codeContents, pos); }, 0);
+                setTimeout(function() { jsAndJSXCallBack(err.stack.replace(/.+?(\d+):(\d+)\)[\n\r][^\u0800]+/, (err instanceof SyntaxError) ? '' : ' (Line $1 Column $2)'), undefined, evalLines, codeContents, pos, selectedLines); }, 0);
             }
         }
     }; // end of evalOnEnter
@@ -316,7 +329,7 @@ var __log, __result, __error;
     var jsAndJSXCallBack, resultModeRB, timeStampCB;
     resultModeRB = $('#resultModeRB');
     timeStampCB = $('#timeStampCB');
-    jsAndJSXCallBack = function(error, execResult, evalLines, codeContents, pos) {
+    jsAndJSXCallBack = function(error, execResult, evalLines, codeContents, pos, selectedLines) {
         var includeTimeStamp, modes,
             CmdCSS, ErrCSS, resultCSS;
         includeTimeStamp = true;
@@ -336,7 +349,7 @@ var __log, __result, __error;
             error = execResult;
             execResult = undefined;
         }
-        if (options.showSnippet || pos) {
+        if (options.showSnippet || selectedLines) {
             __log(evalLines.replace(/^\s+/, ''), CmdCSS);
         }
 
