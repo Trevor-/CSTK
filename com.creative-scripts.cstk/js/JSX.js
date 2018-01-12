@@ -216,9 +216,30 @@ var jsx;
             if (JSON.parse(window.__adobe_cep__.getHostEnvironment()).appId === 'ILST') {
                 jsxScript = "eval(''' " + jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') + "\n''') + '';";
             } else {
-                jsxScript = ("try{eval(''' \n" +
-                    jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') +
-                    "\n''') + '';} catch(e){e + (e.line ? ('\\nLine ' + (+e.line - 1)) : '')}");
+                jsxScript = (
+                    // "\n''') + '';} catch(e){(function(e){var n, a=[]; for (n in e){a.push(n + ': ' + e[n])}; return a.join('\n')})(e)}");
+                    // "\n''') + '';} catch(e){e + (e.line ? ('\\nLine ' + (+e.line - 1)) : '')}");
+                    [
+                        "try{eval(''' \n", // need to add an extra line otherwise #targetengine doesn't work ;-]
+                        jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') + "\n''') + '';",
+                        "} catch (e) {",
+                        "    (function(e) {",
+                        "        var line, sourceLine, name, description, ErrorMessage;",
+                        "        line = +e.line - 1;", // To take into account the extra line added
+                        "        sourceLine = line && e.source.split(/[\\r\\n]/)[line];",
+                        "        name = e.name;",
+                        "        description = e.description;",
+                        "        ErrorMessage = name + ' ' + e.number + ': ' + description;",
+                        "        if (line){",
+                        "           ErrorMessage += '\\nLine: ' + line +",
+                        "               '-> ' + ((sourceLine.length < 300) ? sourceLine : sourceLine.substring(0,300) + '...');",
+                        "        }",
+                        "        return ErrorMessage;",
+                        "    })(e);",
+                        "}"
+                    ].join('')
+                );
+
             }
 
             //__log(jsxScript);
