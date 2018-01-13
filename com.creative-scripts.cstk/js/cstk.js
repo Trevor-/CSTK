@@ -197,8 +197,8 @@ var __log, __result, __error;
 
     // Make sure the correct whole snippet OS dependent shortcut shows up
     if (isMac) {
-        $("#wholeSnippetDV").text('Press Option+Enter to execute the whole snippet');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#wholeSnippetDV").text('Press Option\u2325+Enter to execute the whole snippet');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     }
 
     ////////////////////////////////////////////////////////
@@ -227,7 +227,7 @@ var __log, __result, __error;
         $("#EvalMode").text("JS");
         $("#EVAL").addClass("blueButton");
         $("#jsModeBT").removeClass("greyButton").addClass('blueButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script.<br>' + (isMac ? 'Option+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     });
 
     $('#jsxModeBT').click(function() { // JSX
@@ -247,7 +247,7 @@ var __log, __result, __error;
         $("#EvalMode").text("JSX");
         $("#EVAL").addClass("greenButton");
         $("#jsxModeBT").removeClass("greyButton").addClass('greenButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     });
 
 
@@ -268,7 +268,7 @@ var __log, __result, __error;
         $("#EvalMode").text(isMac ? "BASH" : "CMD");
         $("#EVAL").addClass("redButton");
         $("#execModeBT").removeClass("greyButton").addClass('redButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script.<br>' + (isMac ? 'Option+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
+        $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
     });
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -287,7 +287,7 @@ var __log, __result, __error;
         ////////////////////////////////////////////////////////////////////////////////////////
         // Windows and Mac and differing Chrome versions pickup differing key events          //
         // This allows for executing selected lines using Shift+Enter                         //
-        // And the whole snippet by using Shift+Ctrl+A on Windows and Option+Enter on the Mac //
+        // And the whole snippet by using Shift+Ctrl+A on Windows and Option\u2325+Enter on the Mac //
         ////////////////////////////////////////////////////////////////////////////////////////
 
         // __log('keyCode: ' + key.keyCode + ' key: ' + key.key + ' code: ' + key.code + ' altKey: ' + key.altKey + ' meta: ' + key.metaKey, 'background:yellow;')
@@ -320,6 +320,8 @@ var __log, __result, __error;
             $('#evalCode').animate({ 'border-color': '#d2691e'}, 200, function() {
                 $('#evalCode').animate({'border-color': ['blue', 'green', 'red'][evalMode]}, 200);
             });
+
+            $( ['#wholeSnippetDV', '#lineSnippetDV'][+selectedLines] ).toggleClass( "highlight", 300 ).toggleClass( "highlight", 500 );
 
             try {
                 if (evalMode === 0) {
@@ -529,6 +531,7 @@ var __log, __result, __error;
         $('#evalCode').animate({ 'border-color': '#d2691e'}, 200, function() {
             $('#evalCode').animate({'border-color': ['blue', 'green', 'red'][evalMode]}, 200);
         });
+            $( '#wholeSnippetDV' ).toggleClass( "highlight", 300 ).toggleClass( "highlight", 500 );
         codeContents = $('#evalCode').val();
         try {
             if (evalMode === 0) {
