@@ -77,6 +77,8 @@
     text-align: left;
 }
 
+.console:focus {outline:0;}
+
 .__pre {
     white-space: pre-wrap;
     margin:0;

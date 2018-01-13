@@ -18,9 +18,9 @@
     |   _  _|_  |\/| _  _|.(_. _ _|.
     |__(_|_)|_  |  |(_)(_||| |(-(_|.
 
-      __               __   __      __
-     (__\    | _  _     _) /  \ /| (__)
-      __/  __)(_|| )   /__ \__/  | (__)
+                          __   __      __
+     /| |__|    | _  _     _) /  \ /| (__)
+      |    |  __)(_|| )   /__ \__/  | (__)
 
      __                       __                 __
     /   _  _    _. _ |_ |_.  /   _ _ _ |_.   _  (_  _ _. _ |_ _
@@ -75,6 +75,19 @@ var __log, __result, __error;
     optionsFile = path.join(cstkFolder, 'options.json');
 
     var searchForandAddDebugApps;
+
+    // Set PhotoShop to persistent
+
+    (function(isPersistent) {
+        var event;
+        event = new CSEvent((isPersistent ?
+                "com.adobe.PhotoshopPersistent" :
+                "com.adobe.PhotoshopUnPersistent"),
+            "APPLICATION");
+        event.extensionId = 'com.creative-scripts.cstk.2';
+        csInterface.dispatchEvent(event);
+    })(true); //persistent to prevent extension from unloading
+
 
     /*
      _______  _______  _        _______  _______  _        _______
@@ -303,6 +316,11 @@ var __log, __result, __error;
                 selectedLines = false;
                 evalLines = codeContents;
             }
+            // provide feedback that the commands been sent
+            $('#evalCode').animate({ 'border-color': '#d2691e'}, 200, function() {
+                $('#evalCode').animate({'border-color': ['blue', 'green', 'red'][evalMode]}, 200);
+            });
+
             try {
                 if (evalMode === 0) {
                     ///////////////////////////////////////////////////////////////////////////////////
@@ -325,7 +343,6 @@ var __log, __result, __error;
                     result = jsx.eval(evalLines, function(e, r) { jsAndJSXCallBack(r, e, evalLines, codeContents, pos, selectedLines); }, true);
                 } else if (evalMode === 2) {
                     setTimeout(function() { shell(evalLines, codeContents, pos); }, 0);
-                    // result = exec(evalLines, { cwd: __dirname }, function(e, r) { jsAndJSXCallBack(e, r, evalLines, codeContents, pos); });
                 }
             } catch (err) {
                 setTimeout(function() { jsAndJSXCallBack(err.stack.replace(/.+?(\d+):(\d+)\)[\n\r][^\u0800]+/, (err instanceof SyntaxError) ? '' : ' (Line $1 Column $2)'), undefined, evalLines, codeContents, pos, selectedLines); }, 0);
@@ -345,6 +362,10 @@ var __log, __result, __error;
             $('#evalCode').val(codeContents);
             $('#evalCode').selection('setPos', pos);
         }
+        // provide feedback the the script run
+        $('#evalResult').animate({ 'border-color': ['blue', 'green', 'red'][evalMode] }, 200, function() {
+            $('#evalResult').animate({ 'border-color': '#d2691e' }, 200);
+        });
         CmdCSS = (evalMode) ? 'background:#DDFFDD;' : 'background:#DDDDFF;';
         resultCSS = (evalMode) ? 'background:#F5FFF5;border-bottom:green solid 1px;' : 'background:#F5F5FF;border-bottom:blue solid 1px;';
         ErrCSS = (evalMode) ? 'background:#DFD;font-weight:800;border:red dotted 1px;' : 'background:#DDF;font-weight:800;border:red dotted 1px;';
@@ -379,6 +400,10 @@ var __log, __result, __error;
 
     var spawn = require('child_process').spawn;
     var shell = isMac ? function(command, codeContents, pos) { // Mac
+        // provide feedback that the commands been sent
+        $('#evalCode').animate({ 'border-color': '#d2691e'}, 200, function() {
+            $('#evalCode').animate({'border-color': 'red'}, 200);
+        });
             if (pos !== undefined) {
                 $('#evalCode').val(codeContents);
                 $('#evalCode').selection('setPos', pos);
@@ -416,12 +441,20 @@ var __log, __result, __error;
             terminal.stderr.on('data', function(data) {
                 __error(data, ErrCSS);
             });
+            // provide feedback the the script run
+            $('#evalResult').animate({ 'border-color': 'red' }, 200, function() {
+                $('#evalResult').animate({ 'border-color': '#d2691e' }, 200);
+            });
         } :
         function(command, codeContents, pos) { // Windows
             if (pos !== undefined) {
                 $('#evalCode').val(codeContents);
                 $('#evalCode').selection('setPos', pos);
             }
+            // provide feedback that the commands been sent
+            $('#evalCode').animate({ 'border-color': '#d2691e'}, 200, function() {
+                $('#evalCode').animate({'border-color': 'red'}, 200);
+            });
             var terminal, n, l, _cwd, CmdCSS, ErrCSS, resultCSS;
 
             CmdCSS = 'background:#FFDDDD;';
@@ -475,7 +508,10 @@ var __log, __result, __error;
             terminal.stderr.on('data', function(data) {
                 __error(data, ErrCSS);
             });
-
+            // provide feedback the the script run
+            $('#evalResult').animate({ 'border-color': '#F00' }, 200, function() {
+                $('#evalResult').animate({ 'border-color': '#d2691e' }, 200);
+            });
             // terminal.on('exit', function(code) {
             // __log('child process exited with code ' + code);
             // });
@@ -488,12 +524,16 @@ var __log, __result, __error;
 
     var evalCode = function() {
 
-        var codeContents;
-
+        var codeContents, result;
+        // provide feedback that the commands been sent
+        $('#evalCode').animate({ 'border-color': '#d2691e'}, 200, function() {
+            $('#evalCode').animate({'border-color': ['blue', 'green', 'red'][evalMode]}, 200);
+        });
         codeContents = $('#evalCode').val();
         try {
             if (evalMode === 0) {
-                setTimeout(function() { jsAndJSXCallBack(undefined, eval(codeContents), codeContents); }, 0);
+                result = eval(codeContents);
+                setTimeout(function() { jsAndJSXCallBack(undefined, result, codeContents); }, 0);
             } else if (evalMode === 1) {
                 jsx.eval(codeContents, function(e, r) { jsAndJSXCallBack(r, e, codeContents); }, true);
             } else if (evalMode === 2) {
