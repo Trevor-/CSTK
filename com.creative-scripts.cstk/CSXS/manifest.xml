@@ -11,32 +11,42 @@
             <!-- This is for CC2015 onwards -->
             <!-- Uncomment Host tags according to the apps you want your panel to support -->
             <!-- Photoshop Extended -->
-            <Host Name="PHXS" Version="10" /> <!-- Tested -->
-            <!-- Photoshop -->
-            <!-- <Host Name="PHSP" Version="10" /> -->
+            <!-- Tested -->
+            <Host Name="PHXS" Version="10" />
             <!-- Illustrator -->
-            <Host Name="ILST" Version="19" /> <!-- Tested -->
+            <!-- Tested -->
+            <Host Name="ILST" Version="19" />
             <!-- InDesign -->
-            <Host Name="IDSN" Version="11" /> <!-- Tested -->
+            <!-- Tested -->
+            <Host Name="IDSN" Version="11" />
             <!-- InCopy -->
-            <Host Name="AICY" Version="11" /> <!-- Not Tested but sould be the same as InDesign-->
+            <!-- Not Tested but sould be the same as InDesign-->
+            <Host Name="AICY" Version="11" />
             <!-- Premiere -->
-            <Host Name="PPRO" Version="9" /> <!-- Tested -->
+            <!-- Tested -->
+            <Host Name="PPRO" Version="9" />
             <!-- AfterEffects -->
-            <Host Name="AEFT" Version="13" /> <!-- Tested -->
+            <!-- Tested -->
+            <Host Name="AEFT" Version="13" />
             <!-- PRELUDE -->
-            <Host Name="PRLD" Version="4" /> <!-- Not Tested -->
+            <!-- Not Tested -->
+            <Host Name="PRLD" Version="4" />
             <!-- FLASH Pro -->
-            <Host Name="FLPR" Version="15" /> <!-- Not Tested -->
+            <!-- Not Tested -->
+            <Host Name="FLPR" Version="15" />
             <!-- Audition -->
-            <Host Name="AUDT" Version="8" /> <!-- Not Tested -->
+            <!-- Not Tested -->
+            <Host Name="AUDT" Version="8" />
             <!-- Dreamweaver -->
-            <Host Name="DRWV" Version="16" /> <!-- JSX Console doesn't work JS, Shell and other features work look like they work -->
+            <!-- JSX Console doesn't work JS, Shell and other features work look like they work -->
+            <Host Name="DRWV" Version="16" />
             <!-- Muse -->
-            <Host Name="MUSE" Version="2017" /> <!-- Not showing up -->
+            <!-- Not showing up -->
+            <Host Name="MUSE" Version="2017" />
             <!-- Bridge -->
-            <Host Name="KBRG" Version="1" /> <!-- Not showing up -->
-            <Host Name="BRDG" Version="1" /> <!-- Not showing up -->
+            <!-- Not showing up -->
+            <Host Name="KBRG" Version="1" />
+            <Host Name="BRDG" Version="1" />
         </HostList>
         <LocaleList>
             <Locale Code="All" />
@@ -51,7 +61,7 @@
                 <Resources>
                     <MainPath>./html/index.html</MainPath>
                     <!-- we are using JSX.js so we don't use ScriptPath -->
-                    <!-- <ScriptPath>./jsx/host.js</ScriptPath> -->
+                    <ScriptPath Engine="CSTK"></ScriptPath>
                     <CEFCommandLine>
                         <Parameter>--enable-nodejs</Parameter>
                         <Parameter>--mixed-context</Parameter>

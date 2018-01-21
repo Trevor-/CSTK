@@ -211,14 +211,11 @@ var jsx;
         // I have not gone through all the apps but can say                                                                                     //
         // for Ai you never need to set the forceEval to true                                                                                   //
         // for ID you if you have not coded your script appropriately and your want to send a result to the callBack then set forceEval to true //
+        // I changed this that even on Illustrator it applies the try catch, Note the try catch will fail if $.level is set to 1                //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         var isBin;
         if (forceEval) {
 
-            if (JSON.parse(window.__adobe_cep__.getHostEnvironment()).appId === 'ILST') {
-                isBin = (jsxScript.substring(0,10) === '@JSXBIN@ES') ? '' : ' ';
-                jsxScript = "eval('''" + jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') + "\n''') + '';";
-            } else {
                 isBin = (jsxScript.substring(0,10) === '@JSXBIN@ES') ? '' : '\n';
                 jsxScript = (
                     // "\n''') + '';} catch(e){(function(e){var n, a=[]; for (n in e){a.push(n + ': ' + e[n])}; return a.join('\n')})(e)}");
@@ -243,8 +240,6 @@ var jsx;
                         "}"
                     ].join('')
                 );
-
-            }
 
             //__log(jsxScript);
         }

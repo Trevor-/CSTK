@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ExtensionList>
-    <Extension Id="com.creative-scripts.cstk.1">
+    <Extension Id="com.creative-scripts.cstk.2">
         <HostList>
             <!-- Photoshop Extended -->
             <Host Name="PHXS" Port="9070" />
@@ -17,7 +17,7 @@
             <!-- AfterEffects -->
             <Host Name="AEFT" Port="9076" />
             <!-- PRELUDE -->
-            <Host Name="PRLD" Port="9077" />  
+            <Host Name="PRLD" Port="9077" />
             <!-- FLASH Pro -->
             <Host Name="FLPR" Port="9078" />
             <!-- Audition -->

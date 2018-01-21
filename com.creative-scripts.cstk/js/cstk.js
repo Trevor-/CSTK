@@ -198,7 +198,7 @@ var __log, __result, __error;
     // Make sure the correct whole snippet OS dependent shortcut shows up
     if (isMac) {
         $("#wholeSnippetDV").text('Press Option\u2325+Enter to execute the whole snippet');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#EVAL").attr('title', 'Execute the selected snippet as a JSX script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     }
 
     ////////////////////////////////////////////////////////
@@ -227,7 +227,7 @@ var __log, __result, __error;
         $("#EvalMode").text("JS");
         $("#EVAL").addClass("blueButton");
         $("#jsModeBT").removeClass("greyButton").addClass('blueButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JS script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#EVAL").attr('title', 'Execute the selected snippet as a JS script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     });
 
     $('#jsxModeBT').click(function() { // JSX
@@ -247,7 +247,7 @@ var __log, __result, __error;
         $("#EvalMode").text("JSX");
         $("#EVAL").addClass("greenButton");
         $("#jsxModeBT").removeClass("greyButton").addClass('greenButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a JSX script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
+        $("#EVAL").attr('title', 'Execute the selected snippet as a JSX script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines');
     });
 
 
@@ -268,7 +268,7 @@ var __log, __result, __error;
         $("#EvalMode").text(isMac ? "BASH" : "CMD");
         $("#EVAL").addClass("redButton");
         $("#execModeBT").removeClass("greyButton").addClass('redButton');
-        $("#EVAL").attr('title', 'Execute the selected snippet in as a shell script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
+        $("#EVAL").attr('title', 'Execute the selected snippet as a shell script.<br>' + (isMac ? 'Option\u2325+Enter' : 'Shift+Ctrl+A') + ' to execute the whole snippet<br>Shift+Enter to execute only selected lines<br>For complex shell usage use a real console :->');
     });
 
     /////////////////////////////////////////////////////////////////////////////////
@@ -1265,7 +1265,7 @@ var __log, __result, __error;
     });
 
     $('#help').click(function() {
-        exec((isMac ? 'open "' : 'start "" "') + 'https://github.com/Trevor-/CSTK#readme"');
+        exec((isMac ? 'open "' : 'explorer "') + 'https://github.com/Trevor-/CSTK#readme"');
     });
 
     var getCeps, getDebugPorts, processCeps,
@@ -1967,7 +1967,7 @@ var __log, __result, __error;
                 $log.selectmenu('refresh');
             } else if (key === 'PlayerDebugMode') {
                 $("#debugLevel").val('' + (value ? +value : 2));
-                $log.selectmenu('refresh');
+                $debug.selectmenu('refresh');
             }
         };
 

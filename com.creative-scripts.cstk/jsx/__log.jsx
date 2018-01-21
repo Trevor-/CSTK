@@ -48,77 +48,77 @@ var __log, __error;
             // As we know the argument name we can produce something more aesthetic than a large list for every NONE
             // Same applies for 1147563124 DEFAULT_VALUE
             // As new DEFAULT_VALUE and NONE enums are added to the DOM they will need to be manually added here.
-                defaults = { // 1147563124
-                    "localDisplaySetting": "DisplaySettingOptions.DEFAULT_VALUE",
-                    "flattenerOverride": "SpreadFlattenerLevel.DEFAULT_VALUE",
-                    "blendingSpace": "BlendingSpace.DEFAULT_VALUE",
-                    "pageBinding": "PageBindingOptions.DEFAULT_VALUE",
-                    "vector": "TagVector.DEFAULT_VALUE",
-                    "raster": "TagRaster.DEFAULT_VALUE",
-                    "crd": "ColorRenderingDictionary.DEFAULT_VALUE",
-                    "screening": "Screeening.DEFAULT_VALUE",
-                    "open": "OpenOptions.DEFAULT_VALUE",
-                    "move": "BindingOptions.DEFAULT_VALUE",
-                    "pdfMarkType": "MarkTypes.DEFAULT_VALUE",
-                    "pdfPageLayout": "PageLayoutOptions.DEFAULT_VALUE",
-                    "transparency": "TagTransparency.DEFAULT_VALUE",
-                    "pdfMagnification": "PdfMagnificationOptions.DEFAULT_VALUE",
-                    "otfFigureStyle": "OTFFigureStyle.DEFAULT_VALUE",
-                };
-                nones = { // 1852796517
-                    "preview": "PreviewTypes.NONE",
-                    "fontEmbedding": "FontEmbedding.NONE",
-                    "currentTool": "UITools.NONE",
-                    "clippingType": "ClippingPathType.NONE",
-                    "colorBitmapCompression": "BitmapCompression.NONE",
-                    "grayscaleBitmapCompression": "BitmapCompression.NONE",
-                    "monochromeBitmapCompression": "MonoBitmapCompression.NONE",
-                    "colorBitmapSampling": "Sampling.NONE",
-                    "grayscaleBitmapSampling": "Sampling.NONE",
-                    "monochromeBitmapSampling": "Sampling.NONE",
-                    "resamplingType": "Sampling.NONE",
-                    "standardsCompliance": "PDFXStandards.NONE",
-                    "pageTransitionOverride": "PageTransitionOverrideOptions.NONE",
-                    "fittingOnEmptyFrame": "EmptyFrameFittingOptions.NONE",
-                    "topLeftCornerOption": "CornerOptions.NONE",
-                    "topRightCornerOption": "CornerOptions.NONE",
-                    "bottomLeftCornerOption": "CornerOptions.NONE",
-                    "bottomRightCornerOption": "CornerOptions.NONE",
-                    "strokeCornerAdjustment": "StrokeCornerAdjustment.NONE",
-                    "leftLineEnd": "ArrowHead.NONE",
-                    "rightLineEnd": "ArrowHead.NONE",
-                    "textWrapMode": "TextWrapModes.NONE",
-                    "glyphForm": "AlternateGlyphForms.NONE",
-                    "kentenKind": "KentenCharacter.NONE",
-                    "rubyParentOverhangAmount": "RubyOverhang.NONE",
-                    "kinsokuHangType": "KinsokuHangTypes.NONE",
-                    "gridAlignment": "GridAlignment.NONE",
-                    "exportUntaggedTablesFormat": "XMLExportUntaggedTablesFormat.NONE",
-                    "positionalForm": "PositionalForms.NONE",
-                    "changeCase": "ChangeCaseOptions.NONE",
-                    "mode": "ShadowMode.NONE, FeatherMode.NONE",
-                    "flattenerOverride": "SpreadFlattenerLevel.NONE",
-                    "followShapeMode": "FollowShapeModeOptions.NONE",
-                    "pageNumberPosition": "PageNumberPosition.NONE",
-                    "convertPageBreaks": "ConvertPageBreaks.NONE",
-                    "highlight": "HyperlinkAppearanceHighlight.NONE",
-                    "moviePosterType": "MoviePosterTypes.NONE",
-                    "soundPosterType": "SoundPosterTypes.NONE",
-                    "toolTips": "ToolTipOptions.NONE",
-                    "flipItem": "Flip.NONE",
-                    "flip": "Flip.NONE",
-                    "absoluteFlip": "Flip.NONE",
-                    "fontDownloading": "FontDownloading.NONE",
-                    "sendImageData": "ImageDataTypes.NONE",
-                    "markingForAddedText": "ChangeMarkings.NONE",
-                    "markingForDeletedText": "ChangeMarkings.NONE",
-                    "markingForMovedText": "ChangeMarkings.NONE",
-                    "lockState": "LockStateValues.NONE",
-                    "pageTransitionType": "PageTransitionTypeOptions.NONE",
-                    "epubCover": "EpubCover.NONE",
-                    "cssExportOption": "StyleSheetExportOption.NONE",
-                    "characterCountLocation": "CharacterCountLocation.NONE"
-                };
+            defaults = { // 1147563124
+                "localDisplaySetting": "DisplaySettingOptions.DEFAULT_VALUE",
+                "flattenerOverride": "SpreadFlattenerLevel.DEFAULT_VALUE",
+                "blendingSpace": "BlendingSpace.DEFAULT_VALUE",
+                "pageBinding": "PageBindingOptions.DEFAULT_VALUE",
+                "vector": "TagVector.DEFAULT_VALUE",
+                "raster": "TagRaster.DEFAULT_VALUE",
+                "crd": "ColorRenderingDictionary.DEFAULT_VALUE",
+                "screening": "Screeening.DEFAULT_VALUE",
+                "open": "OpenOptions.DEFAULT_VALUE",
+                "move": "BindingOptions.DEFAULT_VALUE",
+                "pdfMarkType": "MarkTypes.DEFAULT_VALUE",
+                "pdfPageLayout": "PageLayoutOptions.DEFAULT_VALUE",
+                "transparency": "TagTransparency.DEFAULT_VALUE",
+                "pdfMagnification": "PdfMagnificationOptions.DEFAULT_VALUE",
+                "otfFigureStyle": "OTFFigureStyle.DEFAULT_VALUE",
+            };
+            nones = { // 1852796517
+                "preview": "PreviewTypes.NONE",
+                "fontEmbedding": "FontEmbedding.NONE",
+                "currentTool": "UITools.NONE",
+                "clippingType": "ClippingPathType.NONE",
+                "colorBitmapCompression": "BitmapCompression.NONE",
+                "grayscaleBitmapCompression": "BitmapCompression.NONE",
+                "monochromeBitmapCompression": "MonoBitmapCompression.NONE",
+                "colorBitmapSampling": "Sampling.NONE",
+                "grayscaleBitmapSampling": "Sampling.NONE",
+                "monochromeBitmapSampling": "Sampling.NONE",
+                "resamplingType": "Sampling.NONE",
+                "standardsCompliance": "PDFXStandards.NONE",
+                "pageTransitionOverride": "PageTransitionOverrideOptions.NONE",
+                "fittingOnEmptyFrame": "EmptyFrameFittingOptions.NONE",
+                "topLeftCornerOption": "CornerOptions.NONE",
+                "topRightCornerOption": "CornerOptions.NONE",
+                "bottomLeftCornerOption": "CornerOptions.NONE",
+                "bottomRightCornerOption": "CornerOptions.NONE",
+                "strokeCornerAdjustment": "StrokeCornerAdjustment.NONE",
+                "leftLineEnd": "ArrowHead.NONE",
+                "rightLineEnd": "ArrowHead.NONE",
+                "textWrapMode": "TextWrapModes.NONE",
+                "glyphForm": "AlternateGlyphForms.NONE",
+                "kentenKind": "KentenCharacter.NONE",
+                "rubyParentOverhangAmount": "RubyOverhang.NONE",
+                "kinsokuHangType": "KinsokuHangTypes.NONE",
+                "gridAlignment": "GridAlignment.NONE",
+                "exportUntaggedTablesFormat": "XMLExportUntaggedTablesFormat.NONE",
+                "positionalForm": "PositionalForms.NONE",
+                "changeCase": "ChangeCaseOptions.NONE",
+                "mode": "ShadowMode.NONE, FeatherMode.NONE",
+                "flattenerOverride": "SpreadFlattenerLevel.NONE",
+                "followShapeMode": "FollowShapeModeOptions.NONE",
+                "pageNumberPosition": "PageNumberPosition.NONE",
+                "convertPageBreaks": "ConvertPageBreaks.NONE",
+                "highlight": "HyperlinkAppearanceHighlight.NONE",
+                "moviePosterType": "MoviePosterTypes.NONE",
+                "soundPosterType": "SoundPosterTypes.NONE",
+                "toolTips": "ToolTipOptions.NONE",
+                "flipItem": "Flip.NONE",
+                "flip": "Flip.NONE",
+                "absoluteFlip": "Flip.NONE",
+                "fontDownloading": "FontDownloading.NONE",
+                "sendImageData": "ImageDataTypes.NONE",
+                "markingForAddedText": "ChangeMarkings.NONE",
+                "markingForDeletedText": "ChangeMarkings.NONE",
+                "markingForMovedText": "ChangeMarkings.NONE",
+                "lockState": "LockStateValues.NONE",
+                "pageTransitionType": "PageTransitionTypeOptions.NONE",
+                "epubCover": "EpubCover.NONE",
+                "cssExportOption": "StyleSheetExportOption.NONE",
+                "characterCountLocation": "CharacterCountLocation.NONE"
+            };
             if ($.enumDataBase && _enum) {
                 if (_enum === 1852796517 && nones[prop]) { // NONE
                     return [nones[prop]];
@@ -149,7 +149,25 @@ var __log, __error;
 
         $.getEnum();
 
-
+        /**
+         * [props] Lists the properties of a given target
+         * If no target is given then the selection of application is used as the target
+         * target can be provided in the form
+         * $.props(app.activeDocument.layers[0]) or $.props(app.selection.layer) or $.props(['layer']) // Illustrator example
+         * $.props(['textPath','selectedPathPoints',0]) // NOTE THE [BRACKETS] produces:
+                anchor: [205,-1077]
+                leftDirection: [205,-1077]
+                rightDirection: [205,-1077]
+                pointType: PointType.CORNER
+                selected: PathPointSelection.ANCHORPOINT
+                typename: "PathPoint"
+                parent: [PathItem ]
+         * One can filter results $.props(['textPath','selectedPathPoints',0], 'anchor', 'leftDirection', 'rightDirection'); produces the filtered:
+                anchor: [205,-1077]
+                leftDirection: [205,-1077]
+                rightDirection: [205,-1077]
+         * On InDesign the enums are given in the form topRightCornerOption: 1852796517 /* CornerOptions.NONE */
+        /* @return {object} {properties: results.join('\n'), errors: errors.join('\n')}; */
         $.props = function() {
             var arg, n, l, props, errors, results, prop, target, selTaget, getProp, propString, error, level;
             props = [];
@@ -189,8 +207,12 @@ var __log, __error;
                 if (arg) { props.push(arg); }
             }
             if (!target) {
-                target = app.selection[0] || (app.selection.length && app.selection);
-                propString = app.selection[0] ? 'app.selection[0]' : 'app.selection';
+                target = (app.selection && (app.selection[0] || (app.selection.length && app.selection))) || app;
+                if (target === app) {
+                    propString = 'app';
+                } else {
+                    propString = app.selection && app.selection[0] ? 'app.selection[0]' : 'app.selection';
+                }
                 if (!target) {
                     return error('\ud83d\ude91 No item is selected and no target found.');
                 }
@@ -235,8 +257,12 @@ var __log, __error;
             };
             // If the target is provided as an array that specifies the app.selection[0] try and resolve the target;
             if (target.constructor === Array) {
-                selTaget = app.selection[0] || (app.selection.length && app.selection);
-                propString = app.selection[0] ? 'app.selection[0]' : 'app.selection';
+                selTaget = (app.selection && (app.selection[0] || (app.selection.length && app.selection))) || app;
+                if (selTaget === app) {
+                    propString = 'app';
+                } else {
+                    propString = app.selection && app.selection[0] ? 'app.selection[0]' : 'app.selection';
+                }
                 l = target.length;
                 for (n = 0; n < l; n++) {
                     prop = target[n];
@@ -269,7 +295,7 @@ var __log, __error;
                 __error(errors.join('\n'));
             }
             $.level = level;
-
+            return {properties: results.join('\n'), errors: errors.join('\n')};
         };
     } else {
         $.props = __log = __error = $.writeln;

@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <link id="hostStyle" rel="stylesheet" href="../css/styles.css" />
     <link id="hostStyle" rel="stylesheet" href="../css/fontawesome-all.css" />
-    <link rel="stylesheet" href="../js/libs/pretty-dropdowns/dist/css/prettydropdowns.css">
     <link rel="stylesheet" href="../js/libs/jquery-ui-1.12.1.custom/jquery-ui.css">
     <script>
     if (typeof module === 'object') {
@@ -48,10 +47,9 @@
         color: black;
         border-radius: 4px;
         font: bold 12px "Helvetica Neue", Sans-Serif;
-        /*text-transform: uppercase;*/
         box-shadow: 0 0 7px black;
-        white-space: nowrap;
-        max-width: 3000px;
+        /*white-space: pre-wrap;*/
+        /*max-width: 3000px;*/
         /*min-width: 300px;*/
     }
 
@@ -155,7 +153,7 @@
             <div style="font-size: .75em;display: inline-block;">
                 <div style="display: block;">
                     <div style="display:inline-block;">
-                        <span id="EVAL" class="csButton greenButton" style="margin: 2px 4px 4px 4px;" title='Execute the selected snippet in as a JSX script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines'>
+                        <span id="EVAL" class="csButton greenButton" style="margin: 2px 4px 4px 4px;" title='Execute the selected snippet as a JSX script.<br>Shift+Ctrl+A to execute the whole snippet<br>Shift+Enter to execute only selected lines'>
                         <i class="fas fa-terminal fa-lg fabt"></i> EXECUTE <span id="EvalMode">JSX</span></span>
                     </div>
                     <div style="display:inline-block;text-align:left;font-size:.8em;line-height:1.2em;position: relative;top:6px;">
@@ -191,7 +189,7 @@
             </span>
                     <span id="hostAppInfo" style="white-space:nowrap;font-size: .8em;"></span>
                 </div>
-                <div id="versions" style="font-size: .7em;font-stretch: condensed;text-decoration-style: all;text-decoration-style: dashed;color-rendering: all;">
+                <div id="versions" style="font-size: .7em;font-stretch: condensed;">
                 </div>
             </div>
             <div id="folders" style="display: none;">
