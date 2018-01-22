@@ -10,7 +10,7 @@
 * On app console for JSX, JSX and CMD / Bash.
     * The JSX console now shows useful error messages even with InDesign (Error, line# and source line)
     * `$.writeln` and `$.write` are now forwarded to the console and can include css `$.writeln('Hi there', 'background: yellow; color: blue;')`
-    * `$.props()` will give useful info on selected item or other target, see [below](#console) for details.
+    * `$.props()` will give useful info on selected item or other target, see below for details.
     * `__log('hi')` works in both JSX and JS consoles can also include css and class `__log('$#^8SDG@%', 'background: yellow', 'error')`
     * `__error()` same as `__log()` just with the error class applied (comes out red)
     * `__result(err, result, stderr)` useful for JS callbacks `fs.someFunction('somethingHere', __result)`
@@ -64,21 +64,9 @@ Plonk and unzip the zip file in the CSTK.zip folder into
 
 ### Usage Instructions ###
 
-###### Mess around until you get the idea. ######
-
-##### Console #####
-* Make sure you have the correct console mode selected.
-* You can press Shift + Enter to execute the selected lines.
-* To execute the entire contents of the console on Mac use Option⌥+Enter on Windows use Ctr+Shift+A or click the Execute button.
-* Note that the JSX mode runs in a persistent engine remembers what it's feed until you restart the app.
-    * What will happen if you execute a global `const foo = 123` and then 15 years later (unless you restarted the app in the meantime) tried `const foo = 456`?
-        * The JSX console has some built in functions including the `$.props()` method. This method provided a very convenient way of finding out the properties of a selected item or any target for that matter.
-![][props]
-    * By default on apps that have the `app.selection` property if an object is selected then `app.selection[0]` will be the target and if that is undefined depending on the app the `app.selection` will be the target and if there's no selection then the target will just default to `app`.
-    * One can specify a target in the form of a DOM object `$.props(app.documents[0])` this will list all the properties of document 0.
-    * One can filter the result `$.props(app.documents[0], 'fullName', 'id')` if you only want some of them.
-    * In InDesign Enums are provided in the form of integer /* Constant */ for example `rgbPolicy: 1129345136 /* ColorSettingsPolicy.PRESERVE_EMBEDDED_PROFILES */`
-    * One can _build_ one the `app.selection[0]` default by including an array to specify the target for example `$.props(['transparencySettings', 'blendingSettings'])`
+* Mess around until you get the idea.
+* You can press Shift + Enter to process the selected lines or press one of the eval buttons.
+* Note that the JSX mode remembers from one line to the next.
 * `var a = 'Hello';` Shift + Enter `alert(a);` Shift + Enter ==> alerts "Hello"
 * JS mode **DOES NOT REMEMBER** from one line to the next.
 * `var a = 'Hello';` Shift + Enter `alert(a);` Shift + Enter ==> alerts **ERROR**
@@ -86,7 +74,6 @@ Plonk and unzip the zip file in the CSTK.zip folder into
 * Same applies to Shell mode.
 * **DO NOT** mess up the built in Adobe modules.
 * **DO NOT NO MATTER WHAT** look at the Adobe files that start with "Private and Confidential".
-
 
 ### Contribution guidelines ###
 
@@ -109,7 +96,6 @@ Plonk and unzip the zip file in the CSTK.zip folder into
 ### Change Log ###
 
 [howdey]: ./Resources/MDImages/howdey.png
-[props]: ./Resources/MDImages/props.png
 
 [regedit]: https://content.screencast.com/users/dtrevor1/folders/Snagit/media/06f14ee3-fa9c-411e-85bf-dce61c8ec9bd/regedit_small.png
 [consoleGif]: http://creative-scripts.com/wp-content/uploads/2017/09/CSTK-GIF.gif
