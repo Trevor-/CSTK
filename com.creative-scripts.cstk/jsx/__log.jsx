@@ -1,4 +1,4 @@
-var __log, __error;
+var __log, __error, __result;
 (function() {
     const ARRAY_SPLIT = ';;@;;:@#;';
     if (new ExternalObject('lib:PlugPlugExternalObject')) {
@@ -10,12 +10,14 @@ var __log, __error;
         };
         $.write = function(message, style, __class) {
             style = style || ' ';
+            if (message && (message.constructor === Object || message.constructor === Array)) { message = message.toSource(); }
             message += ARRAY_SPLIT + style;
             message += ARRAY_SPLIT + (__class ? __class : ' ');
             $.dispatch('com.creative-scripts.cstk.writeln', message);
         };
         $.writeln = function(message, style, __class) {
             style = style || ' ';
+            if (message && (message.constructor === Object || message.constructor === Array)) { message = message.toSource(); }
             message += ARRAY_SPLIT + style;
             message += ARRAY_SPLIT + (__class ? __class : ' ');
             message += ARRAY_SPLIT + 1;
@@ -23,6 +25,7 @@ var __log, __error;
         };
         __log = function(message, style, __class) {
             style = style || ' ';
+            if (message && (message.constructor === Object || message.constructor === Array)) { message = message.toSource(); }
             message += ARRAY_SPLIT + style;
             if (__class) {
                 message += ARRAY_SPLIT + __class;
@@ -31,6 +34,20 @@ var __log, __error;
         };
         __error = function(message, style) {
             __log(message, style, 'error');
+        };
+        __result = function(error, result, stderr) {
+            if (error) {
+                if (error.constructor === Object || error.constructor === Array) { error = error.toSource(); }
+                __error('Error: ' + error);
+            }
+            if (stderr) {
+                if (stderr.constructor === Object || stderr.constructor === Array) { stderr = stderr.toSource(); }
+                __error('Stderr: ' + stderr);
+            }
+            if (result) {
+                if (result.constructor === Object || result.constructor === Array) { result = result.toSource(); }
+                __log('Result: ' + result);
+            }
         };
 
         ////////////////////////////////////////////////////////////////////////////////////////
@@ -295,9 +312,9 @@ var __log, __error;
                 __error(errors.join('\n'));
             }
             $.level = level;
-            return {properties: results.join('\n'), errors: errors.join('\n')};
+            return { properties: results.join('\n'), errors: errors.join('\n') };
         };
     } else {
-        $.props = __log = __error = $.writeln;
+        $.props = __log = __error = __result = $.writeln;
     }
 })();

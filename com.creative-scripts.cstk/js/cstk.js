@@ -317,11 +317,11 @@ var __log, __result, __error;
                 evalLines = codeContents;
             }
             // provide feedback that the commands been sent
-            $('#evalCode').animate({ 'border-color': '#d2691e'}, 200, function() {
-                $('#evalCode').animate({'border-color': ['blue', 'green', 'red'][evalMode]}, 200);
+            $('#evalCode').animate({ 'border-color': '#d2691e' }, 200, function() {
+                $('#evalCode').animate({ 'border-color': ['blue', 'green', 'red'][evalMode] }, 200);
             });
 
-            $( ['#wholeSnippetDV', '#lineSnippetDV'][+selectedLines] ).toggleClass( "highlight", 300 ).toggleClass( "highlight", 500 );
+            $(['#wholeSnippetDV', '#lineSnippetDV'][+selectedLines]).toggleClass("highlight", 300).toggleClass("highlight", 500);
 
             try {
                 if (evalMode === 0) {
@@ -402,10 +402,10 @@ var __log, __result, __error;
 
     var spawn = require('child_process').spawn;
     var shell = isMac ? function(command, codeContents, pos) { // Mac
-        // provide feedback that the commands been sent
-        $('#evalCode').animate({ 'border-color': '#d2691e'}, 200, function() {
-            $('#evalCode').animate({'border-color': 'red'}, 200);
-        });
+            // provide feedback that the commands been sent
+            $('#evalCode').animate({ 'border-color': '#d2691e' }, 200, function() {
+                $('#evalCode').animate({ 'border-color': 'red' }, 200);
+            });
             if (pos !== undefined) {
                 $('#evalCode').val(codeContents);
                 $('#evalCode').selection('setPos', pos);
@@ -454,8 +454,8 @@ var __log, __result, __error;
                 $('#evalCode').selection('setPos', pos);
             }
             // provide feedback that the commands been sent
-            $('#evalCode').animate({ 'border-color': '#d2691e'}, 200, function() {
-                $('#evalCode').animate({'border-color': 'red'}, 200);
+            $('#evalCode').animate({ 'border-color': '#d2691e' }, 200, function() {
+                $('#evalCode').animate({ 'border-color': 'red' }, 200);
             });
             var terminal, n, l, _cwd, CmdCSS, ErrCSS, resultCSS;
 
@@ -528,10 +528,10 @@ var __log, __result, __error;
 
         var codeContents, result;
         // provide feedback that the commands been sent
-        $('#evalCode').animate({ 'border-color': '#d2691e'}, 200, function() {
-            $('#evalCode').animate({'border-color': ['blue', 'green', 'red'][evalMode]}, 200);
+        $('#evalCode').animate({ 'border-color': '#d2691e' }, 200, function() {
+            $('#evalCode').animate({ 'border-color': ['blue', 'green', 'red'][evalMode] }, 200);
         });
-            $( '#wholeSnippetDV' ).toggleClass( "highlight", 300 ).toggleClass( "highlight", 500 );
+        $('#wholeSnippetDV').toggleClass("highlight", 300).toggleClass("highlight", 500);
         codeContents = $('#evalCode').val();
         try {
             if (evalMode === 0) {
@@ -558,6 +558,7 @@ var __log, __result, __error;
     __log = function(message, style, __class) {
         var evalResult = $("#evalResult");
         if (message === undefined) { return; }
+        if (typeof message === 'object') { message = Jfy(message); }
         __class = __class ? ' ' + __class : '';
         style = style || '';
         $(`<p class="__pre${__class}" style="${style}"></p>`).appendTo(evalResult).text(message);
@@ -570,9 +571,18 @@ var __log, __result, __error;
     };
     __result = function(error, result, stderr) {
         var evalResult = $("#evalResult");
-        if (error) { __error('Error: ' + error); }
-        if (stderr) { __error('Stderr: ' + stderr); }
-        if (result) { __log('Result: ' + result); }
+        if (error) {
+            if (typeof error === 'object') { error = Jfy(error); }
+            __error('Error: ' + error);
+        }
+        if (stderr) {
+            if (typeof stderr === 'object') { stderr = Jfy(stderr); }
+            __error('Stderr: ' + stderr);
+        }
+        if (result) {
+            if (typeof result === 'object') { result = Jfy(result); }
+            __log('Result: ' + result);
+        }
         $(evalResult).animate({
             scrollTop: $(evalResult)[0].scrollHeight - $(evalResult).height()
         }, 0);
