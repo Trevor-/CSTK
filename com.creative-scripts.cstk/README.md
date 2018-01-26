@@ -98,15 +98,18 @@ Plonk and unzip the zip file in the CSTK.zip folder into
 
 ##### Extensions Tools #####
 * To get to the extensions tools click the ![][ExToolsBT] button to go back to the console click the ![][ConsoleBT] button.
+
 ![][tools]
 * To set debug and log levels for a CEP version select the levels and version from the dropdowns and click the **SET** button.
 * To debug extensions the extension you want to debug must be active at the time the list was generated. If you don't see the ![][DebugBT] next to the extension you want to debug, make sure the extension is active and then click the ![][RefreshBT] button. You should then seen it.
+
 ![][ExButtons]
 * Choose you debug app that should automatically be listed in the dropdown and then click the debug button. If you're on the Mac and using a cefclient it will start minimized so you need to click on the cefclient icon in that shows up in the dock.
 
 ![][cefclient]
 
 ![][debug]
+
 * Use your common sense for what the other buttons do.
 * **DO NOT** mess up the built in Adobe modules.
 * **DO NOT NO MATTER WHAT** look at the Adobe files that start with "Private and Confidential".

@@ -113,9 +113,11 @@ var __log, __result, __error;
                 options = packageObj;
             }
             // Setup default values
+            if (options.writeUndefined === undefined) { options.showSnippet = false; }
             if (options.showSnippet === undefined) { options.showSnippet = false; }
             if (options.consoleFontSize === undefined) { options.consoleFontSize = 12; }
             $("#resultModeDV").html('<i class="far fa-' + (options.showSnippet ? 'check-square' : 'square') + ' fa-lg"></i> Include snippet in results');
+            $("#undefinedDV").html('<i class="far fa-' + (options.writeUndefined ? 'check-square' : 'square') + ' fa-lg"></i> Write "undefined" to JS console');
             $('.console').css('font-size', options.consoleFontSize + 'px');
         });
     })();
@@ -130,6 +132,11 @@ var __log, __result, __error;
     $("#resultModeDV").click(function() {
         options.showSnippet = !options.showSnippet;
         $("#resultModeDV").html('<i class="far fa-' + (options.showSnippet ? 'check-square' : 'square') + ' fa-lg"></i> Include snippet in results');
+        fs.outputJSON(optionsFile, options);
+    });
+    $("#undefinedDV").click(function() {
+        options.writeUndefined = !options.writeUndefined;
+        $("#undefinedDV").html('<i class="far fa-' + (options.writeUndefined ? 'check-square' : 'square') + ' fa-lg"></i> Write "undefined" to JS console');
         fs.outputJSON(optionsFile, options);
     });
 
@@ -356,10 +363,7 @@ var __log, __result, __error;
     resultModeRB = $('#resultModeRB');
     timeStampCB = $('#timeStampCB');
     jsAndJSXCallBack = function(error, execResult, evalLines, codeContents, pos, selectedLines) {
-        var includeTimeStamp, modes,
-            CmdCSS, ErrCSS, resultCSS;
-        includeTimeStamp = true;
-        includeTimeStamp = timeStampCB.is(':checked');
+        var modes, CmdCSS, ErrCSS, resultCSS;
         if (pos !== undefined) {
             $('#evalCode').val(codeContents);
             $('#evalCode').selection('setPos', pos);
@@ -383,8 +387,8 @@ var __log, __result, __error;
             __log(evalLines.replace(/^\s+/, ''), CmdCSS);
         }
 
-        if (error) { __error(error, ErrCSS); }
-        if (execResult) { __log(execResult, resultCSS); }
+        if (error !== undefined) { __error(error, ErrCSS); }
+        if(options.writeUndefined || execResult !== undefined) __log(execResult, resultCSS);
         $("#evalResult").animate({
             scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
         }, 100);
@@ -441,7 +445,7 @@ var __log, __result, __error;
                 }
             });
             terminal.stderr.on('data', function(data) {
-                __error(data, ErrCSS);
+                __error('' + data, ErrCSS);
             });
             // provide feedback the the script run
             $('#evalResult').animate({ 'border-color': 'red' }, 200, function() {
@@ -557,11 +561,14 @@ var __log, __result, __error;
 
     __log = function(message, style, __class) {
         var evalResult = $("#evalResult");
-        if (message === undefined) { return; }
-        if (typeof message === 'object') { message = Jfy(message); }
+        if (typeof message === 'object') {
+            message = Jfy(message);
+        } else {
+            message = '' + message;
+        }
         __class = __class ? ' ' + __class : '';
         style = style || '';
-        $(`<p class="__pre${__class}" style="${style}"></p>`).appendTo(evalResult).text(message);
+        $(`<p class="__pre${__class}" style="${style}"></p>`).appendTo(evalResult).text(message.replace(/\r/g, '\n'));
         $(evalResult).animate({
             scrollTop: $(evalResult)[0].scrollHeight - $(evalResult).height()
         }, 0);
@@ -573,15 +580,15 @@ var __log, __result, __error;
         var evalResult = $("#evalResult");
         if (error) {
             if (typeof error === 'object') { error = Jfy(error); }
-            __error('Error: ' + error);
+            __error('Error: ' + error.replace(/\r/g, '\n'));
         }
         if (stderr) {
             if (typeof stderr === 'object') { stderr = Jfy(stderr); }
-            __error('Stderr: ' + stderr);
+            __error('Stderr: ' + stderr.replace(/\r/g, '\n'));
         }
-        if (result) {
+        if (options.writeUndefined || result !== undefined) {
             if (typeof result === 'object') { result = Jfy(result); }
-            __log('Result: ' + result);
+            __log('Result: ' + result.replace(/\r/g, '\n'));
         }
         $(evalResult).animate({
             scrollTop: $(evalResult)[0].scrollHeight - $(evalResult).height()
@@ -593,7 +600,7 @@ var __log, __result, __error;
         var write = function(message, style, __class, writeln) {
             if (message === undefined) { return; }
             __class = __class ? ' ' + __class : '';
-            $(`<span style="${style}" class="__pre${__class}"></span>`).text(message).appendTo(evalResult);
+            $(`<span style="${style}" class="__pre${__class}"></span>`).text(message.replace(/\r/g, '\n')).appendTo(evalResult);
             if (writeln) {
                 $('<br>').appendTo(evalResult);
             }

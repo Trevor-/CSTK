@@ -3,7 +3,7 @@
 
 * CSTK© Version 2
 
-![][howdey]
+![][CSTK2]
 
 ### What is this repository NOT for? ###
 
@@ -16,6 +16,8 @@
     * The JSX console now shows useful error messages even with InDesign (Error, line# and source line)
     * `$.writeln` and `$.write` are now forwarded to the console and can include css `$.writeln('Hi there', 'background: yellow; color: blue;')`
     * The `$.writeln()` and `$.write()` and `__log()` `__error()` and `__result()` methods will output to the console and automatically stringify objects and arrays.
+
+    ![][howdey]
     * `$.props()` will give useful info on selected item or other target, see [below](#console) for details.
     * `__log('hi')` works in both JSX and JS consoles can also include css and class `__log('foo', 'background: yellow', 'error')`
     * `__error()` same as `__log()` just with the error class applied (comes out red)
@@ -155,3 +157,4 @@ Please judge me favorably. My annotations and general writing are much less slop
 [PayPalBT]: ./Resources/MDImages/PayPalBT.png
 [cefclient]: ./Resources/MDImages/cefclient.png
 [Shell]: ./Resources/MDImages/Shell.png
+[CSTK2]: ./Resources/MDImages/CSTK2.gif
