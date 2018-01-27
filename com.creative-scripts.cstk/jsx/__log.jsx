@@ -36,15 +36,15 @@ var __log, __error, __result;
             __log(message, style, 'error');
         };
         __result = function(error, result, stderr) {
-            if (error) {
+            if (error !== undefined) {
                 if (error.constructor === Object || error.constructor === Array) { error = error.toSource(); }
                 __error('Error: ' + error);
             }
-            if (stderr) {
+            if (stderr !== undefined) {
                 if (stderr.constructor === Object || stderr.constructor === Array) { stderr = stderr.toSource(); }
                 __error('Stderr: ' + stderr);
             }
-            if (result) {
+            if (result !== undefined) {
                 if (result.constructor === Object || result.constructor === Array) { result = result.toSource(); }
                 __log('Result: ' + result);
             }

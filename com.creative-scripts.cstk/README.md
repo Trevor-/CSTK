@@ -3,11 +3,11 @@
 
 * CSTK© Version 2
 
-![][howdey]
+![][CSTK2]
 
 ### What is this repository NOT for? ###
 
-* Text editing, making projects, testing projects. Use an appropriate text editor and developing environment for that.
+* Text editing, developing and testing projects. Use an appropriate text editor and developing environment for that.
 
 ### What is this repository for? ###
 
@@ -16,6 +16,8 @@
     * The JSX console now shows useful error messages even with InDesign (Error, line# and source line)
     * `$.writeln` and `$.write` are now forwarded to the console and can include css `$.writeln('Hi there', 'background: yellow; color: blue;')`
     * The `$.writeln()` and `$.write()` and `__log()` `__error()` and `__result()` methods will output to the console and automatically stringify objects and arrays.
+
+    ![][howdey]
     * `$.props()` will give useful info on selected item or other target, see [below](#console) for details.
     * `__log('hi')` works in both JSX and JS consoles can also include css and class `__log('foo', 'background: yellow', 'error')`
     * `__error()` same as `__log()` just with the error class applied (comes out red)
@@ -57,25 +59,22 @@ mklink /J  "C:\Program Files\Common Files\Adobe\CEP\extensions\CSTK"  "C:\Reposi
 **After you have done that one time then to update the extension just `cd` to the CSTK repository folder and type `git pull`**
 
 **If you are a real beginner "developer" and can't handle the above then:**
-Plonk and unzip the zip file in the CSTK.zip folder into
-* Mac /Library/Application Support/Adobe/CEP/extensions or ~/Library/Application Support/Adobe/CEP/extensions
-* Windows C:\Program Files\Common Files\Adobe\CEP\extensions or C:\Users\<USER>\AppData\Roaming\Adobe\CEP\extensions (for pre CEP 6.1 C:\Program Files (x86)\Common Files\Adobe\CEP\extensions)
-* See [here](http://creative-scripts.com/where-to-plonk-my-extensions/) for some more details
-
-**If you are a real real beginner "developer" and can't handle the above then: search for some installer tool to install the com.creative-scripts.cstk.zxp file**
+Download a zip file of the signed extension and follow the instructions [here](http://creative-scripts.com/cstk-in-adobe-app-console-and-tool)
 
 #### How do set the debug mode? ####
 * The extension is now signed so you know longer need to do this.
 
 ### Usage Instructions ###
 
-###### Mess around until you get the idea. ######
+**Mess around until you get the idea.**
+**See the video on [this](http://creative-scripts.com/cstk-in-adobe-app-console-and-tool) page.**
 
 ##### Console #####
 * Make sure you have the correct console mode selected.
 * You can press Shift + Enter to execute selected lines.
 * To execute the entire contents of the console on Mac use Option⌥+Enter on Windows use Ctr+Shift+A or on both you can click the Execute button.
-* Note that the JSX mode runs in a persistent engine remembers what it's feed until you restart the app.
+* Note that the J
+SX mode runs in a persistent engine remembers what it's feed until you restart the app.
     * What will happen if you execute a global `const foo = 123` and then 15 years (not a long time in the history of ExtendScript) later (unless you restarted the app in the meantime) tried `const foo = 456`?
 * The JSX console has some built in functions including the `$.props()` method. This method provided a very convenient way of finding out the properties of a selected item or any target for that matter.
 ![][props]
@@ -98,7 +97,6 @@ Plonk and unzip the zip file in the CSTK.zip folder into
 
 ##### Extensions Tools #####
 * To get to the extensions tools click the ![][ExToolsBT] button to go back to the console click the ![][ConsoleBT] button.
-
 ![][tools]
 * To set debug and log levels for a CEP version select the levels and version from the dropdowns and click the **SET** button.
 * To debug extensions the extension you want to debug must be active at the time the list was generated. If you don't see the ![][DebugBT] next to the extension you want to debug, make sure the extension is active and then click the ![][RefreshBT] button. You should then seen it.
@@ -109,7 +107,6 @@ Plonk and unzip the zip file in the CSTK.zip folder into
 ![][cefclient]
 
 ![][debug]
-
 * Use your common sense for what the other buttons do.
 * **DO NOT** mess up the built in Adobe modules.
 * **DO NOT NO MATTER WHAT** look at the Adobe files that start with "Private and Confidential".
@@ -158,3 +155,4 @@ Please judge me favorably. My annotations and general writing are much less slop
 [PayPalBT]: ./Resources/MDImages/PayPalBT.png
 [cefclient]: ./Resources/MDImages/cefclient.png
 [Shell]: ./Resources/MDImages/Shell.png
+[CSTK2]: ./Resources/MDImages/CSTK2.gif

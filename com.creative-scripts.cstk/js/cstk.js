@@ -1,4 +1,4 @@
-/* global jsx, window, process, LogFactory,CSInterface, require, $, setTimeout, SystemPath, alert, document */
+/* global jsx, window, process, LogFactory,CSInterface, require, $, setTimeout, SystemPath, alert, document, CSEvent */
 /* jshint undef:true, unused:true, evil: true, esversion:6 */
 
 /*
@@ -18,9 +18,9 @@
     |   _  _|_  |\/| _  _|.(_. _ _|.
     |__(_|_)|_  |  |(_)(_||| |(-(_|.
 
-                          __   __      __
-     /| |__|    | _  _     _) /  \ /| (__)
-      |    |  __)(_|| )   /__ \__/  | (__)
+    __   __               __   __      __
+     _) /__     | _  _     _) /  \ /| (__)
+    /__ \__)  __)(_|| )   /__ \__/  | (__)
 
      __                       __                 __
     /   _  _    _. _ |_ |_.  /   _ _ _ |_.   _  (_  _ _. _ |_ _
@@ -1971,7 +1971,7 @@ var __log, __result, __error;
             }
         });
         $("#logLevel, #debugLevel").selectmenu({
-            change: function(event, ui) {
+            change: function() {
                 setUI(false, false, 'REMEMBER to click SET to apply the changes');
             }
         });
