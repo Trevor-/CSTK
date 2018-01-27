@@ -492,10 +492,10 @@ var __log, __result, __error;
             terminal.stderr.setEncoding = 'utf-8';
 
             l = command.length;
-            for (n = 0; n < l; n++) {
+            for (n = 0; n < l -1; n++) {
                 terminal.stdin.write(new Buffer(command[n] + '\n'));
             }
-            terminal.stdin.write(new Buffer('echo SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf\n')); // ;-}
+            terminal.stdin.write(new Buffer(command[n] + '\necho SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf\n')); // ;-}
 
             terminal.stdout.on('data', function(data) {
                 _cwd = /[^\r\n]*?(?=echo SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf)/.exec(data);
@@ -504,15 +504,16 @@ var __log, __result, __error;
                     $('#pwd').text(cwd);
                     data = ('' + data).substr(0, _cwd.index);
                     data = data.replace(/SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf/g, '');
-                    __log(data, resultCSS);
+
+                    __log(('' + data).replace(/[\n\r][\n\r]/g,'\n'), resultCSS);
                     terminal.kill();
                     __log(cwd, CmdCSS + 'border-bottom:red solid 1px;');
                 } else {
-                    __log('' + data, resultCSS);
+                    __log(('' + data).replace(/[\n\r][\n\r]/g,'\n'), resultCSS);
                 }
             });
             terminal.stderr.on('data', function(data) {
-                __error(data, ErrCSS);
+                __error(('' + data).replace(/[\n\r][\n\r]/g,'\n'), ErrCSS);
             });
             // provide feedback the the script run
             $('#evalResult').animate({ 'border-color': '#F00' }, 200, function() {
