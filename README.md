@@ -59,7 +59,7 @@ mklink /J  "C:\Program Files\Common Files\Adobe\CEP\extensions\CSTK"  "C:\Reposi
 **After you have done that one time then to update the extension just `cd` to the CSTK repository folder and type `git pull`**
 
 **If you are a real beginner "developer" and can't handle the above then:**
-Download a zip file of the signed extension and follow the instructions [here](http://creative-scripts.com/cstk-in-adobe-app-console-and-tool)
+Follow the instructions [here](http://creative-scripts.com/cstk-in-adobe-app-console-and-tool#install)
 
 #### How do set the debug mode? ####
 * The extension is now signed so you know longer need to do this.
