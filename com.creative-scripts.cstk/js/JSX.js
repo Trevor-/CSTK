@@ -1,3 +1,19 @@
+/*
+         _ ______  __   _
+        | / ___\ \/ /  (_)___
+     _  | \___ \\  /   | / __|
+    | |_| |___) /  \ _ | \__ \
+     \___/|____/_/\_(_)/ |___/
+                     |__/
+                        _               ____
+    /\   /\___ _ __ ___(_) ___  _ __   |___ \
+    \ \ / / _ \ '__/ __| |/ _ \| '_ \    __) |
+     \ V /  __/ |  \__ \ | (_) | | | |  / __/
+      \_/ \___|_|  |___/_|\___/|_| |_| |_____|
+
+*/
+
+
 //////////////////////////////////////////////////////////////////////////////////
 // JSX.js © and writtent by Trevor http://creative-scripts.com/jsx-js           //
 // If you turn over is less the $50,000,000 then you don't have to pay anything //
@@ -6,13 +22,16 @@
 // Contact me http://creative-scripts.com/contact for pricing and licensing     //
 // Don't remove these commented lines                                           //
 // For simple and effective calling of jsx from the js engine                   //
-// Version 1 last modified Aug 27 2017                                          //
+// Version 2 last modified April 18 2018                                        //
 //////////////////////////////////////////////////////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////////
-// NOTE: JSX.js is dependent on NodeJS                                         //
-// See http://creative-scripts.com/jsx-js on how turn on NodeJS and use JSX.js //
-/////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Change log:                                                                                           //
+// JSX.js V2 is now independent of NodeJS and CSInterface.js :-)                                         //
+// forceEval is now by default true                                                                      //
+// It wraps the scripts in a try catch and an eval providing useful error handling                       //
+// One can set in the jsx engine $.includeStack = true to return the call stack in the event of an error //
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 // JSX.js for calling jsx code from the js engine                                                        //
@@ -51,7 +70,7 @@ var jsx;
     var __dirname = (function() {
         var path, isMac;
         path = decodeURI(window.__adobe_cep__.getSystemPath('extension'));
-        isMac = process.platform[0] === 'd'; // [d]arwin
+        isMac = navigator.platform[0] === 'M'; // [M]ac
         path = path.replace('file://' + (isMac ? '' : '/'), '');
         return path;
     })();
@@ -60,6 +79,204 @@ var jsx;
         callback = callback || function() {};
         window.__adobe_cep__.evalScript(script, callback);
     };
+
+
+    ////////////////////////////////////////////
+    // In place of using the node path module //
+    ////////////////////////////////////////////
+
+    // jshint undef: true, unused: true
+
+    // A very minified version of the NodeJs Path module!!
+    // For use outside of NodeJs
+    // Majorly nicked by Trevor from Joyent
+    var path = (function() {
+
+        var isString = function(arg) {
+            return typeof arg === 'string';
+        };
+
+        // var isObject = function(arg) {
+        //     return typeof arg === 'object' && arg !== null;
+        // };
+
+        var basename = function(path) {
+            if (!isString(path)) {
+                throw new TypeError('Argument to path.basename must be a string');
+            }
+            var bits = path.split(/[\/\\]/g);
+            return bits[bits.length - 1];
+        };
+
+        // jshint undef: true
+        // Regex to split a windows path into three parts: [*, device, slash,
+        // tail] windows-only
+        var splitDeviceRe =
+            /^([a-zA-Z]:|[\\\/]{2}[^\\\/]+[\\\/]+[^\\\/]+)?([\\\/])?([\s\S]*?)$/;
+
+        // Regex to split the tail part of the above into [*, dir, basename, ext]
+        // var splitTailRe =
+        //     /^([\s\S]*?)((?:\.{1,2}|[^\\\/]+?|)(\.[^.\/\\]*|))(?:[\\\/]*)$/;
+
+        var win32 = {};
+        // Function to split a filename into [root, dir, basename, ext]
+        // var win32SplitPath = function(filename) {
+        //     // Separate device+slash from tail
+        //     var result = splitDeviceRe.exec(filename),
+        //         device = (result[1] || '') + (result[2] || ''),
+        //         tail = result[3] || '';
+        //     // Split the tail into dir, basename and extension
+        //     var result2 = splitTailRe.exec(tail),
+        //         dir = result2[1],
+        //         basename = result2[2],
+        //         ext = result2[3];
+        //     return [device, dir, basename, ext];
+        // };
+
+        var win32StatPath = function(path) {
+            var result = splitDeviceRe.exec(path),
+                device = result[1] || '',
+                isUnc = !!device && device[1] !== ':';
+            return {
+                device: device,
+                isUnc: isUnc,
+                isAbsolute: isUnc || !!result[2], // UNC paths are always absolute
+                tail: result[3]
+            };
+        };
+
+        var normalizeUNCRoot = function(device) {
+            return '\\\\' + device.replace(/^[\\\/]+/, '').replace(/[\\\/]+/g, '\\');
+        };
+
+        var normalizeArray = function(parts, allowAboveRoot) {
+            var res = [];
+            for (var i = 0; i < parts.length; i++) {
+                var p = parts[i];
+
+                // ignore empty parts
+                if (!p || p === '.')
+                    continue;
+
+                if (p === '..') {
+                    if (res.length && res[res.length - 1] !== '..') {
+                        res.pop();
+                    } else if (allowAboveRoot) {
+                        res.push('..');
+                    }
+                } else {
+                    res.push(p);
+                }
+            }
+
+            return res;
+        };
+
+        win32.normalize = function(path) {
+            var result = win32StatPath(path),
+                device = result.device,
+                isUnc = result.isUnc,
+                isAbsolute = result.isAbsolute,
+                tail = result.tail,
+                trailingSlash = /[\\\/]$/.test(tail);
+
+            // Normalize the tail path
+            tail = normalizeArray(tail.split(/[\\\/]+/), !isAbsolute).join('\\');
+
+            if (!tail && !isAbsolute) {
+                tail = '.';
+            }
+            if (tail && trailingSlash) {
+                tail += '\\';
+            }
+
+            // Convert slashes to backslashes when `device` points to an UNC root.
+            // Also squash multiple slashes into a single one where appropriate.
+            if (isUnc) {
+                device = normalizeUNCRoot(device);
+            }
+
+            return device + (isAbsolute ? '\\' : '') + tail;
+        };
+        win32.join = function() {
+            var paths = [];
+            for (var i = 0; i < arguments.length; i++) {
+                var arg = arguments[i];
+                if (!isString(arg)) {
+                    throw new TypeError('Arguments to path.join must be strings');
+                }
+                if (arg) {
+                    paths.push(arg);
+                }
+            }
+
+            var joined = paths.join('\\');
+
+            // Make sure that the joined path doesn't start with two slashes, because
+            // normalize() will mistake it for an UNC path then.
+            //
+            // This step is skipped when it is very clear that the user actually
+            // intended to point at an UNC path. This is assumed when the first
+            // non-empty string arguments starts with exactly two slashes followed by
+            // at least one more non-slash character.
+            //
+            // Note that for normalize() to treat a path as an UNC path it needs to
+            // have at least 2 components, so we don't filter for that here.
+            // This means that the user can use join to construct UNC paths from
+            // a server name and a share name; for example:
+            //   path.join('//server', 'share') -> '\\\\server\\share\')
+            if (!/^[\\\/]{2}[^\\\/]/.test(paths[0])) {
+                joined = joined.replace(/^[\\\/]{2,}/, '\\');
+            }
+            return win32.normalize(joined);
+        };
+
+        var posix = {};
+
+        // posix version
+        posix.join = function() {
+            var path = '';
+            for (var i = 0; i < arguments.length; i++) {
+                var segment = arguments[i];
+                if (!isString(segment)) {
+                    throw new TypeError('Arguments to path.join must be strings');
+                }
+                if (segment) {
+                    if (!path) {
+                        path += segment;
+                    } else {
+                        path += '/' + segment;
+                    }
+                }
+            }
+            return posix.normalize(path);
+        };
+
+        // path.normalize(path)
+        // posix version
+        posix.normalize = function(path) {
+            var isAbsolute = path.charAt(0) === '/',
+                trailingSlash = path && path[path.length - 1] === '/';
+
+            // Normalize the path
+            path = normalizeArray(path.split('/'), !isAbsolute).join('/');
+
+            if (!path && !isAbsolute) {
+                path = '.';
+            }
+            if (path && trailingSlash) {
+                path += '/';
+            }
+
+            return (isAbsolute ? '/' : '') + path;
+        };
+
+        win32.basename = posix.basename = basename;
+
+        this.win32 = win32;
+        this.posix = posix;
+        return (navigator.platform[0] === 'M') ? posix : win32;
+    })();
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////
     // The is the  "main" function which is to be prototyped                                              //
@@ -75,6 +292,7 @@ var jsx;
         var jsxScript;
         // Setup jsx function to enable the jsx scripts to easily retrieve their file location
         jsxScript = [
+            '$.level = 0;',
             'if(!$.__fileNames){',
             '    $.__fileNames = {};',
             '    $.__dirname = "__dirname__";'.replace('__dirname__', __dirname),
@@ -124,12 +342,10 @@ var jsx;
      *                            [Optional DEFAULT no replacements]
      *
      * @param  {Bolean} forceEval
-     *                             If the script should be wrapped in an eval
-     *                             This is only necessary if you need result to come back as a string
-     *                             in an application that by default does not return a string
-     *                             i.e. you need a callback from indesign
-     *                             In illustrator you never need to set this
-     *                             [Optional DEFAULT false]
+     *                             If the script should be wrapped in an eval and try catch
+     *                             This will 1) provide useful error feedback if heaven forbid it is needed
+     *                             2) The result will be a string which is required for callback results in InDesign
+     *                             [Optional DEFAULT true]
      *
      * Note 1) The order of the parameters is irrelevant
      * Note 2) One can pass the arguments as an object if desired
@@ -154,7 +370,7 @@ var jsx;
      */
 
     Jsx.prototype.evalScript = function() {
-        var arg, i, key, replaceThis, withThis, args, callback, forceEval, replacements, jsxScript;
+        var arg, i, key, replaceThis, withThis, args, callback, forceEval, replacements, jsxScript, isBin;
 
         //////////////////////////////////////////////////////////////////////////////////////
         // sort out order which arguments into jsxScript, callback, replacements, forceEval //
@@ -186,8 +402,8 @@ var jsx;
                     callback = arg;
                     continue;
                 }
-                if (arg === true) {
-                    forceEval = true;
+                if (arg === false) {
+                    forceEval = false;
                 }
             }
         }
@@ -195,6 +411,11 @@ var jsx;
         // If no script provide then not too much to do!
         if (!jsxScript) {
             return false;
+        }
+
+        // Have changed the forceEval default to be true as I prefer the error handling
+        if (forceEval !== false) {
+            forceEval = true;
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -213,40 +434,49 @@ var jsx;
         // for ID you if you have not coded your script appropriately and your want to send a result to the callBack then set forceEval to true //
         // I changed this that even on Illustrator it applies the try catch, Note the try catch will fail if $.level is set to 1                //
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        var isBin;
+
         if (forceEval) {
 
-                isBin = (jsxScript.substring(0,10) === '@JSXBIN@ES') ? '' : '\n';
-                jsxScript = (
-                    // "\n''') + '';} catch(e){(function(e){var n, a=[]; for (n in e){a.push(n + ': ' + e[n])}; return a.join('\n')})(e)}");
-                    // "\n''') + '';} catch(e){e + (e.line ? ('\\nLine ' + (+e.line - 1)) : '')}");
-                    [
-                        "try{eval('''" + isBin, // need to add an extra line otherwise #targetengine doesn't work ;-]
-                        jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') + "\n''') + '';",
-                        "} catch (e) {",
-                        "    (function(e) {",
-                        "        var line, sourceLine, name, description, ErrorMessage;",
-                        "        line = +e.line" + (isBin === ''? ';' : ' - 1;'), // To take into account the extra line added
-                        "        sourceLine = line && e.source.split(/[\\r\\n]/)[line];",
-                        "        name = e.name;",
-                        "        description = e.description;",
-                        "        ErrorMessage = name + ' ' + e.number + ': ' + description;",
-                        "        if (line){",
-                        "           ErrorMessage += '\\nLine: ' + line +",
-                        "               '-> ' + ((sourceLine.length < 300) ? sourceLine : sourceLine.substring(0,300) + '...');",
-                        "        }",
-                        "        return ErrorMessage;",
-                        "    })(e);",
-                        "}"
-                    ].join('')
-                );
+            isBin = (jsxScript.substring(0, 10) === '@JSXBIN@ES') ? '' : '\n';
+            jsxScript = (
+                // "\n''') + '';} catch(e){(function(e){var n, a=[]; for (n in e){a.push(n + ': ' + e[n])}; return a.join('\n')})(e)}");
+                // "\n''') + '';} catch(e){e + (e.line ? ('\\nLine ' + (+e.line - 1)) : '')}");
+                [
+                    "$.level = 0;",
+                    "try{eval('''" + isBin, // need to add an extra line otherwise #targetengine doesn't work ;-]
+                    jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"') + "\n''') + '';",
+                    "} catch (e) {",
+                    "    (function(e) {",
+                    "        var line, sourceLine, name, description, ErrorMessage, fileName, start, end, bug;",
+                    "        line = +e.line" + (isBin === '' ? ';' : ' - 1;'), // To take into account the extra line added
+                    "        fileName = File(e.fileName).fsName;",
+                    "        sourceLine = line && e.source.split(/[\\r\\n]/)[line];",
+                    "        name = e.name;",
+                    "        description = e.description;",
+                    "        ErrorMessage = name + ' ' + e.number + ': ' + description;",
+                    "        if (fileName.length && !(/[\\/\\\\]\\d+$/.test(fileName))) {",
+                    "           ErrorMessage += '\\nFile: ' + fileName;",
+                    "           line++;",
+                    "        }",
+                    "        if (line){",
+                    "           ErrorMessage += '\\nLine: ' + line +",
+                    "               '-> ' + ((sourceLine.length < 300) ? sourceLine : sourceLine.substring(0,300) + '...');",
+                    "        }",
+                    "        if (e.start) {ErrorMessage += '\\nBug: ' + e.source.substring(e.start - 1, e.end)}",
+                    "        if ($.includeStack) {ErrorMessage += '\\nStack:' + $.stack;}",
+                    "        return ErrorMessage;",
+                    "    })(e);",
+                    "}"
+                ].join('')
+            );
 
-            //__log(jsxScript);
         }
 
-        ////////////////////////////////
-        // deal with the replacements //
-        ////////////////////////////////
+        /////////////////////////////////////////////////////////////
+        // deal with the replacements                              //
+        // Note it's probably better to use ${template} `literals` //
+        /////////////////////////////////////////////////////////////
+
         if (replacements) {
             for (key in replacements) {
                 if (replacements.hasOwnProperty(key)) {
@@ -321,13 +551,10 @@ var jsx;
      *                            [Optional DEFAULT no replacements]
      *
      * @param  {Bolean} forceEval
-     *                             If the script should be wrapped in an eval
-     *                             This is only necessary if
-     *                             1) You need the result for a callback
-     *                             2) In an application that by default does not return a string
-     *                             i.e. you need a callback from indesign
-     *                             3) The result isn't explicitly passed as a String
-     *                             4) replacements have been passed.
+     *                             If the script should be wrapped in an eval and try catch
+     *                             This will 1) provide useful error feedback if heaven forbid it is needed
+     *                             2) The result will be a string which is required for callback results in InDesign
+     *                             [Optional DEFAULT true]
      *
      *                             If no replacements are needed then the jsx script is be executed by using the $.evalFile method
      *                             This exposes the true value of the $.fileName property 8-)
@@ -341,7 +568,6 @@ var jsx;
      *                             Note that if your calling multiple versions of myFabScript.jsx stored in multiple folders then you can get stuffed!
      *                             i.e. if the fileName is important to you then don't do that.
      *                             It also will force the result of the jsx file as a string which is particularly useful for InDesign callBacks
-     *                             [Optional DEFAULT false]
      *
      * Note 1) The order of the parameters is irrelevant
      * Note 2) One can pass the arguments as an object if desired
@@ -366,12 +592,11 @@ var jsx;
 
     Jsx.prototype.evalFile = function() {
         var arg, args, callback, fileName, fileNameScript, forceEval, forceEvalScript,
-            fs, i, jsxFolder, jsxScript, key, newLine, path, replacements, replaceThis, success, withThis;
+            i, jsxFolder, jsxScript, newLine, replacements, success;
 
         success = true; // optimistic :-)
         args = arguments;
-        fs = require('fs');
-        path = require('path');
+
         jsxFolder = path.join(__dirname, 'jsx');
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
         // $.fileName does not return it's correct path in the jsx engine for files called from the js engine   //
@@ -445,8 +670,8 @@ var jsx;
                     callback = arg;
                     continue;
                 }
-                if (arg === true) {
-                    forceEval = true;
+                if (arg === false) {
+                    forceEval = false;
                 }
             }
         }
@@ -472,19 +697,15 @@ var jsx;
             jsxScript = path.join(jsxFolder, jsxScript); // files in the jsxFolder
         }
 
-
         if (forceEvalScript) {
             jsxScript = jsxScript.replace(/"/g, '\\"');
             // Check that the path exist, should change this to asynchronous at some point
-            try {
-                fs.statSync(jsxScript);
-                // TODO Needs more checking for windows
-                jsxScript = fileNameScript.replace(/__fileName__/, jsxScript).replace(/__basename__/, path.win32.basename(jsxScript)) +
-                    '$.evalFile(new File("' + jsxScript + '", 1e14)) + "";';
-                evalScript(jsxScript, callback);
-                return true;
-            } catch (err) {
-                return false;
+            if (!window.cep.fs.stat(jsxScript).err) {
+                jsxScript = fileNameScript.replace(/__fileName__/, jsxScript).replace(/__basename__/, path.basename(jsxScript)) +
+                    '$.evalFile(new File("' + jsxScript.replace(/\\/g, '\\\\') + '")) + "";';
+                return this.evalScript(jsxScript, callback, forceEval);
+            } else {
+            throw new Error(`The file: ${jsxScript} could not be found / read`);
             }
         }
 
@@ -492,11 +713,11 @@ var jsx;
         // Replacements made so we can't use $.evalFile and need to read the jsx script for ourselves //
         ////////////////////////////////////////////////////////////////////////////////////////////////
 
-        fileName = jsxScript.replace(/"/g, '\\"');
+        fileName = jsxScript.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
         try {
-            jsxScript = fs.readFileSync(jsxScript);
+            jsxScript = window.cep.fs.readFile(jsxScript).data;
         } catch (er) {
-            return false;
+            throw new Error(`The file: ${fileName} could not be read`);
         }
         // It is desirable that the injected fileNameScript is on the same line as the 1st line of the script
         // This is so that the $.line or error.line returns the same value as the actual file
@@ -505,43 +726,9 @@ var jsx;
         newLine = /^\s*#/.test(jsxScript) ? '\n' : '';
         jsxScript = fileNameScript.replace(/__fileName__/, fileName).replace(/__basename__/, path.basename(fileName)) + newLine + jsxScript;
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // On Illustrator and other apps the result of the jsx script is automatically passed as a string                                       //
-        // if you have a "script" containing the single number 1 and nothing else then the callBack will register as "1"                        //
-        // On InDesign that same script will provide a blank callBack                                                                           //
-        // Let's say we have a callBack function var callBack = function(result){alert(result);}                                                //
-        // On Ai your see the 1 in the alert                                                                                                    //
-        // On ID your just see a blank alert                                                                                                    //
-        // To see the 1 in the alert you need to convert the result to a string and then it will show                                           //
-        // So if we rewrite our 1 byte script to the 3 byte '1' i.e. surround the 1 in quotes then the call back alert will show 1              //
-        // If the scripts planed one can make sure that the results always passed as a string (including errors)                                //
-        // otherwise one can wrap the script in an eval and then have the result passed as a string                                             //
-        // I have not gone through all the apps but can say                                                                                     //
-        // for Ai you never need to set the forceEval to true                                                                                   //
-        // for ID you if you have not coded your script appropriately and your want to send a result to the callBack then set forceEval to true //
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (forceEval) {
-            jsxScript = "eval(''' " + newLine + jsxScript.replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "\n''') + '';";
-            // To be honest I would be surprised if this always works
-            // I'll wait for feedback
-        }
-
-        ////////////////////////////////
-        // deal with the replacements //
-        ////////////////////////////////
-        if (replacements) {
-            for (key in replacements) {
-                if (replacements.hasOwnProperty(key)) {
-                    replaceThis = new RegExp('__' + key + '__', 'g');
-                    withThis = replacements[key];
-                    jsxScript = jsxScript.replace(replaceThis, withThis + '');
-                }
-            }
-        }
-
         try {
-            evalScript(jsxScript, callback);
-            return true;
+            // evalScript(jsxScript, callback);
+            return this.evalScript(jsxScript, callback, replacements, forceEval);
         } catch (err) {
             ////////////////////////////////////////////////
             // Do whatever error handling you want here ! //

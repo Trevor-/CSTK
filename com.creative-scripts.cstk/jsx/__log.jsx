@@ -1,4 +1,6 @@
 var __log, __error, __result;
+var __sel, __doc;
+
 (function() {
     const ARRAY_SPLIT = ';;@;;:@#;';
     if (new ExternalObject('lib:PlugPlugExternalObject')) {
@@ -317,4 +319,16 @@ var __log, __error, __result;
     } else {
         $.props = __log = __error = __result = $.writeln;
     }
+    __sel = function(index) {
+        if (index === undefined) { return  (app.selection && app.selection[0]) || app.selection; }
+        return app.selection[index];
+    };
+
+    __doc = function(index) {
+        var doc;
+        index = index || 0;
+        doc = app.documents && app.documents.length && app.documents[index];
+        if (doc) { return doc; }
+        throw new Error('Error: There are no open documents.');
+    };
 })();

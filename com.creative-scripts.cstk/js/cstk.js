@@ -47,7 +47,7 @@
 // Set these as global to help out for console and external scripts
 // Would be good to have them also as locals
 var run, Jfy, log, exec, isMac, __dirname, path, os, csInterface, fs;
-var __log, __result, __error;
+var __log, __result, __error, __jsx;
 
 ////////////////////////////////////////////////////////
 // Set up button for opening Creative Scripts folder  //
@@ -363,7 +363,7 @@ var __log, __result, __error;
     resultModeRB = $('#resultModeRB');
     timeStampCB = $('#timeStampCB');
     jsAndJSXCallBack = function(error, execResult, evalLines, codeContents, pos, selectedLines) {
-        var modes, CmdCSS, ErrCSS, resultCSS;
+        var CmdCSS, ErrCSS, resultCSS;
         if (pos !== undefined) {
             $('#evalCode').val(codeContents);
             $('#evalCode').selection('setPos', pos);
@@ -375,7 +375,6 @@ var __log, __result, __error;
         CmdCSS = (evalMode) ? 'background:#DDFFDD;' : 'background:#DDDDFF;';
         resultCSS = (evalMode) ? 'background:#F5FFF5;border-bottom:green solid 1px;' : 'background:#F5F5FF;border-bottom:blue solid 1px;';
         ErrCSS = (evalMode) ? 'background:#DFD;font-weight:800;border:red dotted 1px;' : 'background:#DDF;font-weight:800;border:red dotted 1px;';
-        modes = ['JS', 'JSX', 'SHELL'];
         if (evalMode === 1 && /^[^\n\r]*?Error/i.test(execResult.substring(0, 200))) {
             // The jsx eval mode will not provide and official error
             // This should work for the Brits :-)
@@ -388,7 +387,7 @@ var __log, __result, __error;
         }
 
         if (error !== undefined) { __error(error, ErrCSS); }
-        if(options.writeUndefined || execResult !== undefined) __log(execResult, resultCSS);
+        if (options.writeUndefined || execResult !== undefined) __log(execResult, resultCSS);
         $("#evalResult").animate({
             scrollTop: $("#evalResult")[0].scrollHeight - $("#evalResult").height()
         }, 100);
@@ -492,7 +491,7 @@ var __log, __result, __error;
             terminal.stderr.setEncoding = 'utf-8';
 
             l = command.length;
-            for (n = 0; n < l -1; n++) {
+            for (n = 0; n < l - 1; n++) {
                 terminal.stdin.write(new Buffer(command[n] + '\n'));
             }
             terminal.stdin.write(new Buffer(command[n] + '\necho SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf\n')); // ;-}
@@ -505,15 +504,15 @@ var __log, __result, __error;
                     data = ('' + data).substr(0, _cwd.index);
                     data = data.replace(/SomeUnlikelyCombinationHereKsHlsdgKLJHKsetnlksdfuBIKgsprdyhoNOUYWQERFGHNiosdf/g, '');
 
-                    __log(('' + data).replace(/[\n\r][\n\r]/g,'\n'), resultCSS);
+                    __log(('' + data).replace(/[\n\r][\n\r]/g, '\n'), resultCSS);
                     terminal.kill();
                     __log(cwd, CmdCSS + 'border-bottom:red solid 1px;');
                 } else {
-                    __log(('' + data).replace(/[\n\r][\n\r]/g,'\n'), resultCSS);
+                    __log(('' + data).replace(/[\n\r][\n\r]/g, '\n'), resultCSS);
                 }
             });
             terminal.stderr.on('data', function(data) {
-                __error(('' + data).replace(/[\n\r][\n\r]/g,'\n'), ErrCSS);
+                __error(('' + data).replace(/[\n\r][\n\r]/g, '\n'), ErrCSS);
             });
             // provide feedback the the script run
             $('#evalResult').animate({ 'border-color': '#F00' }, 200, function() {
@@ -594,6 +593,17 @@ var __log, __result, __error;
         $(evalResult).animate({
             scrollTop: $(evalResult)[0].scrollHeight - $(evalResult).height()
         }, 0);
+    };
+
+    __jsx = function(message, resultStyle, resultClass, errorStyle, errorClass) {
+        if (message === undefined) { return; }
+        if (/^[^\n\r]*?Error/i.test(('' + message).substring(0, 200))) {
+        if(errorStyle===undefined){errorStyle ='background:#DFD;font-weight:800;border:red dotted 1px;';}
+            __error(message, errorStyle, errorClass);
+        } else {
+        if(resultStyle===undefined){resultStyle ='background:#F5FFF5;border-bottom:green solid 1px;';}
+            __log(message, resultStyle, resultClass);
+        }
     };
 
     (function() {
