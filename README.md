@@ -122,7 +122,6 @@ SX mode runs in a persistent engine remembers what it's feed until you restart t
 
 ### License ###
 
-* Don't forget to pay! There's a ![][PayPalBT] button on the extension, I don't mind if you use it for a year without coughing up but after that if you find the extension useful make sure to pay ($10 for now).
 * If you nick any snippets from the code please at least put a credit with a link to this page in your binary code.
 * Do not sue.
 * Do not complain.
