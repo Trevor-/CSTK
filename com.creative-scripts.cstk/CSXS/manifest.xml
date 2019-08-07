@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ExtensionManifest Version="6.0" ExtensionBundleId="com.creative-scripts.cstk.bundle.2" ExtensionBundleVersion="2.2.0" ExtensionBundleName="Extension-Name" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ExtensionManifest Version="6.0" ExtensionBundleId="com.creative-scripts.cstk.2" ExtensionBundleVersion="2.2.0" ExtensionBundleName="Extension-Name" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Author>Trevor http://www.creative-scripts.com</Author>
     <Legal>Written under the do not complain do not sue license. DON'T FORGET TO PAY UP!</Legal>
     <Abstract>CSTK 2 JSX, JS and Shell Console and HTML extensions tools</Abstract>
@@ -80,17 +80,18 @@
                     <Menu>CSTK</Menu>
                     <Geometry>
                         <Size>
-                            <Height>640</Height>
-                            <Width>600</Width>
+                            <Height>300</Height>
+                            <Width>343</Width>
                         </Size>
                         <MinSize>
-                            <Height>300</Height>
+                            <Height>170</Height>
                             <Width>300</Width>
                         </MinSize>
                         <MaxSize>
-                            <Height>10000</Height>
-                            <Width>10000</Width>
+                            <Height>1000</Height>
+                            <Width>1000</Width>
                         </MaxSize>
+                        
                     </Geometry>
                     <Icons>
                         <Icon Type="Normal">./icons/terminal.png</Icon>
