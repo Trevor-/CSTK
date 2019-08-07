@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ExtensionManifest Version="6.0" ExtensionBundleId="com.creative-scripts.cstk.bundle.2" ExtensionBundleVersion="2.0.0" ExtensionBundleName="Extension-Name" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ExtensionManifest Version="6.0" ExtensionBundleId="com.creative-scripts.cstk.bundle.2" ExtensionBundleVersion="2.2.0" ExtensionBundleName="Extension-Name" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <Author>Trevor http://www.creative-scripts.com</Author>
     <Legal>Written under the do not complain do not sue license. DON'T FORGET TO PAY UP!</Legal>
     <Abstract>CSTK 2 JSX, JS and Shell Console and HTML extensions tools</Abstract>
     <ExtensionList>
-        <Extension Id="com.creative-scripts.cstk.2" Version="8.2.0" />
+        <Extension Id="com.creative-scripts.cstk.2" Version="2.2.0" />
     </ExtensionList>
     <ExecutionEnvironment>
         <HostList>
@@ -15,7 +15,7 @@
             <Host Name="PHXS" Version="10" />
             <!-- Illustrator -->
             <!-- Tested -->
-            <Host Name="ILST" Version="19" />
+            <Host Name="ILST" Version="1" />
             <!-- InDesign -->
             <!-- Tested -->
             <Host Name="IDSN" Version="11" />
@@ -65,6 +65,7 @@
                     <CEFCommandLine>
                         <Parameter>--enable-nodejs</Parameter>
                         <Parameter>--mixed-context</Parameter>
+                        <Parameter>--high-dpi-support=1</Parameter>
                     </CEFCommandLine>
                 </Resources>
                 <Lifecycle>

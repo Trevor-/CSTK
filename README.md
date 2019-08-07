@@ -1,7 +1,7 @@
 # CSTK© README #
 ## Created by Trevor [Creative Scripts](https://creative-scripts.com) ##
 
-* CSTK© Version 2
+* CSTK© Version 2.2
 
 ![][CSTK2]
 
@@ -133,7 +133,8 @@ SX mode runs in a persistent engine remembers what it's feed until you restart t
 
 ### Change Log ###
 
-
+Version 2.2 (07 Aug 19)
+* Added persistence for Photoshop, InDesign and InCopy so the extension does not restart on closing the pannel.
 
 Version 2.1 (16 April 18)
 * Improved error handling for jsx console

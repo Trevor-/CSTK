@@ -74,19 +74,23 @@ var __log, __result, __error, __jsx;
     openFolderAppFile = path.join(cstkFolder, 'OpenFolderApp.txt');
     optionsFile = path.join(cstkFolder, 'options.json');
 
-    var searchForandAddDebugApps;
+    var searchForAndAddDebugApps;
 
-    // Set PhotoShop to persistent
+    // Set PhotoShop, InDesign and InCopy persistence
 
-    (function(isPersistent) {
+    (function() {
+        var persistenceString = '' + ({
+            PHXS: 'com.adobe.PhotoshopPersistent',
+            IDSN: 'com.adobe.InDesignPersistent',
+            AICY: 'com.adobe.InCopyPersistent'
+        }[csInterface.getApplicationID()]);
+        if (persistenceString === 'undefined') {return;}
         var event;
-        event = new CSEvent((isPersistent ?
-                "com.adobe.PhotoshopPersistent" :
-                "com.adobe.PhotoshopUnPersistent"),
-            "APPLICATION");
+        event = new CSEvent(persistenceString, "APPLICATION");
         event.extensionId = 'com.creative-scripts.cstk.2';
         csInterface.dispatchEvent(event);
-    })(true); //persistent to prevent extension from unloading
+        return persistenceString;
+    })(); //persistent to prevent extension from unloading
 
 
     /*
@@ -699,7 +703,7 @@ var __log, __result, __error, __jsx;
 
     var versions = process.versions;
     $('#versions').html(
-        'CSTK: 2' +
+        'CSTK: 2.1' +
         ' - node: ' + versions.node +
         // OK I could have used csInterface.getCurrentApiVersion().major etc. but this was more simple ;-/
         ' - cep: ' + (versions.cep || window.__adobe_cep__.getCurrentApiVersion().replace(/[^\d\.]+([\d\.])+[^\d\.]+([\d\.])+[^\d\.]+([\d\.])+.+/, "$3.$2.$1").replace(/\.0$/, '')) +
@@ -765,7 +769,7 @@ var __log, __result, __error, __jsx;
         $('#folders').show();
         // $("#openFolders").tooltip("close");
         getCeps();
-        searchForandAddDebugApps();
+        searchForAndAddDebugApps();
         $('#openFolders').hide();
         $('#openConsole').show();
     });
@@ -1176,7 +1180,7 @@ var __log, __result, __error, __jsx;
         return false;
     }; // end of selectDebugFile
 
-    searchForandAddDebugApps = function() {
+    searchForAndAddDebugApps = function() {
         var cmd;
         if (isMac) {
             // use spotlight to find Chrome and Client instances
@@ -1921,7 +1925,7 @@ var __log, __result, __error, __jsx;
     });
     $('#refeshAppList').click(function() {
         // $('#folderBody').text('Please wait a few (upto 10) seconds for the apps to be processed');
-        searchForandAddDebugApps();
+        searchForAndAddDebugApps();
         getCeps();
     });
 
@@ -2062,7 +2066,7 @@ var __log, __result, __error, __jsx;
         // });
         // $('#sudo').hide();
 
-        searchForandAddDebugApps();
+        searchForAndAddDebugApps();
         getCeps();
     });
 
